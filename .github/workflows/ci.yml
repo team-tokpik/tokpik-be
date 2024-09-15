@@ -15,10 +15,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working_directory: ./
-
 jobs:
   build:
     runs-on: ubuntu-latest

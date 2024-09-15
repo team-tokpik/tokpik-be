@@ -15,10 +15,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working_directory: ./
-
 jobs:
   build-docker-image-and-push:
     runs-on: ubuntu-latest
