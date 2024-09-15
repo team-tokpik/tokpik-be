@@ -3,8 +3,8 @@ name: CI 수행
 on:
   pull_request:
     branches:
-      - main
       - dev
+      - main
 
 # repository에 대한 읽기 권한만 부여
 permissions:
