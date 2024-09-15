@@ -1,0 +1,80 @@
+name: CD 수행
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+# repository에 대한 읽기 권한만 부여
+permissions:
+  contents: read
+
+# 동시성 그룹 설정, 진행 중인 이전 실행 취소 후 새 실행을 시작
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working_directory: ./
+
+jobs:
+  build-docker-image-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: repository checkout
+        uses: actions/checkout@v3
+
+      - name: JDK set up
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: application.properties 설정
+        run: |
+          touch src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
+
+      - name: gradlew 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: gradlew 빌드
+        run: ./gradlew build
+
+      - name: docker 이미지 빌드
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be:latest .
+
+      - name: docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: docker hub에 이미지 push
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be:latest
+
+  deploy:
+    needs: build-docker-image-and-push
+    if: ${{ needs.build-docker-image-and-push.result == 'success' }}
+    runs-on:
+      - self-hosted
+      - ec2-runner
+    steps:
+      - name: repository checkout
+        uses: actions/checkout@v3
+
+      - name: IAM 통한 ec2 인스턴스 접속
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_IAM_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_IAM_SECRET }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 배포
+        run: |
+          docker rm -f tokpik-be || true
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
+          docker run -d -p 8080:8080 --name tokpik-be ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
