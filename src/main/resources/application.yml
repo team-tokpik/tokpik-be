@@ -1,9 +1,8 @@
 spring:
   config:
     import: classpath:application.properties
-
-  profiles:
-    active: dev
+    activate:
+      on-profile: dev
 
   datasource:
     url: ${DB_URL}
