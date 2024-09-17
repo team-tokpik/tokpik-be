@@ -30,7 +30,7 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String profilePhotoUrl;
-    
+
     @Column(nullable = false)
     private String kakaoId;
 
@@ -44,22 +44,18 @@ public class User extends BaseTimeEntity {
     @Convert(converter = GenderConverter.class)
     private Gender gender;
 
-    @Column(nullable = false)
-    private String primaryLocation;
 
     public User(String email,
         String profilePhotoUrl,
         String kakaoId,
         String refreshToken,
         LocalDateTime birth,
-        Gender gender,
-        String primaryLocation) {
+        Gender gender) {
         this.email = email;
         this.profilePhotoUrl = profilePhotoUrl;
         this.kakaoId = kakaoId;
         this.refreshToken = refreshToken;
         this.birth = birth;
         this.gender = gender;
-        this.primaryLocation = primaryLocation;
     }
 }
