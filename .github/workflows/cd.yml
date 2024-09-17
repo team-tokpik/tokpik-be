@@ -77,6 +77,6 @@ jobs:
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
           docker run -d \
           -p 8080:8080  \
-          -v /home/ubuntu/logs:/app \
+          -v /home/ubuntu/logs:/app/logs \
           --name tokpik-be \
           ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
