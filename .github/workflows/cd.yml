@@ -71,6 +71,12 @@ jobs:
 
       - name: 배포
         run: |
+          mkdir -p /home/ubuntu/logs
+          chmod -c 755 /home/ubuntu/logs
           docker rm -f tokpik-be || true
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
-          docker run -d -p 8080:8080 --name tokpik-be ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
+          docker run -d \
+          -p 8080:8080  \
+          -v /home/ubuntu/logs:/app \
+          --name tokpik-be \
+          ${{ secrets.DOCKER_HUB_USERNAME }}/tokpik-be
