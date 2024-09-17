@@ -19,8 +19,27 @@ public class UserQueryService {
     public UserProfileResponse getUserProfile(long userId) {
 
         User user = findById(userId);
+        String maskedEmail = maskEmail(user.getEmail());
 
-        return UserProfileResponse.from(user);
+        return new UserProfileResponse(maskedEmail, user.getProfilePhotoUrl());
+    }
+
+    /**
+     * '@'를 기준으로 첫 부분, 첫 글자 제외한 나머지 글자 '*'로 마스킹 처리
+     *
+     * @param email 원래 이메일
+     * @return 마스킹 처리된 이메일, ex) m*****@naver.com
+     */
+    private String maskEmail(String email) {
+
+        StringBuilder result = new StringBuilder();
+        String[] parts = email.split("@", 2);
+
+        return result.append(parts[0].charAt(0))
+            .append("*".repeat(parts[0].length() - 1))
+            .append('@')
+            .append(parts[1])
+            .toString();
     }
 
     public User findById(long userId) {
