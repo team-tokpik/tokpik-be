@@ -31,7 +31,7 @@ public class UserTopicTag extends BaseTimeEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "topic_tag_id", nullable = false)
+    @JoinColumn(name = "talk_topic_tag_id", nullable = false)
     private TopicTag topicTag;
 
     public UserTopicTag(User user, TopicTag topicTag) {
