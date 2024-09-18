@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,28 +32,22 @@ public class User extends BaseTimeEntity {
     private String profilePhotoUrl;
 
     @Column(nullable = false)
-    private String kakaoId;
-
-    @Column(nullable = false)
     private String refreshToken;
 
     @Column(nullable = false)
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     @Column(nullable = false)
     @Convert(converter = GenderConverter.class)
     private Gender gender;
 
-
     public User(String email,
         String profilePhotoUrl,
-        String kakaoId,
         String refreshToken,
-        LocalDateTime birth,
+        LocalDate birth,
         Gender gender) {
         this.email = email;
         this.profilePhotoUrl = profilePhotoUrl;
-        this.kakaoId = kakaoId;
         this.refreshToken = refreshToken;
         this.birth = birth;
         this.gender = gender;
