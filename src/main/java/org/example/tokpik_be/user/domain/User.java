@@ -52,4 +52,8 @@ public class User extends BaseTimeEntity {
         this.birth = birth;
         this.gender = gender;
     }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
