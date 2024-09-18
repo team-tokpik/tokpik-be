@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class TopicTagService {
 
+    @Autowired
     private UserTopicTagRepository userTopicTagRepository;
 
     @Autowired
