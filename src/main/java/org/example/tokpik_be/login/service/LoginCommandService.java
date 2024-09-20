@@ -1,6 +1,8 @@
 package org.example.tokpik_be.login.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.tokpik_be.login.dto.request.AccessTokenRefreshRequest;
+import org.example.tokpik_be.login.dto.response.AccessTokenRefreshResponse;
 import org.example.tokpik_be.login.dto.response.KakaoUserResponse;
 import org.example.tokpik_be.login.dto.response.LoginResponse;
 import org.example.tokpik_be.user.domain.User;
@@ -37,5 +39,17 @@ public class LoginCommandService {
         user.updateRefreshToken(refreshToken);
 
         return new LoginResponse(user.requiresProfile(), accessToken, refreshToken);
+    }
+
+    public AccessTokenRefreshResponse refreshAccessToken(AccessTokenRefreshRequest request) {
+
+        long userId = jwtUtil.parseUserIdFromToken(request.refreshToken());
+        User user = userQueryService.findById(userId);
+
+        String accessToken = jwtUtil.generateAccessToken(userId);
+        String refreshToken = jwtUtil.generateRefreshToken(userId);
+        user.updateRefreshToken(refreshToken);
+
+        return new AccessTokenRefreshResponse(accessToken, refreshToken);
     }
 }
