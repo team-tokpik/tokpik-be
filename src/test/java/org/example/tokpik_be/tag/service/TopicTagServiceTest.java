@@ -2,13 +2,11 @@ package org.example.tokpik_be.tag.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.assertj.core.api.SoftAssertions;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.tag.domain.TopicTag;
@@ -25,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,19 +47,21 @@ public class TopicTagServiceTest {
         @Test
         @DisplayName("성공한다.")
         void success() {
-            User user = new User("test@naver.com", "url", "kakaoId", "token", LocalDateTime.now(), Gender.MALE);
-            user.setId(userId);
+            User user = Mockito.mock(User.class);
+            given(user.getId()).willReturn(userId);
+            given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
             UserTopicTag userTopicTag = new UserTopicTag();
             userTopicTag.setTopicTag(new TopicTag(1L, "Tag 1"));
 
-            given(userRepository.findById(userId)).willReturn(Optional.of(user));
             given(userTopicTagRepository.findByUserId(userId)).willReturn(List.of(userTopicTag));
 
             UserTopicTagResponse response = topicTagService.getUserTopicTags(userId);
 
-            assertEquals(userId, response.userId());
-            assertEquals("Tag 1", response.talkTopicTags().get(0).content());
+            SoftAssertions.assertSoftly(softly -> {
+                softly.assertThat(response.userId()).isEqualTo(userId);
+                softly.assertThat(response.talkTopicTags().get(0).content()).isEqualTo("Tag 1");
+            });
         }
 
         @Test
