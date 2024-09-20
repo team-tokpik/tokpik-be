@@ -3,8 +3,6 @@ package org.example.tokpik_be.tag.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.example.tokpik_be.exception.GeneralException;
-import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.tag.domain.TopicTag;
 import org.example.tokpik_be.tag.dto.response.UserTopicTagResponse;
 import org.example.tokpik_be.tag.entity.UserTopicTag;
@@ -12,7 +10,6 @@ import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.repository.UserRepository;
 import org.example.tokpik_be.user.service.UserQueryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +37,7 @@ public class TopicTagService {
                     topicTag.getContent()
                 );
             })
-            .collect(Collectors.toList());
+            .toList();
 
         return new UserTopicTagResponse(userId, topicTagDTOList);
     }
