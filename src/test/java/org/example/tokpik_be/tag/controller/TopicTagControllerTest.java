@@ -33,7 +33,7 @@ public class TopicTagControllerTest extends ControllerTestSupport {
     }
 
     @Nested
-    @DisplayName("사용자 대화 태그 조회 시")
+    @DisplayName("사용자 대화 태그 조회 시 ")
     class GetUserTopicTagsTest {
 
         private final long userId = 1L;
