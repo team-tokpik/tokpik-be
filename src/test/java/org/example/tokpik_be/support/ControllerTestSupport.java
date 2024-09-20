@@ -1,6 +1,7 @@
 package org.example.tokpik_be.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.tokpik_be.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +12,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 public abstract class ControllerTestSupport {
 
+    protected final ObjectMapper objectMapper = new ObjectMapper()
+        .registerModule(new JavaTimeModule());
     protected MockMvc mockMvc;
-    protected final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
