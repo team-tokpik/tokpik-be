@@ -19,7 +19,6 @@ import org.example.tokpik_be.user.enums.Gender;
 
 @Table(name = "users")
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
