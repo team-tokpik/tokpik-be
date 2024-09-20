@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(name = "talk_topic_tags")
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class TopicTag extends BaseTimeEntity {
 
     @Id
@@ -26,4 +28,9 @@ public class TopicTag extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String content;
+
+    public TopicTag(Long id, String content) {
+        this.id = id;
+        this.content = content;
+    }
 }
