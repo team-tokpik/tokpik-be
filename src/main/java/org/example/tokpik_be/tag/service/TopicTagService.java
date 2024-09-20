@@ -11,6 +11,7 @@ import org.example.tokpik_be.tag.entity.UserTopicTag;
 import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.repository.UserRepository;
+import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +22,13 @@ import lombok.RequiredArgsConstructor;
 public class TopicTagService {
 
     private final UserTopicTagRepository userTopicTagRepository;
+    private final UserQueryService userQueryService;
 
     private final UserRepository userRepository;
 
     public UserTopicTagResponse getUserTopicTags(long userId) {
 
-        User user = findById(userId);
+        User user = userQueryService.findById(userId);
 
         List<UserTopicTag> userTopicTags = userTopicTagRepository.findByUserId(user.getId());
 
@@ -41,10 +43,5 @@ public class TopicTagService {
             .collect(Collectors.toList());
 
         return new UserTopicTagResponse(userId, topicTagDTOList);
-    }
-
-    private User findById(long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new GeneralException(UserException.USER_NOT_FOUND));
     }
 }
