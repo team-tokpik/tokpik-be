@@ -9,7 +9,7 @@ public record UserTopicTagResponse(
     @Schema(type="number", description = "사용자 ID", example = "1")
     Long userId,
 
-    @Schema(description = "대화 태그 목록")
+    @Schema(type = "array", description = "대화 태그 목록")
     List<TopicTagDTO> talkTopicTags
 ) {
 
