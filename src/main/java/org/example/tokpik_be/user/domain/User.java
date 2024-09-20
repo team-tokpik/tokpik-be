@@ -11,12 +11,15 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import org.example.tokpik_be.common.BaseTimeEntity;
 import org.example.tokpik_be.user.converter.GenderConverter;
 import org.example.tokpik_be.user.enums.Gender;
 
 @Table(name = "users")
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
