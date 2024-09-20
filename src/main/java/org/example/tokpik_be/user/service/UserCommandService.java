@@ -3,6 +3,7 @@ package org.example.tokpik_be.user.service;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
+import org.example.tokpik_be.user.enums.Gender;
 import org.example.tokpik_be.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class UserCommandService {
 
     public void makeProfile(long userId, UserMakeProfileRequest request) {
         User user = userQueryService.findById(userId);
-        user.updateProfile(request.birth(), request.gender());
+        Gender gender = Gender.from(request.gender());
+        user.updateProfile(request.birth(), gender);
     }
 }
