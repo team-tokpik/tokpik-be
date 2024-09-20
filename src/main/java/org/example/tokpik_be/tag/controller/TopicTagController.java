@@ -23,7 +23,7 @@ public class TopicTagController {
     public ResponseEntity<UserTopicTagResponse> getUserTopicTags(
         @RequestAttribute("userId") long userId) {
 
-        UserTopicTagResponse response = topicTagService.getUserTopicTags();
+        UserTopicTagResponse response = topicTagService.getUserTopicTags(userId);
 
         return ResponseEntity.ok().body(response);
     }

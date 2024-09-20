@@ -10,19 +10,13 @@ import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @Service
 public class TopicTagService {
 
     @Autowired
     private UserTopicTagRepository userTopicTagRepository;
 
-    @Autowired
-    private HttpServletRequest request;
-
-    public UserTopicTagResponse getUserTopicTags() {
-        Long userId = (Long) request.getAttribute("userId");
+    public UserTopicTagResponse getUserTopicTags(long userId) {
 
         List<UserTopicTag> userTopicTags = userTopicTagRepository.findByUserId(userId);
 
