@@ -1,23 +1,34 @@
 package org.example.tokpik_be.user.controller;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.support.ControllerTestSupport;
+import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
 import org.example.tokpik_be.user.dto.response.UserProfileResponse;
+import org.example.tokpik_be.user.service.UserCommandService;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 class UserControllerTest extends ControllerTestSupport {
+
+    private final long userId = 1L;
+
+    @Mock
+    private UserCommandService userCommandService;
 
     @Mock
     private UserQueryService userQueryService;
@@ -34,8 +45,6 @@ class UserControllerTest extends ControllerTestSupport {
     @Nested
     @DisplayName("마이 페이지 프로필 조회 시 ")
     class GetMyProfileTest {
-
-        private final long userId = 1L;
 
         @DisplayName("성공한다.")
         @Test
@@ -69,6 +78,70 @@ class UserControllerTest extends ControllerTestSupport {
             // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
+        }
+    }
+
+    @Nested
+    @DisplayName("프로필 생성 시 ")
+    class MakeProfileTest {
+
+        private final UserMakeProfileRequest request = new UserMakeProfileRequest(
+            LocalDate.now().minusYears(20),
+            true);
+
+        @DisplayName("성공한다.")
+        @Test
+        void success() throws Exception {
+            // given
+            doNothing().when(userCommandService).makeProfile(userId, request);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/users/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("userId", userId)
+                .content(objectMapper.writeValueAsString(request)));
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+
+        @DisplayName("생년월일은 필수값이다.")
+        @Test
+        void withoutBirth() throws Exception {
+            // given
+            UserMakeProfileRequest requestWithoutBirth = new UserMakeProfileRequest(null,
+                request.gender());
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/users/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("userId", userId)
+                .content(objectMapper.writeValueAsString(requestWithoutBirth)));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.birth").value("생년월일은 필수값"));
+        }
+
+        @DisplayName("생년월일은 과거,현재만 가능하다.")
+        @Test
+        void futureBirth() throws Exception {
+            // given
+            UserMakeProfileRequest futureBirthRequest = new UserMakeProfileRequest(
+                LocalDate.now().plusYears(1),
+                request.gender()
+            );
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/users/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("userId", userId)
+                .content(objectMapper.writeValueAsString(futureBirthRequest)));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.birth")
+                    .value("생년월일은 과거,현재만 가능"));
         }
     }
 }

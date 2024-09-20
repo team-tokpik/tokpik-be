@@ -1,7 +1,7 @@
 package org.example.tokpik_be.common;
 
-public record ApiExceptionResponse(
-    String message
+public record ApiExceptionResponse<T> (
+    T message
 ) {
 
 }
