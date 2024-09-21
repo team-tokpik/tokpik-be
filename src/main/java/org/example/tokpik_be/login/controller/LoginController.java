@@ -1,5 +1,7 @@
 package org.example.tokpik_be.login.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,8 @@ public class LoginController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "access token refresh", description = "refresh token으로 새 access token 발급")
+    @ApiResponse(responseCode = "200", description = "access token 정상 발급")
     @PostMapping("/refresh")
     public ResponseEntity<AccessTokenRefreshResponse> refreshAccessToken(
         @RequestBody @Valid AccessTokenRefreshRequest request) {
