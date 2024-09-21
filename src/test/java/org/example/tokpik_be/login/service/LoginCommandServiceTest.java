@@ -2,13 +2,18 @@ package org.example.tokpik_be.login.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
+import java.util.Date;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.LoginException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.login.dto.request.AccessTokenRefreshRequest;
 import org.example.tokpik_be.login.dto.response.AccessTokenRefreshResponse;
+import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.example.tokpik_be.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -41,12 +46,15 @@ class LoginCommandServiceTest {
         @Test
         void success() {
             // given
-            long userId = 1L;
             AccessTokenRefreshRequest request = new AccessTokenRefreshRequest(jwt);
 
+            long userId = 1L;
+            User user = mock(User.class);
+            given(user.notEqualRefreshToken(request.refreshToken())).willReturn(false);
+
             given(jwtUtil.parseUserIdFromToken(request.refreshToken())).willReturn(userId);
-            given(userQueryService.notExistsById(userId)).willReturn(false);
-            given(jwtUtil.generateAccessToken(userId)).willReturn(jwt);
+            given(userQueryService.findById(userId)).willReturn(user);
+            given(jwtUtil.generateAccessToken(eq(userId), any(Date.class))).willReturn(jwt);
 
             // when
             AccessTokenRefreshResponse response = loginCommandService.refreshAccessToken(request);
@@ -82,7 +90,8 @@ class LoginCommandServiceTest {
             AccessTokenRefreshRequest request = new AccessTokenRefreshRequest(jwt);
 
             given(jwtUtil.parseUserIdFromToken(request.refreshToken())).willReturn(userId);
-            given(userQueryService.notExistsById(userId)).willReturn(true);
+            given(userQueryService.findById(userId))
+                .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
             // when
 
