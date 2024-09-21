@@ -1,6 +1,8 @@
 package org.example.tokpik_be.login.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.tokpik_be.exception.GeneralException;
+import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.login.dto.request.AccessTokenRefreshRequest;
 import org.example.tokpik_be.login.dto.response.AccessTokenRefreshResponse;
 import org.example.tokpik_be.login.dto.response.KakaoUserResponse;
@@ -44,12 +46,12 @@ public class LoginCommandService {
     public AccessTokenRefreshResponse refreshAccessToken(AccessTokenRefreshRequest request) {
 
         long userId = jwtUtil.parseUserIdFromToken(request.refreshToken());
-        User user = userQueryService.findById(userId);
+        if (userQueryService.notExistsById(userId)) {
+            throw new GeneralException(UserException.USER_NOT_FOUND);
+        }
 
         String accessToken = jwtUtil.generateAccessToken(userId);
-        String refreshToken = jwtUtil.generateRefreshToken(userId);
-        user.updateRefreshToken(refreshToken);
 
-        return new AccessTokenRefreshResponse(accessToken, refreshToken);
+        return new AccessTokenRefreshResponse(accessToken);
     }
 }
