@@ -58,9 +58,4 @@ public class UserQueryService {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new GeneralException(UserException.USER_NOT_FOUND));
     }
-
-    public boolean notExistsById(long userId) {
-
-        return !userRepository.existsById(userId);
-    }
 }
