@@ -12,8 +12,6 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import org.example.tokpik_be.common.BaseTimeEntity;
 import org.example.tokpik_be.user.converter.GenderConverter;
 import org.example.tokpik_be.user.enums.Gender;
@@ -57,5 +55,10 @@ public class User extends BaseTimeEntity {
     public void updateProfile(LocalDate birth, Gender gender) {
         this.birth = birth;
         this.gender = gender;
+    }
+
+    public boolean notEqualRefreshToken(String refreshToken) {
+
+        return !this.refreshToken.equals(refreshToken);
     }
 }
