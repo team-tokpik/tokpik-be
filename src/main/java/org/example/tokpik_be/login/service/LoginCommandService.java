@@ -1,8 +1,9 @@
 package org.example.tokpik_be.login.service;
 
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
-import org.example.tokpik_be.exception.UserException;
+import org.example.tokpik_be.exception.LoginException;
 import org.example.tokpik_be.login.dto.request.AccessTokenRefreshRequest;
 import org.example.tokpik_be.login.dto.response.AccessTokenRefreshResponse;
 import org.example.tokpik_be.login.dto.response.KakaoUserResponse;
@@ -36,8 +37,10 @@ public class LoginCommandService {
 
         User user = userQueryService.findByEmail(email);
         long userId = user.getId();
-        String accessToken = jwtUtil.generateAccessToken(userId);
-        String refreshToken = jwtUtil.generateRefreshToken(userId);
+
+        Date generateAt = new Date();
+        String accessToken = jwtUtil.generateAccessToken(userId, generateAt);
+        String refreshToken = jwtUtil.generateRefreshToken(userId, generateAt);
         user.updateRefreshToken(refreshToken);
 
         return new LoginResponse(user.requiresProfile(), accessToken, refreshToken);
@@ -45,12 +48,16 @@ public class LoginCommandService {
 
     public AccessTokenRefreshResponse refreshAccessToken(AccessTokenRefreshRequest request) {
 
-        long userId = jwtUtil.parseUserIdFromToken(request.refreshToken());
-        if (userQueryService.notExistsById(userId)) {
-            throw new GeneralException(UserException.USER_NOT_FOUND);
+        String refreshToken = request.refreshToken();
+
+        long userId = jwtUtil.parseUserIdFromToken(refreshToken);
+        User user = userQueryService.findById(userId);
+        if (user.notEqualRefreshToken(refreshToken)) {
+            throw new GeneralException(LoginException.INVALID_JWT);
         }
 
-        String accessToken = jwtUtil.generateAccessToken(userId);
+        Date generateAt = new Date();
+        String accessToken = jwtUtil.generateAccessToken(userId, generateAt);
 
         return new AccessTokenRefreshResponse(accessToken);
     }

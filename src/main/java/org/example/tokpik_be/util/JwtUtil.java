@@ -24,22 +24,22 @@ public class JwtUtil {
         this.parser = Jwts.parser().verifyWith(this.key).build();
     }
 
-    public String generateAccessToken(long userId, Date generatedAt) {
+    public String generateAccessToken(long userId, Date generateAt) {
 
-        return generateUserJwt(userId, generatedAt, ACCESS_TOKEN_DURATION);
+        return generateUserJwt(userId, generateAt, ACCESS_TOKEN_DURATION);
     }
 
-    public String generateRefreshToken(long userId, Date generatedAt) {
+    public String generateRefreshToken(long userId, Date generateAt) {
 
-        return generateUserJwt(userId, generatedAt, REFRESH_TOKEN_DURATION);
+        return generateUserJwt(userId, generateAt, REFRESH_TOKEN_DURATION);
     }
 
-    private String generateUserJwt(long userId, Date generatedAt, Duration duration) {
+    private String generateUserJwt(long userId, Date generateAt, Duration duration) {
 
         return Jwts.builder()
             .signWith(key)
             .claim("userId", userId)
-            .expiration(new Date(generatedAt.getTime() + duration.toMillis()))
+            .expiration(new Date(generateAt.getTime() + duration.toMillis()))
             .compact();
     }
 
