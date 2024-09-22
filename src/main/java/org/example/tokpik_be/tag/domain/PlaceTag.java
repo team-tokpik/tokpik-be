@@ -6,17 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.example.tokpik_be.common.BaseTimeEntity;
 
-@Table(name = "talk_topic_tags")
+@Table(name = "talk_place_tags")
 @Getter
-@Setter
 @Entity
-@NoArgsConstructor
-public class TopicTag extends BaseTimeEntity {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class PlaceTag extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +24,7 @@ public class TopicTag extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    public TopicTag(String content) {
+    public PlaceTag(String content) {
         this.content = content;
     }
 }

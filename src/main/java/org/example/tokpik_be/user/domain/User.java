@@ -3,16 +3,22 @@ package org.example.tokpik_be.user.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tokpik_be.common.BaseTimeEntity;
+import org.example.tokpik_be.tag.entity.UserPlaceTag;
+import org.example.tokpik_be.tag.entity.UserTopicTag;
 import org.example.tokpik_be.user.converter.GenderConverter;
 import org.example.tokpik_be.user.enums.Gender;
 
@@ -37,6 +43,12 @@ public class User extends BaseTimeEntity {
 
     @Convert(converter = GenderConverter.class)
     private Gender gender;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<UserTopicTag> userTopicTags = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<UserPlaceTag> userPlaceTags = new ArrayList<>();
 
     public User(String email, String profilePhotoUrl) {
         this.email = email;

@@ -13,3 +13,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+  ai:
+    openai:
+      api-key: ${OPEN_AI_API_KEY}
