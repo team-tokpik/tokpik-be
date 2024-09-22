@@ -1,8 +1,5 @@
 package org.example.tokpik_be.tag.domain;
 
-import org.example.tokpik_be.common.BaseTimeEntity;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.tokpik_be.common.BaseTimeEntity;
 
 @Table(name = "talk_topic_tags")
 @Getter
@@ -27,8 +25,7 @@ public class TopicTag extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    public TopicTag(Long id, String content) {
-        this.id = id;
+    public TopicTag(String content) {
         this.content = content;
     }
 }
