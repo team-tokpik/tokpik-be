@@ -58,7 +58,9 @@ public class LoginCommandService {
 
         Date generateAt = new Date();
         String accessToken = jwtUtil.generateAccessToken(userId, generateAt);
+        String newRefreshToken = jwtUtil.generateRefreshToken(userId, generateAt);
+        user.updateRefreshToken(newRefreshToken);
 
-        return new AccessTokenRefreshResponse(accessToken);
+        return new AccessTokenRefreshResponse(accessToken, newRefreshToken);
     }
 }
