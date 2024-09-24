@@ -1,6 +1,5 @@
 package org.example.tokpik_be.login.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -8,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.util.Date;
+import org.assertj.core.api.SoftAssertions;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.LoginException;
 import org.example.tokpik_be.exception.UserException;
@@ -55,12 +55,16 @@ class LoginCommandServiceTest {
             given(jwtUtil.parseUserIdFromToken(request.refreshToken())).willReturn(userId);
             given(userQueryService.findById(userId)).willReturn(user);
             given(jwtUtil.generateAccessToken(eq(userId), any(Date.class))).willReturn(jwt);
+            given(jwtUtil.generateRefreshToken(eq(userId), any(Date.class))).willReturn(jwt);
 
             // when
             AccessTokenRefreshResponse response = loginCommandService.refreshAccessToken(request);
 
             // then
-            assertThat(response.accessToken()).isEqualTo(jwt);
+            SoftAssertions.assertSoftly(softly -> {
+                softly.assertThat(response.accessToken()).isEqualTo(jwt);
+                softly.assertThat(response.refreshToken()).isEqualTo(jwt);
+            });
         }
 
         @DisplayName("access token이 유효하지 않을 경우 예외가 발생한다.")

@@ -44,7 +44,7 @@ class LoginControllerTest extends ControllerTestSupport {
             String jwt = "header.payload.signature";
             AccessTokenRefreshRequest request = new AccessTokenRefreshRequest(jwt);
 
-            AccessTokenRefreshResponse response = new AccessTokenRefreshResponse(jwt);
+            AccessTokenRefreshResponse response = new AccessTokenRefreshResponse(jwt, jwt);
             given(loginCommandService.refreshAccessToken(request)).willReturn(response);
 
             // when
@@ -54,7 +54,8 @@ class LoginControllerTest extends ControllerTestSupport {
 
             // then
             resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value(response.accessToken()));
+                .andExpect(jsonPath("$.accessToken").value(response.accessToken()))
+                .andExpect(jsonPath("$.refreshToken").value(response.refreshToken()));
         }
 
         @DisplayName("refresh token은 필수값이며, 빈 문자열이거나 공백일 수 없다.")
