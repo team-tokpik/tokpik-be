@@ -48,13 +48,13 @@ public class TopicTagService {
     public UserTopicTagResponse updateUserTopicTags(long userId, UserTopicTagsRequest request) {
         User user = userQueryService.findById(userId);
 
-        if (request.getTopicTagIds() == null || request.getTopicTagIds().length == 0) {
+        if (request.topicTagIds() == null || request.topicTagIds().isEmpty()) {
             throw new GeneralException(TagException.INVALID_REQUEST);
         }
 
         userTopicTagRepository.deleteByUserId(user.getId());
 
-        for (long tagId : request.getTopicTagIds()) {
+        for (long tagId : request.topicTagIds()) {
             if (!topicTagRepository.existsById(tagId)) {
                 throw new GeneralException(TagException.TAG_NOT_FOUND);
             }
