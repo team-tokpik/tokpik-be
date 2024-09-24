@@ -33,7 +33,7 @@ public class TopicTagController {
     }
 
     @PatchMapping("/users/tags")
-    @Operation(summary = "사용자 대화 태그 수정", description = "대화 태그 추가 또는 제거")
+    @Operation(summary = "사용자 대화 태그 수정", description = "대화 태그 추가 또는 제거, 1개 이상의 태그 선택 필요")
     @ApiResponse(responseCode = "200", description = "사용자 대화 태그 수정 성공")
     public ResponseEntity<UserTopicTagResponse> updateUserTopicTags(
         @RequestAttribute("userId") long userId,
