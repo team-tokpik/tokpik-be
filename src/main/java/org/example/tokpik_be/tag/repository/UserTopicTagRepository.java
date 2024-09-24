@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface UserTopicTagRepository extends JpaRepository<UserTopicTag, Long> {
 
     List<UserTopicTag> findByUserId(Long userId);
+
+    void deleteByUserId(Long id);
 }
