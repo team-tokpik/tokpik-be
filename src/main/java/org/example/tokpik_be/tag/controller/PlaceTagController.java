@@ -21,7 +21,7 @@ public class PlaceTagController {
 
     private final PlaceTagService placeTagService;
 
-    @GetMapping("/users/places")
+    @GetMapping("/users/place-tags")
     @Operation(summary = "사용자 장소 태그 조회", description = "내 장소 태그 조회")
     @ApiResponse(responseCode = "200", description = "사용자 장소 태그 조회 성공")
     public ResponseEntity<UserPlaceTagResponse> getUserPlaceTags(
@@ -32,7 +32,7 @@ public class PlaceTagController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PatchMapping("/users/places")
+    @PatchMapping("/users/place-tags")
     @Operation(summary = "사용자 장소 태그 수정", description = "장소 태그 수정, 1개 이상의 태그 선택 필요")
     @ApiResponse(responseCode = "200", description = "사용자 장소 태그 수정 성공")
     public ResponseEntity<UserPlaceTagResponse> updateUserPlaceTags(
