@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import org.example.tokpik_be.common.BaseTimeEntity;
 import org.example.tokpik_be.tag.domain.PlaceTag;
 
-@Table(name = "user_place_tags")
+@Table(name = "user_talk_place_tags")
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
