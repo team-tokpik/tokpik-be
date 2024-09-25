@@ -16,13 +16,13 @@ import org.example.tokpik_be.user.enums.Gender;
 @AllArgsConstructor
 public class TalkPartner {
 
-    @Column(name = "partner_gender", nullable = false)
+    @Column(name = "partner_gender")
     @Convert(converter = GenderConverter.class)
     private Gender gender;
 
-    @Column(name = "partner_age_lower_bound", nullable = false)
-    private int ageLowerBound;
+    @Column(name = "partner_age_lower_bound")
+    private Integer ageLowerBound;
 
-    @Column(name = "partner_age_upper_bound", nullable = false)
-    private int ageUpperBound;
+    @Column(name = "partner_age_upper_bound")
+    private Integer ageUpperBound;
 }
