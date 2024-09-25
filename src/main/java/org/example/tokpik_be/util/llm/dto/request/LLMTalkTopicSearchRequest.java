@@ -9,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 
 @Builder
 public record LLMTalkTopicSearchRequest(
+    List<String> topicTags,
     List<String> talkPurposes,
     List<String> talkPlaces,
     List<String> talkSituations,
@@ -21,18 +22,23 @@ public record LLMTalkTopicSearchRequest(
     public static LLMTalkTopicSearchRequest from(List<TopicTag> topicTags,
         List<PlaceTag> placeTags) {
 
-        List<String> talkPurposes = topicTags.stream().map(TopicTag::getContent).toList();
+        List<String> topicTagContents = topicTags.stream().map(TopicTag::getContent).toList();
         List<String> talkPlaces = placeTags.stream().map(PlaceTag::getContent).toList();
 
         return LLMTalkTopicSearchRequest.builder()
-            .talkPurposes(talkPurposes)
+            .topicTags(topicTagContents)
             .talkPlaces(talkPlaces)
             .build();
     }
 
-    public static LLMTalkTopicSearchRequest from(TalkTopicSearchRequest request) {
+    public static LLMTalkTopicSearchRequest from(
+        List<TopicTag> topicTags,
+        TalkTopicSearchRequest request) {
+
+        List<String> topicTagContents = topicTags.stream().map(TopicTag::getContent).toList();
 
         return LLMTalkTopicSearchRequest.builder()
+            .topicTags(topicTagContents)
             .talkPurposes(request.talkPurposes())
             .talkSituations(request.talkSituations())
             .talkMoods(request.talkMoods())
@@ -59,8 +65,7 @@ public record LLMTalkTopicSearchRequest(
                 모든 옵션을 동시에 만족할 필요는 없습니다.
             - 상대방의 성별과 나이에 적합한 주제를 고르세요.
             - 대화 주제를 제시할 때 대화 주제 제목은 20자 내외, 대화 부제는 30자 내외로 제시해주세요.
-            - 문화적 차이, 민감한 주제는 조심스럽게 다루어주세요.
-            - 주어진 응답 형식을 엄수해주세요.
+            - 주어진 응답 형식을 엄수해주세요. 주어진 옵션과 일치하는 응답 값을 동일하게 설정해주세요.
             - null로 제시된 옵션을 무시해주세요.
             - 전형적이지 않고 재치 넘치는 주제를 선정해주세요.
             - 다음 예시를 참고해주세요.
