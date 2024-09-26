@@ -1,8 +1,10 @@
 package org.example.tokpik_be.talk_topic.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.TagException;
@@ -41,63 +43,75 @@ public class TalkTopicCommandService {
 
     public TalkTopicsSearchResponse generateTopics(long userId, TalkTopicSearchRequest request) {
         List<TopicTag> topicTags = topicTagRepository.findAll();
-
-        User user = userQueryService.findById(userId);
-        LLMTalkTopicSearchRequest llmTalkTopicSearchRequest;
-
-        if (request.includeFilterCondition()) {
-            llmTalkTopicSearchRequest = LLMTalkTopicSearchRequest.from(topicTags, request);
-        } else {
-            List<TopicTag> userTopicTags = user.getUserTopicTags().stream()
-                .map(UserTopicTag::getTopicTag).toList();
-            List<PlaceTag> userPlaceTags = user.getUserPlaceTags().stream()
-                .map(UserPlaceTag::getPlaceTag).toList();
-            llmTalkTopicSearchRequest = LLMTalkTopicSearchRequest.from(userTopicTags,
-                userPlaceTags);
-        }
-
-        LLMTalkTopicsResponse talkTopicsResponse = llmApiClient.searchTalkTopics(
-            llmTalkTopicSearchRequest);
         List<PlaceTag> placeTags = placeTagRepository.findAll();
+        User user = userQueryService.findById(userId);
 
-        List<TalkTopic> talkTopics = new ArrayList<>();
-        for (LLMTalkTopicResponse response : talkTopicsResponse.responses()) {
-            TopicTag topicTag = topicTags.stream()
-                .filter(tag -> tag.getContent().equals(response.placeTag()))
-                .findFirst()
-                .orElseThrow(() -> new GeneralException(TagException.TAG_NOT_FOUND));
+        LLMTalkTopicSearchRequest llmRequest = createLLMRequest(request, user, topicTags,
+            placeTags);
+        LLMTalkTopicsResponse llmResponse = llmApiClient.searchTalkTopics(llmRequest);
 
-            PlaceTag placeTag = placeTags.stream()
-                .filter(tag -> tag.getContent().equals(response.placeTag()))
-                .findFirst()
-                .orElseThrow(() -> new GeneralException(TagException.TAG_NOT_FOUND));
-
-            Gender gender = Optional.ofNullable(response.talkPartnerGender())
-                .map(Gender::from)
-                .orElse(null);
-
-            TalkPartner talkPartner = new TalkPartner(gender,
-                response.talkPartnerAgeLowerBound(),
-                response.talkPartnerAgeUpperBound());
-
-            TalkTopic talkTopic = new TalkTopic(
-                response.title(),
-                response.subTitle(),
-                response.situation(),
-                talkPartner,
-                topicTag,
-                placeTag
-            );
-            talkTopics.add(talkTopic);
-        }
-
+        List<TalkTopic> talkTopics = createTalkTopics(llmResponse, topicTags, placeTags);
         talkTopicRepository.saveAll(talkTopics);
 
-        List<TalkTopicSearchResponse> responses = talkTopics.stream()
-            .map(talkTopic -> TalkTopicSearchResponse.from(talkTopic, true))
-            .toList();
-
-        return new TalkTopicsSearchResponse(responses);
+        return new TalkTopicsSearchResponse(talkTopics.stream()
+            .map(talkTopic -> TalkTopicSearchResponse.from(talkTopic, false))
+            .toList());
     }
 
+    private LLMTalkTopicSearchRequest createLLMRequest(TalkTopicSearchRequest request,
+        User user,
+        List<TopicTag> topicTags,
+        List<PlaceTag> placeTags) {
+        if (request.includeFilterCondition()) {
+
+            return LLMTalkTopicSearchRequest.from(topicTags, placeTags, request);
+        }
+
+        List<TopicTag> userTopicTags = user.getUserTopicTags().stream()
+            .map(UserTopicTag::getTopicTag)
+            .toList();
+        List<PlaceTag> userPlaceTags = user.getUserPlaceTags().stream()
+            .map(UserPlaceTag::getPlaceTag)
+            .toList();
+
+        return LLMTalkTopicSearchRequest.from(userTopicTags, userPlaceTags);
+    }
+
+    private List<TalkTopic> createTalkTopics(LLMTalkTopicsResponse llmResponse,
+        List<TopicTag> topicTags,
+        List<PlaceTag> placeTags) {
+        Map<String, TopicTag> topicTagMap = createTagMap(topicTags, TopicTag::getContent);
+        Map<String, PlaceTag> placeTagMap = createTagMap(placeTags, PlaceTag::getContent);
+
+        return llmResponse.responses().stream()
+            .map(response -> createTalkTopic(response, topicTagMap, placeTagMap))
+            .toList();
+    }
+
+    private <T> Map<String, T> createTagMap(List<T> tags, Function<T, String> keyExtractor) {
+
+        return tags.stream().collect(Collectors.toMap(keyExtractor, Function.identity()));
+    }
+
+    private TalkTopic createTalkTopic(LLMTalkTopicResponse response,
+        Map<String, TopicTag> topicTagMap,
+        Map<String, PlaceTag> placeTagMap) {
+        TopicTag topicTag = Optional.ofNullable(topicTagMap.get(response.topicTag()))
+            .orElseThrow(() -> new GeneralException(TagException.TAG_NOT_FOUND));
+        PlaceTag placeTag = Optional.ofNullable(placeTagMap.get(response.placeTag()))
+            .orElseThrow(() -> new GeneralException(TagException.TAG_NOT_FOUND));
+
+        TalkPartner talkPartner = new TalkPartner(
+            Gender.from(response.talkPartnerGender()),
+            response.talkPartnerAgeLowerBound(),
+            response.talkPartnerAgeUpperBound()
+        );
+
+        return new TalkTopic(response.title(),
+            response.subTitle(),
+            response.situation(),
+            talkPartner,
+            topicTag,
+            placeTag);
+    }
 }
