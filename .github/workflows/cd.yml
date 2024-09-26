@@ -58,6 +58,9 @@ jobs:
     runs-on:
       - self-hosted
       - ec2-runner
+    steps:
+      - name: repository checkout
+        uses: actions/checkout@v3
 
       - name: 배포
         run: |
