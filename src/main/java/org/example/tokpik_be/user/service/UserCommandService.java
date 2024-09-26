@@ -13,6 +13,7 @@ import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
 import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
+import org.example.tokpik_be.user.dto.request.UserUpdateNotificationTokenRequest;
 import org.example.tokpik_be.user.enums.Gender;
 import org.example.tokpik_be.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -85,5 +86,12 @@ public class UserCommandService {
         userPlaceTagRepository.deleteByUserId(userId);
         userPlaceTagRepository.saveAll(userPlaceTags);
         user.updateUserPlaceTags(userPlaceTags);
+    }
+
+    public void updateNotificationToken(long userId, UserUpdateNotificationTokenRequest request) {
+        User user = userQueryService.findById(userId);
+
+        String notificationToken = request.notificationToken();
+        user.updateNotificationToken(notificationToken);
     }
 }
