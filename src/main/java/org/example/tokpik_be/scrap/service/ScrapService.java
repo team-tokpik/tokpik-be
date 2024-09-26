@@ -2,6 +2,8 @@ package org.example.tokpik_be.scrap.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.example.tokpik_be.exception.GeneralException;
+import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
@@ -10,6 +12,7 @@ import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
+import org.example.tokpik_be.talk_topic.service.TalkTopicQueryService;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ public class ScrapService {
     private final ScrapRepository scrapRepository;
     private final ScrapTopicRepository scrapTopicRepository;
     private final UserQueryService userQueryService;
+    private final TalkTopicQueryService talkTopicQueryService;
 
     public ScrapListResponse getScrapList(long userId) {
 
@@ -66,5 +70,20 @@ public class ScrapService {
         scrapRepository.save(scrap);
 
         return new ScrapCreateResponse(scrap.getId());
+    }
+
+    @Transactional
+    public void scrapTopic(long scrapId, long topicId) {
+        Scrap scrap = findById(scrapId);
+        TalkTopic talkTopic = talkTopicQueryService.findById(topicId);
+
+        ScrapTopic scrapTopic = new ScrapTopic(scrap, talkTopic);
+        scrapTopicRepository.save(scrapTopic);
+    }
+
+    private Scrap findById(long scrapId) {
+
+        return scrapRepository.findById(scrapId)
+            .orElseThrow(() -> new GeneralException(ScrapException.SCRAP_NOT_FOUND));
     }
 }
