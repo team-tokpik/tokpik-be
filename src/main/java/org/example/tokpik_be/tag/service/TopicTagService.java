@@ -6,6 +6,8 @@ import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.TagException;
 import org.example.tokpik_be.tag.domain.TopicTag;
 import org.example.tokpik_be.tag.dto.request.UserTopicTagsRequest;
+import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse;
+import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse.TopicTagResponse;
 import org.example.tokpik_be.tag.dto.response.UserTopicTagResponse;
 import org.example.tokpik_be.tag.entity.UserTopicTag;
 import org.example.tokpik_be.tag.repository.TopicTagRepository;
@@ -70,4 +72,11 @@ public class TopicTagService {
         return new UserTopicTagResponse(userId, topicTagDTOList);
     }
 
+    @Transactional(readOnly = true)
+    public TopicTagTotalResponse getAllTopicTags() {
+        List<TopicTag> topicTags = topicTagRepository.findAll();
+        List<TopicTagResponse> responses = topicTags.stream().map(TopicTagResponse::from).toList();
+
+        return new TopicTagTotalResponse(responses);
+    }
 }
