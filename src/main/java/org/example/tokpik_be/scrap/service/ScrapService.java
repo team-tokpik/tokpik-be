@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
@@ -55,5 +56,14 @@ public class ScrapService {
             talkTopic.getTopicTag().getId(),
             talkTopic.getTopicTag().getContent()
         );
+    }
+
+    public ScrapCountResponse getUserSrcapCounts(long userId){
+
+        User user = userQueryService.findById(userId);
+
+        Long count = scrapRepository.countByUser(user.getId());
+
+        return new ScrapCountResponse(count);
     }
 }

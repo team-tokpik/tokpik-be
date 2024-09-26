@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     List<Scrap> findByUserIdOrderByCreatedAtDesc(Long id);
+
+    Long countByUser(Long id);
 }
