@@ -11,6 +11,7 @@ import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.service.ScrapService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,5 +42,16 @@ public class ScrapController {
         ScrapCreateResponse response = scrapService.createScrap(userId, scrapCreateRequest);
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "대화 주제 스크랩", description = "대화 주제 스크랩")
+    @ApiResponse(responseCode = "200", description = "대화 주제 스크랩 성공")
+    @PostMapping("/users/scraps/{scrapId}/topics/{topicId}")
+    public ResponseEntity<Void> scrapTopic(@PathVariable("scrapId") long scrapId,
+        @PathVariable("topicId") long topicId) {
+
+        scrapService.scrapTopic(scrapId, topicId);
+
+        return ResponseEntity.ok().build();
     }
 }
