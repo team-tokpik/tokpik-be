@@ -1,5 +1,7 @@
 package org.example.tokpik_be.talk_topic.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
@@ -18,6 +20,8 @@ public class TalkTopicController {
 
     private final TalkTopicCommandService talkTopicCommandService;
 
+    @Operation(summary = "대화 주제 조회(검색)", description = "대화 주제 조회(검색) API")
+    @ApiResponse(responseCode = "200" ,description = "대화 주제 검색 성공")
     @PostMapping("/topics")
     public ResponseEntity<TalkTopicsSearchResponse> searchTalkTopics(
         @RequestAttribute("userId") long userId,
