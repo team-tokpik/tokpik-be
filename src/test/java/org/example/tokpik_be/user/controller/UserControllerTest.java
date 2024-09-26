@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.support.ControllerTestSupport;
@@ -87,7 +89,9 @@ class UserControllerTest extends ControllerTestSupport {
 
         private final UserMakeProfileRequest request = new UserMakeProfileRequest(
             LocalDate.now().minusYears(20),
-            true);
+            true,
+            List.of(1L, 2L, 3L),
+            List.of(1L, 2L, 3L));
 
         @DisplayName("성공한다.")
         @Test
@@ -110,7 +114,9 @@ class UserControllerTest extends ControllerTestSupport {
         void withoutBirth() throws Exception {
             // given
             UserMakeProfileRequest requestWithoutBirth = new UserMakeProfileRequest(null,
-                request.gender());
+                request.gender(),
+                request.topicTagIds(),
+                request.placeTagIds());
 
             // when
             ResultActions resultActions = mockMvc.perform(post("/users/profiles")
@@ -129,8 +135,9 @@ class UserControllerTest extends ControllerTestSupport {
             // given
             UserMakeProfileRequest futureBirthRequest = new UserMakeProfileRequest(
                 LocalDate.now().plusYears(1),
-                request.gender()
-            );
+                request.gender(),
+                request.topicTagIds(),
+                request.placeTagIds());
 
             // when
             ResultActions resultActions = mockMvc.perform(post("/users/profiles")
@@ -142,6 +149,50 @@ class UserControllerTest extends ControllerTestSupport {
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message.birth")
                     .value("생년월일은 과거,현재만 가능"));
+        }
+
+        @DisplayName("대화 장소 ID 목록에 null이 포함될 수 없다.")
+        @Test
+        void includeNullPlaceTagIds() throws Exception {
+            // given
+            UserMakeProfileRequest invalidTopicTagIdsRequest = new UserMakeProfileRequest(
+                request.birth(),
+                request.gender(),
+                Arrays.asList(1L, null, 3L),
+                request.topicTagIds());
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/users/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("userId", userId)
+                .content(objectMapper.writeValueAsString(invalidTopicTagIdsRequest)));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message['placeTagIds[1]']")
+                    .value("placeTagId는 not null"));
+        }
+
+        @DisplayName("대화 종류 ID 목록에 null이 포함될 수 없다.")
+        @Test
+        void includeNullTopicTagIds() throws Exception {
+            // given
+            UserMakeProfileRequest invalidPlaceTagIdsRequest = new UserMakeProfileRequest(
+                request.birth(),
+                request.gender(),
+                request.topicTagIds(),
+                Arrays.asList(1L, null, 3L));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/users/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("userId", userId)
+                .content(objectMapper.writeValueAsString(invalidPlaceTagIdsRequest)));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message['topicTagIds[1]']")
+                    .value("topicTagId는 not null"));
         }
     }
 }

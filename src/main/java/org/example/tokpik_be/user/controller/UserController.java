@@ -2,6 +2,7 @@ package org.example.tokpik_be.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@Tag(name = "사용자 API", description = "사용자 연관 API")
 @RestController
 @RequiredArgsConstructor
 public class UserController {

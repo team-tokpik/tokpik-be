@@ -1,6 +1,11 @@
 package org.example.tokpik_be.tag.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.tag.dto.request.UserPlaceTagsRequest;
+import org.example.tokpik_be.tag.dto.response.PlaceTagTotalResponse;
 import org.example.tokpik_be.tag.dto.response.UserPlaceTagResponse;
 import org.example.tokpik_be.tag.service.PlaceTagService;
 import org.springframework.http.ResponseEntity;
@@ -9,11 +14,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +40,16 @@ public class PlaceTagController {
         @RequestBody @Valid UserPlaceTagsRequest request) {
 
         UserPlaceTagResponse response = placeTagService.updateUserPlaceTags(userId, request);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "전체 대화 장소 조회", description = "전체 대화 장소 조회")
+    @ApiResponse(responseCode = "200", description = "전체 대화 장소 조회 성공")
+    @GetMapping("/place-tags")
+    public ResponseEntity<PlaceTagTotalResponse> getAllPlaceTags() {
+
+        PlaceTagTotalResponse response = placeTagService.getAllPlaceTags();
 
         return ResponseEntity.ok().body(response);
     }
