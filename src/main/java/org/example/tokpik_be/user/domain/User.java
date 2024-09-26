@@ -76,4 +76,12 @@ public class User extends BaseTimeEntity {
 
         return !this.refreshToken.equals(refreshToken);
     }
+
+    public void updateUserTopicTags(List<UserTopicTag> userTopicTags) {
+        this.userTopicTags.addAll(userTopicTags);
+    }
+
+    public void updateUserPlaceTags(List<UserPlaceTag> userPlaceTags) {
+        this.userPlaceTags.addAll(userPlaceTags);
+    }
 }
