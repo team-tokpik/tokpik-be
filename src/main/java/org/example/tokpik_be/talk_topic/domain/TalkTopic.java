@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.tokpik_be.common.BaseTimeEntity;
 import org.example.tokpik_be.tag.domain.PlaceTag;
 import org.example.tokpik_be.tag.domain.TopicTag;
 
@@ -20,7 +19,7 @@ import org.example.tokpik_be.tag.domain.TopicTag;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TalkTopic extends BaseTimeEntity {
+public class TalkTopic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
