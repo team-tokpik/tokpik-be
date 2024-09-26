@@ -1,6 +1,8 @@
 package org.example.tokpik_be.scrap.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -47,7 +49,11 @@ public class ScrapController {
     @Operation(summary = "대화 주제 스크랩", description = "대화 주제 스크랩")
     @ApiResponse(responseCode = "200", description = "대화 주제 스크랩 성공")
     @PostMapping("/users/scraps/{scrapId}/topics/{topicId}")
-    public ResponseEntity<Void> scrapTopic(@PathVariable("scrapId") long scrapId,
+    public ResponseEntity<Void> scrapTopic(
+        @Parameter(name = "scrapId", description = "스크랩 ID", example = "1", in = ParameterIn.PATH)
+        @PathVariable("scrapId") long scrapId,
+
+        @Parameter(name = "topicId", description = "스크랩할 대화 주제 ID", example = "1", in = ParameterIn.PATH)
         @PathVariable("topicId") long topicId) {
 
         scrapService.scrapTopic(scrapId, topicId);
