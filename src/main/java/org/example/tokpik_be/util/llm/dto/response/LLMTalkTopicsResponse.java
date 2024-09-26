@@ -2,11 +2,37 @@ package org.example.tokpik_be.util.llm.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import org.example.tokpik_be.talk_topic.dto.response.TalkTopicSearchResponse;
 
 public record LLMTalkTopicsResponse(
     @JsonProperty(required = true)
-    List<TalkTopicSearchResponse> responses
+    List<LLMTalkTopicResponse> responses
 ) {
 
+    public record LLMTalkTopicResponse(
+        @JsonProperty(required = true)
+        String title,
+
+        @JsonProperty(required = true)
+        String subTitle,
+
+        @JsonProperty(required = true)
+        String topicTag,
+
+        @JsonProperty(required = true)
+        String placeTag,
+
+        @JsonProperty(required = true)
+        String situation,
+
+        @JsonProperty(required = true)
+        Boolean talkPartnerGender,
+
+        @JsonProperty(required = true)
+        Integer talkPartnerAgeLowerBound,
+
+        @JsonProperty(required = true)
+        Integer talkPartnerAgeUpperBound
+    ) {
+
+    }
 }

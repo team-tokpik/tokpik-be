@@ -1,7 +1,5 @@
 package org.example.tokpik_be.util.llm.client;
 
-import java.util.List;
-import org.example.tokpik_be.talk_topic.dto.response.TalkTopicSearchResponse;
 import org.example.tokpik_be.util.llm.dto.request.LLMTalkTopicSearchRequest;
 import org.example.tokpik_be.util.llm.dto.response.LLMTalkTopicsResponse;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -33,15 +31,13 @@ public class GPTApiClient implements LLMApiClient {
     }
 
     @Override
-    public List<TalkTopicSearchResponse> searchTalkTopics(LLMTalkTopicSearchRequest request) {
+    public LLMTalkTopicsResponse searchTalkTopics(LLMTalkTopicSearchRequest request) {
 
         String promptContent = request.toPromptContent();
 
         Prompt prompt = new Prompt(promptContent, this.chatOptions);
         ChatResponse response = chatModel.call(prompt);
-        LLMTalkTopicsResponse talkTopicsResponse = outputConverter
-            .convert(response.getResult().getOutput().getContent());
 
-        return talkTopicsResponse.responses();
+        return outputConverter.convert(response.getResult().getOutput().getContent());
     }
 }

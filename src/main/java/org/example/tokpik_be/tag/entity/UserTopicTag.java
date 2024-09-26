@@ -1,9 +1,6 @@
 package org.example.tokpik_be.tag.entity;
 
-import org.example.tokpik_be.common.BaseTimeEntity;
-import org.example.tokpik_be.tag.domain.TopicTag;
-import org.example.tokpik_be.user.domain.User;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +11,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.tokpik_be.common.BaseTimeEntity;
+import org.example.tokpik_be.tag.domain.TopicTag;
 
 @Table(name = "user_talk_topic_tags")
 @Entity
@@ -26,17 +25,15 @@ public class UserTopicTag extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    private long userId;
 
     @ManyToOne
     @JoinColumn(name = "talk_topic_tag_id", nullable = false)
     private TopicTag topicTag;
 
-    public UserTopicTag(User user, TopicTag topicTag) {
-        this.user = user;
+    public UserTopicTag(long userId, TopicTag topicTag) {
+        this.userId = userId;
         this.topicTag = topicTag;
     }
-
 }

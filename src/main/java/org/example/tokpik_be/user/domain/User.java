@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -45,9 +46,11 @@ public class User extends BaseTimeEntity {
     private Gender gender;
 
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private List<UserTopicTag> userTopicTags = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private List<UserPlaceTag> userPlaceTags = new ArrayList<>();
 
     public User(String email, String profilePhotoUrl) {

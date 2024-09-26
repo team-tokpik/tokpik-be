@@ -1,7 +1,7 @@
 package org.example.tokpik_be.tag.service;
 
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.TagException;
 import org.example.tokpik_be.tag.domain.TopicTag;
@@ -14,8 +14,6 @@ import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -58,13 +56,15 @@ public class TopicTagService {
             if (!topicTagRepository.existsById(tagId)) {
                 throw new GeneralException(TagException.TAG_NOT_FOUND);
             }
-            UserTopicTag userTopicTag = new UserTopicTag(user, topicTagRepository.findById(tagId).get());
+            UserTopicTag userTopicTag = new UserTopicTag(user.getId(),
+                topicTagRepository.findById(tagId).get());
             userTopicTagRepository.save(userTopicTag);
         }
 
         List<UserTopicTag> updatedTags = userTopicTagRepository.findByUserId(user.getId());
         List<UserTopicTagResponse.TopicTagDTO> topicTagDTOList = updatedTags.stream()
-            .map(tag -> new UserTopicTagResponse.TopicTagDTO(tag.getTopicTag().getId(), tag.getTopicTag().getContent()))
+            .map(tag -> new UserTopicTagResponse.TopicTagDTO(tag.getTopicTag().getId(),
+                tag.getTopicTag().getContent()))
             .toList();
 
         return new UserTopicTagResponse(userId, topicTagDTOList);
