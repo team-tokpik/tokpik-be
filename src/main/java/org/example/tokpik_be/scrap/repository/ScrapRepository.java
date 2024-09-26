@@ -8,8 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
-
-    List<Scrap> findByUserId(Long id);
-
     List<Scrap> findByUserIdOrderByCreatedAtDesc(Long id);
 }

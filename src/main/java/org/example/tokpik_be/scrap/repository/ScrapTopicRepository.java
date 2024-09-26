@@ -10,7 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScrapTopicRepository extends JpaRepository<ScrapTopic, Long> {
 
-    List<ScrapTopic> findByScrap(Scrap scrap);
-
     List<ScrapTopic> findByScrapOrderByCreatedAtDesc(Scrap scrap);
 }
