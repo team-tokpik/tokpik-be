@@ -33,12 +33,15 @@ public record LLMTalkTopicSearchRequest(
 
     public static LLMTalkTopicSearchRequest from(
         List<TopicTag> topicTags,
+        List<PlaceTag> placeTags,
         TalkTopicSearchRequest request) {
 
         List<String> topicTagContents = topicTags.stream().map(TopicTag::getContent).toList();
+        List<String> talkPlaces = placeTags.stream().map(PlaceTag::getContent).toList();
 
         return LLMTalkTopicSearchRequest.builder()
             .topicTags(topicTagContents)
+            .talkPlaces(talkPlaces)
             .talkPurposes(request.talkPurposes())
             .talkSituations(request.talkSituations())
             .talkMoods(request.talkMoods())
@@ -51,7 +54,10 @@ public record LLMTalkTopicSearchRequest(
     public String toPromptContent() {
 
         String promptContent = """
-            당신은 상황에 맞는 대화 주제를 추천해주는 전문가입니다. 다음 정보를 바탕으로 10개의 대화 주제를 추천해주세요.
+            당신은 상황에 맞는 대화 주제를 추천해주는 전문가입니다. 다음 정보를 바탕으로 30개의 대화 주제를 추천해주세요.
+            응답의 topicTag는 반드시 다음 옵션 중 하나로 설정해주세요 : %s
+            응답의 placeTag는 반드시 주어진 대화 장소중에서 설정해주세요
+
             1. 대화 목적 : %s
             2. 대화 장소 : %s
             3. 대화 상황 : %s
@@ -68,11 +74,10 @@ public record LLMTalkTopicSearchRequest(
             - 주어진 응답 형식을 엄수해주세요. 주어진 옵션과 일치하는 응답 값을 동일하게 설정해주세요.
             - null로 제시된 옵션을 무시해주세요.
             - 전형적이지 않고 재치 넘치는 주제를 선정해주세요.
-            - 다음 예시를 참고해주세요.
-                title : MBTI / T발 너 C야?, subtitle: MBTI, 확실하게 알려드릴게요, topicTag : 요즘 이슈
             """;
 
         return promptContent.formatted(
+            generatePromptConditions(this.topicTags),
             generatePromptConditions(this.talkPurposes),
             generatePromptConditions(this.talkPlaces),
             generatePromptConditions(this.talkSituations),
