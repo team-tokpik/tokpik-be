@@ -1,9 +1,11 @@
 package org.example.tokpik_be.scrap.service;
 
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
+import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
+import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
@@ -11,8 +13,7 @@ import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +56,15 @@ public class ScrapService {
             talkTopic.getTopicTag().getId(),
             talkTopic.getTopicTag().getContent()
         );
+    }
+
+    @Transactional
+    public ScrapCreateResponse createScrap(long userId, ScrapCreateRequest request) {
+        User user = userQueryService.findById(userId);
+
+        Scrap scrap = new Scrap(request.scrapName(), user);
+        scrapRepository.save(scrap);
+
+        return new ScrapCreateResponse(scrap.getId());
     }
 }
