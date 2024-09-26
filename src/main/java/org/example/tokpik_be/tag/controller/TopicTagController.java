@@ -44,6 +44,8 @@ public class TopicTagController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "전체 대화 종류 조회", description = "전체 대화 종류 조회")
+    @ApiResponse(responseCode = "200", description = "전체 대화 종류 조회 성공")
     @GetMapping("/topic-tags")
     public ResponseEntity<TopicTagTotalResponse> getAllTopicTags() {
 
