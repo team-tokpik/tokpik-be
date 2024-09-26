@@ -1,6 +1,11 @@
 package org.example.tokpik_be.tag.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.tag.dto.request.UserTopicTagsRequest;
+import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse;
 import org.example.tokpik_be.tag.dto.response.UserTopicTagResponse;
 import org.example.tokpik_be.tag.service.TopicTagService;
 import org.springframework.http.ResponseEntity;
@@ -9,11 +14,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,4 +44,11 @@ public class TopicTagController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/topic-tags")
+    public ResponseEntity<TopicTagTotalResponse> getAllTopicTags() {
+
+        TopicTagTotalResponse response = topicTagService.getAllTopicTags();
+
+        return ResponseEntity.ok().body(response);
+    }
 }
