@@ -20,21 +20,31 @@ public class ScrapController {
 
     private final ScrapService scrapService;
 
-    @GetMapping("/users/scraps")
     @Operation(summary = "스크랩 리스트 조회", description = "스크랩 리스트 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 리스트 조회 성공")
+    @GetMapping("/users/scraps")
     public ResponseEntity<ScrapListResponse> getScrapList(
         @RequestAttribute("userId") long userId) {
         ScrapListResponse scrapListResponse = scrapService.getScrapList(userId);
         return ResponseEntity.ok(scrapListResponse);
     }
 
-    @GetMapping("/users/scraps/count")
     @Operation(summary = "총 스크랩 수 조회", description = "총 스크랩 수 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 수 조회 성공")
+    @GetMapping("/users/scraps/count")
     public ResponseEntity<ScrapCountResponse> getScrapCounts(
         @RequestAttribute("userId") long userId){
         ScrapCountResponse scrapCountResponse = scrapService.getUserSrcapCounts(userId);
+        return ResponseEntity.ok(scrapCountResponse);
+    }
+
+
+    @Operation(summary = "총 스크랩 톡픽 수 조회", description = "사용자 총 스크랩 톡픽 수 조회")
+    @ApiResponse(responseCode = "200", description = "스크랩 톡픽 수 조회 성공")
+    @GetMapping("/users/scraps/topik/count")
+    public ResponseEntity<ScrapCountResponse> getTopicCounts(
+        @RequestAttribute("userId") long userId){
+        ScrapCountResponse scrapCountResponse = scrapService.getUserTopicCounts(userId);
         return ResponseEntity.ok(scrapCountResponse);
     }
 }
