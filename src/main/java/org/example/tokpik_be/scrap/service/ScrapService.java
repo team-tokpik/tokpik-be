@@ -106,4 +106,10 @@ public class ScrapService {
             .orElseThrow(() -> new GeneralException(ScrapException.SCRAP_NOT_FOUND));
 
     }
+
+    @Transactional
+    public void deleteScrap(long scrapId) {
+        Scrap scrap = findById(scrapId);
+        scrapRepository.delete(scrap);
+    }
 }
