@@ -62,6 +62,13 @@ jobs:
       - name: repository checkout
         uses: actions/checkout@v3
 
+      - name: Docker 시스템 정리
+        run: |
+          docker container prune -f
+          docker image prune -a -f
+          docker volume prune -f
+          docker rmi $(docker images -f "dangling=true" -q) || true
+
       - name: 배포
         run: |
           mkdir -p /home/ubuntu/logs

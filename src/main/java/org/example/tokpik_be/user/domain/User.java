@@ -41,6 +41,7 @@ public class User extends BaseTimeEntity {
 
     private String refreshToken;
     private LocalDate birth;
+    private String notificationToken;
 
     @Convert(converter = GenderConverter.class)
     private Gender gender;
@@ -75,5 +76,17 @@ public class User extends BaseTimeEntity {
     public boolean notEqualRefreshToken(String refreshToken) {
 
         return !this.refreshToken.equals(refreshToken);
+    }
+
+    public void updateUserTopicTags(List<UserTopicTag> userTopicTags) {
+        this.userTopicTags.addAll(userTopicTags);
+    }
+
+    public void updateUserPlaceTags(List<UserPlaceTag> userPlaceTags) {
+        this.userPlaceTags.addAll(userPlaceTags);
+    }
+
+    public void updateNotificationToken(String notificationToken) {
+        this.notificationToken = notificationToken;
     }
 }

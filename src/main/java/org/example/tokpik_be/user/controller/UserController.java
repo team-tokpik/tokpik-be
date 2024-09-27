@@ -2,20 +2,23 @@ package org.example.tokpik_be.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
+import org.example.tokpik_be.user.dto.request.UserUpdateNotificationTokenRequest;
 import org.example.tokpik_be.user.dto.response.UserProfileResponse;
 import org.example.tokpik_be.user.service.UserCommandService;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@Tag(name = "사용자 API", description = "사용자 연관 API")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -43,5 +46,17 @@ public class UserController {
         UserProfileResponse response = userQueryService.getUserProfile(userId);
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "notification token 갱신", description = "notification token 갱신")
+    @ApiResponse(responseCode = "200", description = "notification token 갱신 성공")
+    @PutMapping("/users/notification-token")
+    public ResponseEntity<Void> updateNotificationToken(
+        @RequestAttribute("userId") long userId,
+        @RequestBody @Valid UserUpdateNotificationTokenRequest request) {
+
+        userCommandService.updateNotificationToken(userId, request);
+        
+        return ResponseEntity.ok().build();
     }
 }

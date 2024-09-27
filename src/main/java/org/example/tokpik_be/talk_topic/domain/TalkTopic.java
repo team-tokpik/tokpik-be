@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,11 +37,11 @@ public class TalkTopic {
     @Embedded
     private TalkPartner partner;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "talk_topic_tag_id")
     private TopicTag topicTag;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "talk_place_tag_id")
     private PlaceTag placeTag;
 
