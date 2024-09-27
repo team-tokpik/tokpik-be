@@ -13,25 +13,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationCommandStrategyFactory {
 
-    private final Map<Integer, NotificationCommandStrategy> notificationCommandStrategyByIntervalMinutes;
+    private final Map<Integer, NotificationCommandStrategy> commandStrategiesByInterval;
 
     @Autowired
-    public NotificationCommandStrategyFactory(
-        List<NotificationCommandStrategy> notificationCommandStrategies) {
+    public NotificationCommandStrategyFactory(List<NotificationCommandStrategy> strategies) {
 
-        this.notificationCommandStrategyByIntervalMinutes = notificationCommandStrategies.stream()
+        this.commandStrategiesByInterval = strategies.stream()
             .collect(Collectors.toMap(NotificationCommandStrategy::getIntervalMinutes,
                 Function.identity()));
     }
 
     public void deleteByIdAndIntervalMinutes(long notificationId, int intervalMinutes) {
         NotificationCommandStrategy notificationCommandStrategy =
-            notificationCommandStrategyByIntervalMinutes.get(intervalMinutes);
+            commandStrategiesByInterval.get(intervalMinutes);
 
         if (Objects.isNull(notificationCommandStrategy)) {
             throw new GeneralException(NotificationException.INVALID_NOTIFICATION_INTERVAL);
         }
 
         notificationCommandStrategy.deleteById(notificationId);
+    }
+
+    public void deleteNotificationsInBatch() {
+        commandStrategiesByInterval.values().forEach(NotificationCommandStrategy::deleteAllInBatch);
     }
 }
