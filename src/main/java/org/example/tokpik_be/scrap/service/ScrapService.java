@@ -6,6 +6,7 @@ import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
@@ -62,6 +63,24 @@ public class ScrapService {
         );
     }
 
+    public ScrapCountResponse getUserSrcapCounts(long userId){
+
+        User user = userQueryService.findById(userId);
+
+        Long count = scrapRepository.countByUser(user);
+
+        return new ScrapCountResponse(count);
+    }
+
+    public ScrapCountResponse getUserTopicCounts(long userId){
+
+        User user = userQueryService.findById(userId);
+
+        Long count = scrapTopicRepository.countByUserId(userId);
+
+        return new ScrapCountResponse(count);
+    }
+
     @Transactional
     public ScrapCreateResponse createScrap(long userId, ScrapCreateRequest request) {
         User user = userQueryService.findById(userId);
@@ -85,5 +104,6 @@ public class ScrapService {
 
         return scrapRepository.findById(scrapId)
             .orElseThrow(() -> new GeneralException(ScrapException.SCRAP_NOT_FOUND));
+
     }
 }
