@@ -1,5 +1,7 @@
 package org.example.tokpik_be.notification.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.notification.dto.request.NotificationDeleteRequest;
@@ -16,6 +18,8 @@ public class NotificationController {
 
     private final NotificationCommandService notificationCommandService;
 
+    @Operation(summary = "알림 삭제", description = "알림 삭제")
+    @ApiResponse(responseCode = "200", description = "알림 삭제 성공")
     @DeleteMapping("/users/notifications")
     public ResponseEntity<Void> deleteNotification(@RequestBody NotificationDeleteRequest request) {
 
