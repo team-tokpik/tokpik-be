@@ -62,7 +62,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        Long count = scrapRepository.countByUser(user.getId());
+        Long count = scrapRepository.countByUser(user);
 
         return new ScrapCountResponse(count);
     }
