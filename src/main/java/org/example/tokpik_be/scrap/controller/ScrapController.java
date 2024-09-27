@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
-
-
 @Tag(name = "스크랩 API", description = "스크랩 연관 API")
 @RestController
 @RequiredArgsConstructor
