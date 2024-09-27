@@ -1,5 +1,6 @@
 package org.example.tokpik_be.scrap.controller;
 
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -12,6 +13,7 @@ import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.service.ScrapService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,13 +28,32 @@ public class ScrapController {
 
     private final ScrapService scrapService;
 
-    @GetMapping("/users/scraps")
     @Operation(summary = "스크랩 리스트 조회", description = "스크랩 리스트 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 리스트 조회 성공")
+    @GetMapping("/users/scraps")
     public ResponseEntity<ScrapListResponse> getScrapList(
         @RequestAttribute("userId") long userId) {
         ScrapListResponse scrapListResponse = scrapService.getScrapList(userId);
         return ResponseEntity.ok(scrapListResponse);
+    }
+
+
+    @Operation(summary = "총 스크랩 수 조회", description = "총 스크랩 수 조회")
+    @ApiResponse(responseCode = "200", description = "스크랩 수 조회 성공")
+    @GetMapping("/users/scraps/count")
+    public ResponseEntity<ScrapCountResponse> getScrapCounts(
+        @RequestAttribute("userId") long userId){
+        ScrapCountResponse scrapCountResponse = scrapService.getUserSrcapCounts(userId);
+        return ResponseEntity.ok(scrapCountResponse);
+    }
+
+    @Operation(summary = "총 스크랩 톡픽 수 조회", description = "사용자 총 스크랩 톡픽 수 조회")
+    @ApiResponse(responseCode = "200", description = "스크랩 톡픽 수 조회 성공")
+    @GetMapping("/users/scraps/topik/count")
+    public ResponseEntity<ScrapCountResponse> getTopicCounts(
+        @RequestAttribute("userId") long userId){
+        ScrapCountResponse scrapCountResponse = scrapService.getUserTopicCounts(userId);
+        return ResponseEntity.ok(scrapCountResponse);
     }
 
     @Operation(summary = "스크랩 생성", description = "스크랩 생성")
@@ -57,6 +78,19 @@ public class ScrapController {
         @PathVariable("topicId") long topicId) {
 
         scrapService.scrapTopic(scrapId, topicId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    @Operation(summary = "스크랩 삭제", description = "스크랩 삭제")
+    @ApiResponse(responseCode = "200", description = "스크랩 삭제 성공")
+    @DeleteMapping("/users/scraps/{scrapId}")
+    public ResponseEntity<Void> deleteScrap(
+        @Parameter(name = "scrapId", description = "스크랩 ID", example = "1", in = ParameterIn.PATH)
+        @PathVariable("scrapId") long scrapId) {
+
+        scrapService.deleteScrap(scrapId);
 
         return ResponseEntity.ok().build();
     }
