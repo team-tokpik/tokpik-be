@@ -13,6 +13,7 @@ import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.service.ScrapService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,5 +81,17 @@ public class ScrapController {
 
         return ResponseEntity.ok().build();
 
+    }
+
+    @Operation(summary = "스크랩 삭제", description = "스크랩 삭제")
+    @ApiResponse(responseCode = "200", description = "스크랩 삭제 성공")
+    @DeleteMapping("/users/scraps/{scrapId}")
+    public ResponseEntity<Void> deleteScrap(
+        @Parameter(name = "scrapId", description = "스크랩 ID", example = "1", in = ParameterIn.PATH)
+        @PathVariable("scrapId") long scrapId) {
+
+        scrapService.deleteScrap(scrapId);
+
+        return ResponseEntity.ok().build();
     }
 }
