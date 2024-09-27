@@ -1,5 +1,6 @@
 package org.example.tokpik_be.scrap.controller;
 
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.service.ScrapService;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,14 @@ public class ScrapController {
         @RequestAttribute("userId") long userId) {
         ScrapListResponse scrapListResponse = scrapService.getScrapList(userId);
         return ResponseEntity.ok(scrapListResponse);
+    }
+
+    @GetMapping("/users/scraps/count")
+    @Operation(summary = "총 스크랩 수 조회", description = "총 스크랩 수 조회")
+    @ApiResponse(responseCode = "200", description = "스크랩 수 조회 성공")
+    public ResponseEntity<ScrapCountResponse> getScrapCounts(
+        @RequestAttribute("userId") long userId){
+        ScrapCountResponse scrapCountResponse = scrapService.getUserSrcapCounts(userId);
+        return ResponseEntity.ok(scrapCountResponse);
     }
 }
