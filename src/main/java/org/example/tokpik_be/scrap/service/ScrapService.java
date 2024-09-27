@@ -66,4 +66,13 @@ public class ScrapService {
 
         return new ScrapCountResponse(count);
     }
+
+    public ScrapCountResponse getUserTopicCounts(long userId){
+
+        User user = userQueryService.findById(userId);
+
+        Long count = scrapTopicRepository.countByUserId(userId);
+
+        return new ScrapCountResponse(count);
+    }
 }
