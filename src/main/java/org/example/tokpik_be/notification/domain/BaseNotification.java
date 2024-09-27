@@ -28,4 +28,10 @@ public abstract class BaseNotification {
 
     @Column(nullable = false)
     private LocalTime endTime;
+
+    private boolean deleted;
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
