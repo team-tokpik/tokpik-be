@@ -1,10 +1,13 @@
 package org.example.tokpik_be.talk_topic.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
+import org.example.tokpik_be.talk_topic.dto.response.TalkTopicDetailResponse;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicsRelatedResponse;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicsSearchResponse;
 import org.example.tokpik_be.talk_topic.service.TalkTopicCommandService;
@@ -50,4 +53,19 @@ public class TalkTopicController {
 
         return ResponseEntity.ok().body(response);
     }
+
+    @Operation(summary = "대화 주제 상세 조회", description = "대화 주제 상세 내용 조회")
+    @ApiResponse(responseCode = "200", description = "대화 주제 상세 내용 조회 성공")
+    @GetMapping("/topics/{topicId}/details")
+    public ResponseEntity<TalkTopicDetailResponse> getTalkTopicDetail(
+        @RequestAttribute("userId") long userId,
+        @Parameter(name = "topicId", description = "대화 주제 ID", example = "1", in = ParameterIn.PATH)
+        @PathVariable("topicId") long topicId) {
+
+        TalkTopicDetailResponse response = talkTopicQueryService
+            .getTalkTopicDetail(userId, topicId);
+
+        return ResponseEntity.ok().body(response);
+    }
+
 }
