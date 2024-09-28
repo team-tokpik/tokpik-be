@@ -11,7 +11,7 @@ public record TopicTagTotalResponse(
 
     public record TopicTagResponse(
         @Schema(type = "number", description = "대화 종류 ID", example = "1")
-        long talkTypeId,
+        long topicTagId,
 
         @Schema(type = "string", description = "대화 종류 내용", example = "비즈니스와 업무")
         String content
