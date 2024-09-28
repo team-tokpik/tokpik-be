@@ -1,6 +1,7 @@
 package org.example.tokpik_be.scrap.service;
 
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.ScrapException;
@@ -10,12 +11,15 @@ import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
+import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.talk_topic.service.TalkTopicQueryService;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -129,5 +133,39 @@ public class ScrapService {
         return scrapTopicRepository.findById(scrapTopicId)
             .orElseThrow(() -> new GeneralException(ScrapException.SCRAP_TOPIC_NOT_FOUND));
 
+    }
+
+    public ScrapResponse getScrapTopics(Long scrapId, Long lastContentId, int size) {
+
+        Pageable pageable = PageRequest.of(0, size);
+        List<ScrapTopic> scrapTopics = scrapTopicRepository
+            .findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, lastContentId, pageable);
+
+        List<ScrapResponse.ScrapTopicResponse> contents = scrapTopics.stream()
+            .map(scrapTopic -> {
+                TalkTopic talkTopic = scrapTopic.getTalkTopic();
+                boolean isScraped = isTopicScraped(scrapId, talkTopic.getId());
+                return new ScrapResponse.ScrapTopicResponse(
+                    talkTopic.getId(),
+                    talkTopic.getTitle(),
+                    talkTopic.getTopicTag().getContent(),
+                    isScraped
+                );
+            })
+            .toList();
+
+        Long newLastContentId = contents.isEmpty() ? lastContentId : scrapTopics.get(scrapTopics.size() - 1).getId();
+        boolean isLast = !scrapTopicRepository.existsByScrapIdAndIdGreaterThan(scrapId, newLastContentId);
+
+        return new ScrapResponse(
+            contents,
+            newLastContentId,
+            lastContentId == 0,
+            isLast
+        );
+    }
+
+    private boolean isTopicScraped(Long scrapId, Long topicId) {
+        return scrapTopicRepository.existsByScrapIdAndTalkTopicId(scrapId, topicId);
     }
 }
