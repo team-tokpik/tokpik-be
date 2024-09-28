@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tokpik_be.common.BaseTimeEntity;
+import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.user.domain.User;
 
 @Table(name = "notifications")
@@ -48,6 +50,10 @@ public class Notification extends BaseTimeEntity {
     @OneToMany
     @JoinColumn(name = "notification_id")
     private List<NotificationTalkTopic> notificationTalkTopics = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "scrap_id")
+    private Scrap scrap;
 
     public void delete() {
         this.deleted = true;
