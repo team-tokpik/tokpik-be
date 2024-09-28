@@ -1,12 +1,20 @@
 package org.example.tokpik_be.notification.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.example.tokpik_be.notification.dto.response.NotificationsResponse;
 import org.example.tokpik_be.notification.service.NotificationCommandService;
+import org.example.tokpik_be.notification.service.NotificationQueryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "알림 API", description = "알림 연관 API")
@@ -15,7 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
 
     private final NotificationCommandService notificationCommandService;
+    private final NotificationQueryService notificationQueryService;
 
+    @Operation(summary = "알림 삭제", description = "알림 삭제")
+    @ApiResponse(responseCode = "200", description = "알림 삭제 성공")
     @DeleteMapping("/users/notifications/{notificationId}")
     public ResponseEntity<Void> deleteNotification(@RequestAttribute("userId") long userId,
         @PathVariable("notificationId") long notificationId) {
@@ -23,5 +34,20 @@ public class NotificationController {
         notificationCommandService.deleteNotification(userId, notificationId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "알림 목록 조회", description = "알림 목록 조회, 한 페이지에 10개 알림 제공")
+    @ApiResponse(responseCode = "200", description = "알림 목록 조회 성공")
+    @GetMapping("/users/notifications")
+    public ResponseEntity<NotificationsResponse> getNotifications(
+        @RequestAttribute("userId") long userId,
+        @Parameter(name = "lastContentId", description = "마지막 알림 ID, 커서 페이징에 사용",
+            in = ParameterIn.QUERY)
+        @RequestParam(name = "nextContentId", required = false) Long nextContentId) {
+
+        NotificationsResponse response = notificationQueryService
+            .getNotifications(userId, nextContentId);
+
+        return ResponseEntity.ok().body(response);
     }
 }
