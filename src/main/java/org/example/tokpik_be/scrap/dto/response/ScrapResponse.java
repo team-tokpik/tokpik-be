@@ -23,6 +23,9 @@ public record ScrapResponse(
 ) {
     public record ScrapTopicResponse(
         @JsonProperty(required = true)
+        @Schema(type = "number", description = "스크랩 대화 주제 ID", example = "1")
+        Long scrapTopicId,
+        @JsonProperty(required = true)
         @Schema(type = "number", description = "대화 주제 ID", example = "1")
         Long topicId,
 

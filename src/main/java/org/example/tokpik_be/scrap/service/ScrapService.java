@@ -146,6 +146,7 @@ public class ScrapService {
                 TalkTopic talkTopic = scrapTopic.getTalkTopic();
                 boolean isScraped = isTopicScraped(scrapId, talkTopic.getId());
                 return new ScrapResponse.ScrapTopicResponse(
+                    scrapTopic.getId(),
                     talkTopic.getId(),
                     talkTopic.getTitle(),
                     talkTopic.getTopicTag().getContent(),
