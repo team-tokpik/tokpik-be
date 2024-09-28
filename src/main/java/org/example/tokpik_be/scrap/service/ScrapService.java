@@ -166,6 +166,6 @@ public class ScrapService {
     }
 
     private boolean isTopicScraped(Long scrapId, Long topicId) {
-        return scrapTopicRepository.existsByScrapIdAndTalkTopicId(scrapId, topicId);
+        return scrapRepository.existsByScrapIdAndTalkTopicId(scrapId, topicId);
     }
 }
