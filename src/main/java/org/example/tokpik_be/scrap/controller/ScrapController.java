@@ -4,6 +4,8 @@ import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
+import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
 import org.example.tokpik_be.scrap.service.ScrapService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "스크랩 API", description = "스크랩 연관 API")
@@ -108,5 +112,19 @@ public class ScrapController {
         scrapService.deleteScrapTopic(scrapId, scrapTopicId);
 
         return ResponseEntity.ok().build();
+    }
+
+
+    @Operation(summary = "스크랩 조회", description = "특정 스크랩에 포함된 대화 주제들을 조회")
+    @ApiResponse(responseCode = "200", description = "스크랩 조회 성공",
+        content = @Content(schema = @Schema(implementation = ScrapResponse.class)))
+    @GetMapping("/users/scraps/{scrapId}/topics")
+    public ResponseEntity<ScrapResponse> getScrapTopics(
+        @PathVariable @Parameter(description = "스크랩 ID") Long scrapId,
+        @RequestParam(defaultValue = "0") @Parameter(description = "마지막으로 받은 컨텐츠 ID") Long lastContentId,
+        @RequestParam(defaultValue = "8") @Parameter(description = "페이지 크기") int size
+    ) {
+        ScrapResponse response = scrapService.getScrapTopics(scrapId, lastContentId, size);
+        return ResponseEntity.ok(response);
     }
 }

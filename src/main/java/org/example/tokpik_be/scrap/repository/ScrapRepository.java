@@ -13,5 +13,5 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
 
     Long countByUser(User user);
 
-    boolean existsByScrapIdAndTalkTopicId(Long scrapId, Long topicId);
+    boolean existsByIdAndScrapTopicsTalkTopicId(Long id, Long topicId);
 }
