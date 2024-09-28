@@ -137,6 +137,15 @@ public class ScrapService {
 
     public ScrapResponse getScrapTopics(Long scrapId, Long lastContentId, int size) {
 
+        Scrap scrap = findById(scrapId);
+
+        if (lastContentId != null && lastContentId > 0) {
+            boolean isValidLastContent = scrapTopicRepository.existsByScrapIdAndId(scrapId, lastContentId);
+            if (!isValidLastContent) {
+                throw new GeneralException(ScrapException.INVALID_SCRAP_TOPIC);
+            }
+        }
+
         Pageable pageable = PageRequest.of(0, size);
         List<ScrapTopic> scrapTopics = scrapTopicRepository
             .findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, lastContentId, pageable);
@@ -155,13 +164,25 @@ public class ScrapService {
             })
             .toList();
 
-        Long newLastContentId = contents.isEmpty() ? lastContentId : scrapTopics.get(scrapTopics.size() - 1).getId();
+        Long newLastContentId = contents.isEmpty() ? lastContentId :
+            scrapTopics.get(scrapTopics.size() - 1).getId();
+
+        boolean isFirst;
+        if (lastContentId == null || lastContentId == 0) {
+            isFirst = true;
+        } else {
+            long countAfterLastContent = scrapTopicRepository
+                .countByScrapIdAndIdGreaterThan(scrapId, lastContentId);
+            isFirst = countAfterLastContent == 0;
+        }
+
         boolean isLast = !scrapTopicRepository.existsByScrapIdAndIdGreaterThan(scrapId, newLastContentId);
+        //boolean isLast = scrapTopics.size() < size;
 
         return new ScrapResponse(
             contents,
             newLastContentId,
-            lastContentId == 0,
+            isFirst,
             isLast
         );
     }

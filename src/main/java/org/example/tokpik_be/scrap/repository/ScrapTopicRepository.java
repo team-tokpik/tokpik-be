@@ -21,4 +21,8 @@ public interface ScrapTopicRepository extends JpaRepository<ScrapTopic, Long> {
     List<ScrapTopic> findByScrapIdAndIdGreaterThanOrderByIdAsc(Long scrapId, Long lastContentId, Pageable pageable);
 
     boolean existsByScrapIdAndIdGreaterThan(Long scrapId, Long newLastContentId);
+
+    long countByScrapIdAndIdGreaterThan(Long scrapId, Long lastContentId);
+
+    boolean existsByScrapIdAndId(Long scrapId, Long topicId);
 }
