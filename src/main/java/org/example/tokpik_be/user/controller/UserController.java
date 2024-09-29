@@ -11,6 +11,7 @@ import org.example.tokpik_be.user.dto.response.UserProfileResponse;
 import org.example.tokpik_be.user.service.UserCommandService;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,6 +58,17 @@ public class UserController {
 
         userCommandService.updateNotificationToken(userId, request);
         
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴")
+    @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteUser(
+        @RequestAttribute("userId") long userId) {
+
+        userCommandService.deleteUser(userId);
+
         return ResponseEntity.ok().build();
     }
 }
