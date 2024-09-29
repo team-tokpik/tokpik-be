@@ -1,6 +1,5 @@
 package org.example.tokpik_be.notification.service;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.NotificationException;
@@ -25,11 +24,9 @@ public class NotificationQueryService {
             .orElseThrow(() -> new GeneralException(NotificationException.NOTIFICATION_NOT_FOUND));
     }
 
-    public NotificationsResponse getNotifications(long userId, Long nextContentId) {
-        long nextNotificationId = Optional.ofNullable(nextContentId).orElse(Long.MAX_VALUE);
+    public NotificationsResponse getNotifications(long userId, Long nextCursorId) {
         int pageSize = 10;
 
-        return queryDslNotificationRepository
-            .getNotifications(userId, nextNotificationId, pageSize);
+        return queryDslNotificationRepository.getNotifications(userId, nextCursorId, pageSize);
     }
 }
