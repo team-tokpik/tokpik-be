@@ -20,10 +20,10 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class QueryDslTalkTopicRepository {
 
-    private final JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory queryFactory;
 
     public TalkTopicsRelatedResponse findRelatedTalkTopics(long userId, TalkTopic baseTopic) {
-        List<TalkTopicRelatedResponse> relatedTopics = jpaQueryFactory.from(talkTopic)
+        List<TalkTopicRelatedResponse> relatedTopics = queryFactory.from(talkTopic)
             .select(Projections.constructor(TalkTopicRelatedResponse.class,
                 talkTopic.id,
                 talkTopic.topicTag.content,
