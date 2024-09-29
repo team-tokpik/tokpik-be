@@ -116,8 +116,7 @@ public class ScrapController {
 
 
     @Operation(summary = "스크랩 조회", description = "특정 스크랩에 포함된 대화 주제들을 조회")
-    @ApiResponse(responseCode = "200", description = "스크랩 조회 성공",
-        content = @Content(schema = @Schema(implementation = ScrapResponse.class)))
+    @ApiResponse(responseCode = "200", description = "스크랩 조회 성공")
     @GetMapping("/users/scraps/{scrapId}/topics")
     public ResponseEntity<ScrapResponse> getScrapTopics(
         @PathVariable @Parameter(description = "스크랩 ID") Long scrapId,
