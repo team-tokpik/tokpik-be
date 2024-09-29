@@ -12,4 +12,6 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     List<Scrap> findByUserIdOrderByCreatedAtDesc(Long id);
 
     Long countByUser(User user);
+
+    boolean existsByIdAndScrapTopicsTalkTopicId(Long id, Long topicId);
 }
