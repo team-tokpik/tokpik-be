@@ -2,6 +2,7 @@ package org.example.tokpik_be.tag.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.tag.dto.request.UserTopicTagsRequest;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "대화 태그 API", description = "대화 종류 연관 API")
 @RestController
 @RequiredArgsConstructor
 public class TopicTagController {

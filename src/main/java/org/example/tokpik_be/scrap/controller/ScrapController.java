@@ -94,4 +94,19 @@ public class ScrapController {
 
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "스크랩 대화 주제 삭제", description = "스크랩한 대화 주제를 삭제")
+    @ApiResponse(responseCode = "200", description = "대화 주제 삭제 성공")
+    @DeleteMapping("/users/scraps/{scrapId}/topics/{scrapTopicId}")
+    public ResponseEntity<Void> deleteScrapTopic(
+        @Parameter(name = "scrapId", description = "스크랩 ID", example = "1", in = ParameterIn.PATH)
+        @PathVariable long scrapId,
+
+        @Parameter(name = "scrapTopicId", description = "삭제할 스크랩 대화 주제 ID", example = "1", in = ParameterIn.PATH)
+        @PathVariable long scrapTopicId) {
+
+        scrapService.deleteScrapTopic(scrapId, scrapTopicId);
+
+        return ResponseEntity.ok().build();
+    }
 }

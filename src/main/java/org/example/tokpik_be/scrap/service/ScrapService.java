@@ -112,4 +112,22 @@ public class ScrapService {
         Scrap scrap = findById(scrapId);
         scrapRepository.delete(scrap);
     }
+
+    @Transactional
+    public void deleteScrapTopic(long scrapId, long scrapTopicId){
+        Scrap scrap = findById(scrapId);
+        ScrapTopic scrapTopic = findByScrapTopicId(scrapTopicId);
+
+        if (!scrap.getScrapTopics().contains(scrapTopic)) {
+            throw new GeneralException(ScrapException.INVALID_SCRAP_TOPIC);
+        }
+
+        scrapTopicRepository.delete(scrapTopic);
+    }
+
+    private ScrapTopic findByScrapTopicId(long scrapTopicId) {
+        return scrapTopicRepository.findById(scrapTopicId)
+            .orElseThrow(() -> new GeneralException(ScrapException.SCRAP_TOPIC_NOT_FOUND));
+
+    }
 }
