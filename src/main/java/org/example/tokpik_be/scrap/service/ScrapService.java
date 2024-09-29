@@ -176,8 +176,7 @@ public class ScrapService {
             isFirst = countAfterLastContent == 0;
         }
 
-        boolean isLast = !scrapTopicRepository.existsByScrapIdAndIdGreaterThan(scrapId, newLastContentId);
-        //boolean isLast = scrapTopics.size() < size;
+        boolean isLast = scrapTopics.size() < size;
 
         return new ScrapResponse(
             contents,
