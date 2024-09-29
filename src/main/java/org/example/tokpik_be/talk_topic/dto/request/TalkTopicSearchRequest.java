@@ -8,13 +8,13 @@ public record TalkTopicSearchRequest(
     @Schema(type = "boolean", description = "필터(검색 조건) 사용 여부", example = "true")
     boolean includeFilterCondition,
 
-    @Schema(type = "array", description = "대화목적", example = "친목")
+    @Schema(type = "array", description = "대화목적", example = "[\"친목\", \"비즈니스\"]")
     List<@NotBlank(message = "대화목적은 유효한 문자열만 가능") String> talkPurposes,
 
-    @Schema(type = "array", description = "대화상황", example = "첫만남")
+    @Schema(type = "array", description = "대화상황", example = "[\"첫만남\", \"1대1\"]")
     List<@NotBlank(message = "대화상황은 유효한 문자열만 가능") String> talkSituations,
 
-    @Schema(type = "array", description = "대화분위기", example = "유익한 분위기")
+    @Schema(type = "array", description = "대화분위기", example = "[\"편안한분위기\", \"조용한분위기\"]")
     List<@NotBlank(message = "대화분위기는 유효한 문자열만 가능") String> talkMoods,
 
     @Schema(type = "boolean", description = "대화상대 성별, 남=true/여=false", example = "true")
