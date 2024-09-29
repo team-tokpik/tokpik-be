@@ -41,12 +41,12 @@ public class NotificationController {
     @GetMapping("/users/notifications")
     public ResponseEntity<NotificationsResponse> getNotifications(
         @RequestAttribute("userId") long userId,
-        @Parameter(name = "lastContentId", description = "마지막 알림 ID, 커서 페이징에 사용",
+        @Parameter(name = "nextCursorId", description = "마지막 알림 ID, 커서 페이징에 사용",
             in = ParameterIn.QUERY)
-        @RequestParam(name = "nextContentId", required = false) Long nextContentId) {
+        @RequestParam(name = "nextCursorId", required = false) Long nextCursorId) {
 
         NotificationsResponse response = notificationQueryService
-            .getNotifications(userId, nextContentId);
+            .getNotifications(userId, nextCursorId);
 
         return ResponseEntity.ok().body(response);
     }
