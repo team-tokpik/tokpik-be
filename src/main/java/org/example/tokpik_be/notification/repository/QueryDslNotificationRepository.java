@@ -41,7 +41,8 @@ public class QueryDslNotificationRepository {
         // 대상 알림 ID 목록 조회
         List<Long> notificationIds = queryFactory.select(notification.id)
             .from(notification)
-            .where(usersNotificationCondition.and(nextPageCondition))
+            .where(usersNotificationCondition.and(nextPageCondition)
+                .and(notification.deleted.isFalse()))
             .limit(pageSize + 1)
             .fetch();
 
