@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.NotificationException;
 import org.example.tokpik_be.exception.ScrapException;
+import org.example.tokpik_be.exception.TalkTopicException;
 import org.example.tokpik_be.notification.domain.Notification;
 import org.example.tokpik_be.notification.domain.NotificationTalkTopic;
 import org.example.tokpik_be.notification.dto.request.NotificationCreateRequest;
@@ -102,10 +103,17 @@ public class NotificationCommandService {
             throw new GeneralException(NotificationException.CAN_NOTICE_TALK_TOPICS_IN_SCRAP);
         }
 
-        // 알림 대화 주제 생성 및 저장, 연관관계 설정
-        long notificationId = notification.getId();
+        // 대화 주제 조회 및 요청 순서에 따라 정렬
         List<TalkTopic> talkTopics = talkTopicRepository.findAllById(notificationTalkTopicIds);
-        List<NotificationTalkTopic> notificationTalkTopics = talkTopics.stream()
+        List<TalkTopic> sortedTalkTopics = notificationTalkTopicIds.stream()
+            .map(id -> talkTopics.stream().filter(talkTopic -> talkTopic.getId().equals(id)))
+            .findFirst()
+            .orElseThrow(() -> new GeneralException(TalkTopicException.TALK_TOPIC_NOT_FOUND))
+            .toList();
+
+        // 알림 대화 주제 생성 및 저장, 알림 & 알림 대화 주제 관계 설정
+        long notificationId = notification.getId();
+        List<NotificationTalkTopic> notificationTalkTopics = sortedTalkTopics.stream()
             .map(talkTopic -> new NotificationTalkTopic(notificationId, talkTopic))
             .toList();
         notificationTalkTopicRepository.saveAll(notificationTalkTopics);
