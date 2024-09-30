@@ -5,16 +5,21 @@ import static org.example.tokpik_be.notification.domain.QNotificationTalkTopic.n
 import static org.example.tokpik_be.scrap.domain.QScrap.scrap;
 import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
+import static org.example.tokpik_be.user.domain.QUser.user;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.tokpik_be.notification.dto.response.NotificationScheduledResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse.NotificationResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse.NotificationResponse.NotificationTalkTopicTypeResponse;
@@ -110,6 +115,26 @@ public class QueryDslNotificationRepository {
             .toList();
 
         return new NotificationsResponse(contents, nextCursorId, first, last);
+    }
+
+    public List<NotificationScheduledResponse> getScheduledNotifications(LocalDate noticeDate,
+        LocalTime from,
+        LocalTime to,
+        int intervalMinutes) {
+
+        return queryFactory.from(notification)
+            .select(Projections.constructor(NotificationScheduledResponse.class,
+                notification.user.notificationToken,
+                talkTopic.title,
+                talkTopic.subtitle))
+            .join(notification.user, user)
+            .join(notification.notificationTalkTopics, notificationTalkTopic)
+            .join(notificationTalkTopic.talkTopic, talkTopic)
+            .where(notification.noticeDate.eq(noticeDate)
+                .and(notification.startTime.goe(from))
+                .and(notification.endTime.loe(to))
+                .and(notification.intervalMinutes.eq(intervalMinutes)))
+            .fetch();
     }
 }
 
