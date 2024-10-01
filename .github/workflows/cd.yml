@@ -34,7 +34,7 @@ jobs:
           FCM_ACCOUNT_KEY: ${{ secrets.FCM_ACCOUNT_KEY }}
         run: |
           touch src/main/resources/tokpik-firebase-account.json
-          echo "$FCM_ACCOUNT_KEY" | base64 --decode > src/main/resources/topkpik-firebase-account.json
+          echo "$FCM_ACCOUNT_KEY" | base64 --decode > src/main/resources/tokpik-firebase-account.json
 
       - name: application.properties 설정
         run: |
