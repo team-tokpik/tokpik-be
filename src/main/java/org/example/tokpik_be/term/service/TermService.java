@@ -35,7 +35,7 @@ public class TermService {
                         term.getContentTitle(),
                         term.getContent()
                     ))
-                    .collect(Collectors.toList())
+                    .toList()
             ))
             .toList();
     }
