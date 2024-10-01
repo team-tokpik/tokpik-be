@@ -38,3 +38,6 @@ out/
 
 ### properties
 /src/main/resources/*.properties
+
+### secret json
+/src/main/resources/*.json

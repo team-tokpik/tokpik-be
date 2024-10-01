@@ -29,4 +29,9 @@ public class NotificationTalkTopic {
     @ManyToOne
     @JoinColumn(name = "talk_topic_id")
     private TalkTopic talkTopic;
+
+    public NotificationTalkTopic(long notificationId, TalkTopic talkTopic) {
+        this.notificationId = notificationId;
+        this.talkTopic = talkTopic;
+    }
 }

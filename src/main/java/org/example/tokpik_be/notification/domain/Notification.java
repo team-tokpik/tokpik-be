@@ -47,15 +47,34 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany
-    @JoinColumn(name = "notification_id")
-    private List<NotificationTalkTopic> notificationTalkTopics = new ArrayList<>();
-
     @OneToOne
     @JoinColumn(name = "scrap_id")
     private Scrap scrap;
 
+    @OneToMany
+    @JoinColumn(name = "notification_id")
+    private List<NotificationTalkTopic> notificationTalkTopics = new ArrayList<>();
+
+    public Notification(LocalDate noticeDate,
+        LocalTime startTime,
+        LocalTime endTime,
+        int intervalMinutes,
+        User user,
+        Scrap scrap) {
+        this.noticeDate = noticeDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalMinutes = intervalMinutes;
+        this.deleted = false;
+        this.user = user;
+        this.scrap = scrap;
+    }
+
     public void delete() {
         this.deleted = true;
+    }
+
+    public void addNotificationTalkTopics(List<NotificationTalkTopic> notificationTalkTopics) {
+        this.notificationTalkTopics.addAll(notificationTalkTopics);
     }
 }
