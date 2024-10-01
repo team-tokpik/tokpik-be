@@ -18,13 +18,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PolicyController {
 
-    private final PolicyService privacyService;
+    private final PolicyService policyService;
 
     @Operation(summary = "개인정보정책 조회", description = "개인정보정책 조회")
     @ApiResponse(responseCode = "200", description = "개인정보정책 조회 성공")
     @GetMapping("/policys")
     public ResponseEntity<List<PolicyResponse>> getAllPolicys() {
-        List<PolicyResponse> policys = privacyService.getAllPolicy();
+        List<PolicyResponse> policys = policyService.getAllPolicy();
         return ResponseEntity.ok(policys);
     }
 
