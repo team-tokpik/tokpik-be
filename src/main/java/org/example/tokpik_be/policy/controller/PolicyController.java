@@ -1,9 +1,9 @@
-package org.example.tokpik_be.privacy.controller;
+package org.example.tokpik_be.policy.controller;
 
 import java.util.List;
 
-import org.example.tokpik_be.privacy.dto.response.PolicyResponse;
-import org.example.tokpik_be.privacy.service.PolicyService;
+import org.example.tokpik_be.policy.dto.response.PolicyResponse;
+import org.example.tokpik_be.policy.service.PolicyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

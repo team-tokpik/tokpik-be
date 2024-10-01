@@ -1,10 +1,10 @@
-package org.example.tokpik_be.privacy.service;
+package org.example.tokpik_be.policy.service;
 
 import java.util.List;
 
-import org.example.tokpik_be.privacy.domain.Policy;
-import org.example.tokpik_be.privacy.dto.response.PolicyResponse;
-import org.example.tokpik_be.privacy.repository.PolicyRepository;
+import org.example.tokpik_be.policy.domain.Policy;
+import org.example.tokpik_be.policy.dto.response.PolicyResponse;
+import org.example.tokpik_be.policy.repository.PolicyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

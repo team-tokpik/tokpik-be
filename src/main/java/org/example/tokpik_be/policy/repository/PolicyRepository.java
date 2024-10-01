@@ -1,6 +1,6 @@
-package org.example.tokpik_be.privacy.repository;
+package org.example.tokpik_be.policy.repository;
 
-import org.example.tokpik_be.privacy.domain.Policy;
+import org.example.tokpik_be.policy.domain.Policy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

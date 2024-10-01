@@ -1,4 +1,4 @@
-package org.example.tokpik_be.privacy.domain;
+package org.example.tokpik_be.policy.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package org.example.tokpik_be.privacy.dto.response;
+package org.example.tokpik_be.policy.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
