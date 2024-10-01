@@ -1,9 +1,9 @@
 package org.example.tokpik_be.privacy.repository;
 
-import org.example.tokpik_be.privacy.domain.Privacy;
+import org.example.tokpik_be.privacy.domain.Policy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PrivacyRepository extends JpaRepository<Privacy, Long> {
+public interface PolicyRepository extends JpaRepository<Policy, Long> {
 }

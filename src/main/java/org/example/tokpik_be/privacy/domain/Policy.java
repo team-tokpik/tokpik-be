@@ -10,11 +10,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "privacys")
+@Table(name = "policys")
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Privacy {
+public class Policy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Privacy {
     @Column(nullable = false)
     private String content;
 
-    public Privacy(String title, String content){
+    public Policy(String title, String content){
         this.title = title;
         this.content = content;
     }
