@@ -12,6 +12,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
@@ -117,23 +118,25 @@ public class QueryDslNotificationRepository {
         return new NotificationsResponse(contents, nextCursorId, first, last);
     }
 
-    public List<NotificationScheduledResponse> getScheduledNotifications(LocalDate noticeDate,
-        LocalTime from,
-        LocalTime to,
-        int intervalMinutes) {
+    public List<NotificationScheduledResponse> getScheduledNotifications(LocalDateTime now) {
+
+        LocalDate sendDate = now.toLocalDate();
+        LocalTime sendTime = now.toLocalTime();
 
         return queryFactory.from(notification)
             .select(Projections.constructor(NotificationScheduledResponse.class,
-                notification.user.notificationToken,
+                user.notificationToken,
                 talkTopic.title,
-                talkTopic.subtitle))
-            .join(notification.user, user)
+                talkTopic.subtitle,
+                notification.startTime,
+                notification.endTime,
+                notification.intervalMinutes))
             .join(notification.notificationTalkTopics, notificationTalkTopic)
             .join(notificationTalkTopic.talkTopic, talkTopic)
-            .where(notification.noticeDate.eq(noticeDate)
-                .and(notification.startTime.goe(from))
-                .and(notification.endTime.loe(to))
-                .and(notification.intervalMinutes.eq(intervalMinutes)))
+            .join(notification.user, user)
+            .where(notification.deleted.isFalse().and(notification.noticeDate.eq(sendDate)
+                .and(notification.startTime.loe(sendTime))
+                .and(notification.endTime.goe(sendTime))))
             .fetch();
     }
 }
