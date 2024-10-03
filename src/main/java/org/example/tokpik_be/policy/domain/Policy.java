@@ -10,7 +10,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "policys")
+@Table(name = "policies")
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
