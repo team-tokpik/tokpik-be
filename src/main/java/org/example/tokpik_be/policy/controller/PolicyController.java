@@ -24,8 +24,8 @@ public class PolicyController {
     @ApiResponse(responseCode = "200", description = "개인정보정책 조회 성공")
     @GetMapping("/policies")
     public ResponseEntity<List<PolicyResponse>> getAllPolicies() {
-        List<PolicyResponse> polices = policyService.getAllPolicy();
-        return ResponseEntity.ok(polices);
+        List<PolicyResponse> policies = policyService.getAllPolicy();
+        return ResponseEntity.ok(policies);
     }
 
 }
