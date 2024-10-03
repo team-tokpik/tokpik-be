@@ -20,7 +20,7 @@ public class PolicyService {
     public List<PolicyResponse> getAllPolicy() {
         List<Policy> policies = policyRepository.findAll();
         return policies.stream()
-            .map(privacy -> new PolicyResponse(privacy.getTitle(), privacy.getContent()))
+            .map(policy -> new PolicyResponse(policy.getTitle(), policy.getContent()))
             .toList();
     }
 }
