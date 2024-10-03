@@ -41,7 +41,7 @@ public record NotificationsResponse(
         @Schema(type = "number", description = "스크랩에 저장된 대화 주제 합계", example = "30")
         long notificationTopicTotal,
 
-        @Schema(type = "array", description = "알림 지정 순서에 따른 첫 세 대화 주제 종류들")
+        @Schema(type = "array", description = "알림 지정 순서에 따른 첫 네 대화 주제 종류들")
         List<NotificationTalkTopicTypeResponse> notificationTalkTopicTypes
     ) {
 
