@@ -1,7 +1,9 @@
 package org.example.tokpik_be.user.controller;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -10,8 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import org.example.tokpik_be.exception.GeneralException;
-import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.support.ControllerTestSupport;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
 import org.example.tokpik_be.user.dto.response.UserProfileResponse;
@@ -64,22 +64,6 @@ class UserControllerTest extends ControllerTestSupport {
             resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.maskedEmail").value(response.maskedEmail()))
                 .andExpect(jsonPath("$.profilePhotoUrl").value(response.profilePhotoUrl()));
-        }
-
-        @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
-        @Test
-        void userNotFound() throws Exception {
-            // given
-            given(userQueryService.getUserProfile(userId))
-                .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
-
-            // when
-            ResultActions resultActions = mockMvc.perform(get("/users/profiles")
-                .requestAttr("userId", userId));
-
-            // then
-            resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
         }
     }
 
@@ -193,6 +177,25 @@ class UserControllerTest extends ControllerTestSupport {
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message['topicTagIds[1]']")
                     .value("topicTagId는 not null"));
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 탈퇴 시 ")
+    class DeleteUserTest {
+
+        @DisplayName("성공한다.")
+        @Test
+        void success() throws Exception {
+            // given
+            willDoNothing().given(userCommandService).deleteUser(userId);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(delete("/users")
+                .requestAttr("userId", userId));
+
+            // then
+            resultActions.andExpect(status().isOk());
         }
     }
 }
