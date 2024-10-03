@@ -84,7 +84,7 @@ public class QueryDslNotificationRepository {
         Map<Long, List<Tuple>> groupByNotificationId = results.stream()
             .collect(Collectors.groupingBy(result -> result.get(notification.id)));
 
-        // group 바탕으로 알림별 알림 대화 주제 ID(알림 지정 순서)에 따라 정렬, 첫 세 알림 대화 주제 선정, 응답 DTO로 매핑
+        // group 바탕으로 알림별 알림 대화 주제 ID(알림 지정 순서)에 따라 정렬, 첫 네 알림 대화 주제 선정, 응답 DTO로 매핑
         List<NotificationResponse> contents = groupByNotificationId.entrySet().stream()
             .map(entry -> {
                 long notificationId = entry.getKey();
@@ -92,10 +92,11 @@ public class QueryDslNotificationRepository {
 
                 long notificationTopicTotal = tuples.size();
 
+                int toIndex = Math.min(tuples.size(), 4);
                 List<NotificationTalkTopicTypeResponse> talkTopicTypeResponses = tuples
                     .stream()
                     .sorted(Comparator.comparing(r -> r.get(notificationTalkTopic.id)))
-                    .toList().subList(0, 3)
+                    .toList().subList(0, toIndex)
                     .stream()
                     .map(r -> new NotificationTalkTopicTypeResponse(r.get(topicTag.id),
                         r.get(topicTag.content)))
