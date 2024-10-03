@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "이용약관 조회 API", description = "이용약관 연관 API")
 @RestController
 @RequiredArgsConstructor
 public class TermController {

@@ -18,9 +18,9 @@ public class PolicyService {
 
     @Transactional(readOnly = true)
     public List<PolicyResponse> getAllPolicy() {
-        List<Policy> policys = policyRepository.findAll();
-        return policys.stream()
-            .map(privacy -> new PolicyResponse(privacy.getTitle(), privacy.getContent()))
+        List<Policy> policies = policyRepository.findAll();
+        return policies.stream()
+            .map(policy -> new PolicyResponse(policy.getTitle(), policy.getContent()))
             .toList();
     }
 }

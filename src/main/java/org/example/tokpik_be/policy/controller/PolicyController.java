@@ -22,10 +22,10 @@ public class PolicyController {
 
     @Operation(summary = "개인정보정책 조회", description = "개인정보정책 조회")
     @ApiResponse(responseCode = "200", description = "개인정보정책 조회 성공")
-    @GetMapping("/policys")
-    public ResponseEntity<List<PolicyResponse>> getAllPolicys() {
-        List<PolicyResponse> policys = policyService.getAllPolicy();
-        return ResponseEntity.ok(policys);
+    @GetMapping("/policies")
+    public ResponseEntity<List<PolicyResponse>> getAllPolicies() {
+        List<PolicyResponse> policies = policyService.getAllPolicy();
+        return ResponseEntity.ok(policies);
     }
 
 }
