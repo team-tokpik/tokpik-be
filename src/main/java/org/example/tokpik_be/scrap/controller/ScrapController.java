@@ -53,7 +53,7 @@ public class ScrapController {
 
     @Operation(summary = "총 스크랩 톡픽 수 조회", description = "사용자 총 스크랩 톡픽 수 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 톡픽 수 조회 성공")
-    @GetMapping("/users/scraps/topik/count")
+    @GetMapping("/users/scraps/topics/count")
     public ResponseEntity<ScrapCountResponse> getTopicCounts(
         @RequestAttribute("userId") long userId){
         ScrapCountResponse scrapCountResponse = scrapService.getUserTopicCounts(userId);
