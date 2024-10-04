@@ -9,7 +9,7 @@ import org.example.tokpik_be.tag.dto.request.UserPlaceTagsRequest;
 import org.example.tokpik_be.tag.dto.response.PlaceTagTotalResponse;
 import org.example.tokpik_be.tag.dto.response.PlaceTagTotalResponse.PlaceTagResponse;
 import org.example.tokpik_be.tag.dto.response.UserPlaceTagResponse;
-import org.example.tokpik_be.tag.entity.UserPlaceTag;
+import org.example.tokpik_be.tag.domain.UserPlaceTag;
 import org.example.tokpik_be.tag.repository.PlaceTagRepository;
 import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
 import org.example.tokpik_be.user.domain.User;

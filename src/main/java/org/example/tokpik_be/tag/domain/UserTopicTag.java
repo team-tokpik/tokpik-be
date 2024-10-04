@@ -1,4 +1,4 @@
-package org.example.tokpik_be.tag.entity;
+package org.example.tokpik_be.tag.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

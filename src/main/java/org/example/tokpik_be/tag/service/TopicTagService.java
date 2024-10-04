@@ -9,7 +9,7 @@ import org.example.tokpik_be.tag.dto.request.UserTopicTagsRequest;
 import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse;
 import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse.TopicTagResponse;
 import org.example.tokpik_be.tag.dto.response.UserTopicTagResponse;
-import org.example.tokpik_be.tag.entity.UserTopicTag;
+import org.example.tokpik_be.tag.domain.UserTopicTag;
 import org.example.tokpik_be.tag.repository.TopicTagRepository;
 import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.example.tokpik_be.user.domain.User;
