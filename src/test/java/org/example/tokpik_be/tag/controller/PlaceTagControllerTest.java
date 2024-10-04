@@ -109,7 +109,8 @@ public class PlaceTagControllerTest extends ControllerTestSupport {
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
             // When
-            ResultActions resultActions = mockMvc.perform(get("/users/place-tags").requestAttr("userId", userId));
+            ResultActions resultActions = mockMvc.perform(get("/users/place-tags")
+                .requestAttr("userId", userId));
 
             // Then
             resultActions.andExpect(status().isBadRequest())
