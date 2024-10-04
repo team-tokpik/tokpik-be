@@ -53,6 +53,10 @@ public class PlaceTagService {
             throw new GeneralException(TagException.INVALID_REQUEST);
         }
 
+        if(request.placeTagIds().size() != request.placeTagIds().stream().distinct().count()) {
+            throw new GeneralException(TagException.DUPLICATE_TAGS);
+        }
+
         userPlaceTagRepository.deleteByUserId(user.getId());
 
         for (long tagId : request.placeTagIds()) {

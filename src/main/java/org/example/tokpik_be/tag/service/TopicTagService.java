@@ -52,6 +52,10 @@ public class TopicTagService {
             throw new GeneralException(TagException.INVALID_REQUEST);
         }
 
+        if(request.topicTagIds().size() != request.topicTagIds().stream().distinct().count()) {
+            throw new GeneralException(TagException.DUPLICATE_TAGS);
+        }
+
         userTopicTagRepository.deleteByUserId(user.getId());
 
         for (long tagId : request.topicTagIds()) {
