@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.notification.dto.request.NotificationCreateRequest;
+import org.example.tokpik_be.notification.dto.response.NotificationDetailResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse;
 import org.example.tokpik_be.notification.service.NotificationCommandService;
 import org.example.tokpik_be.notification.service.NotificationQueryService;
@@ -64,5 +65,18 @@ public class NotificationController {
         notificationCommandService.createNotification(userId, request);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "알림 상세 조회", description = "알림 상세 내역 조회")
+    @ApiResponse(responseCode = "200", description = "알림 상세 조회 성공")
+    @GetMapping("/users/notifications/{notificationId}/details")
+    public ResponseEntity<NotificationDetailResponse> getNotificationDetail(
+        @RequestAttribute("userId") long userId,
+        @PathVariable("notificationId") long notificationId) {
+
+        NotificationDetailResponse response = notificationQueryService
+            .getNotificationDetail(userId, notificationId);
+
+        return ResponseEntity.ok().body(response);
     }
 }
