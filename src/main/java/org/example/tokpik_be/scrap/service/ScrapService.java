@@ -7,7 +7,7 @@ import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
-import org.example.tokpik_be.scrap.dto.request.ScrapUpdateNameRequest;
+import org.example.tokpik_be.scrap.dto.request.ScrapUpdateTitleRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
@@ -192,7 +192,7 @@ public class ScrapService {
     }
 
     @Transactional
-    public void updateScrapTitle(long userId, long scrapId, ScrapUpdateNameRequest request) {
+    public void updateScrapTitle(long userId, long scrapId, ScrapUpdateTitleRequest request) {
         User user = userQueryService.findById(userId);
         Scrap scrap = findById(scrapId);
 
