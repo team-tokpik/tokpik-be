@@ -81,7 +81,8 @@ public class NotificationCommandService {
         }
 
         // 알림 생성 및 저장
-        Notification notification = new Notification(request.noticeDate(),
+        Notification notification = new Notification(request.notificationName(),
+            request.noticeDate(),
             request.notificationStartTime(),
             request.notificationEndTime(),
             intervalMinutes,
