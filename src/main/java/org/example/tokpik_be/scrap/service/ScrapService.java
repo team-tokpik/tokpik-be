@@ -1,14 +1,14 @@
 package org.example.tokpik_be.scrap.service;
 
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
-import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
+import org.example.tokpik_be.scrap.dto.request.ScrapUpdateTitleRequest;
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
@@ -67,7 +67,7 @@ public class ScrapService {
         );
     }
 
-    public ScrapCountResponse getUserSrcapCounts(long userId){
+    public ScrapCountResponse getUserSrcapCounts(long userId) {
 
         User user = userQueryService.findById(userId);
 
@@ -76,7 +76,7 @@ public class ScrapService {
         return new ScrapCountResponse(count);
     }
 
-    public ScrapCountResponse getUserTopicCounts(long userId){
+    public ScrapCountResponse getUserTopicCounts(long userId) {
 
         User user = userQueryService.findById(userId);
 
@@ -118,7 +118,7 @@ public class ScrapService {
     }
 
     @Transactional
-    public void deleteScrapTopic(long scrapId, long scrapTopicId){
+    public void deleteScrapTopic(long scrapId, long scrapTopicId) {
         Scrap scrap = findById(scrapId);
         ScrapTopic scrapTopic = findByScrapTopicId(scrapTopicId);
 
@@ -140,7 +140,8 @@ public class ScrapService {
         Scrap scrap = findById(scrapId);
 
         if (lastContentId != null && lastContentId > 0) {
-            boolean isValidLastContent = scrapTopicRepository.existsByScrapIdAndId(scrapId, lastContentId);
+            boolean isValidLastContent = scrapTopicRepository.existsByScrapIdAndId(scrapId,
+                lastContentId);
             if (!isValidLastContent) {
                 throw new GeneralException(ScrapException.INVALID_SCRAP_TOPIC);
             }
@@ -188,5 +189,17 @@ public class ScrapService {
 
     private boolean isTopicScraped(Long scrapId, Long topicId) {
         return scrapRepository.existsByIdAndScrapTopicsTalkTopicId(scrapId, topicId);
+    }
+
+    @Transactional
+    public void updateScrapTitle(long userId, long scrapId, ScrapUpdateTitleRequest request) {
+        User user = userQueryService.findById(userId);
+        Scrap scrap = findById(scrapId);
+
+        if (!scrap.getUser().equals(user)) {
+            throw new GeneralException(ScrapException.UNAUTHORIZED_SCRAP_ACCESS);
+        }
+
+        scrap.updateTitle(request.scrapTitle());
     }
 }
