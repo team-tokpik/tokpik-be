@@ -32,6 +32,9 @@ public class Notification extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private LocalDate noticeDate;
 
     @Column(nullable = false)
@@ -55,12 +58,14 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "notification_id")
     private List<NotificationTalkTopic> notificationTalkTopics = new ArrayList<>();
 
-    public Notification(LocalDate noticeDate,
+    public Notification(String name,
+        LocalDate noticeDate,
         LocalTime startTime,
         LocalTime endTime,
         int intervalMinutes,
         User user,
         Scrap scrap) {
+        this.name = name;
         this.noticeDate = noticeDate;
         this.startTime = startTime;
         this.endTime = endTime;

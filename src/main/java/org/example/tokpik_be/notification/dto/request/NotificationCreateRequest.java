@@ -1,6 +1,7 @@
 package org.example.tokpik_be.notification.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -8,6 +9,10 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record NotificationCreateRequest(
+    @Schema(type = "string", description = "알림 이름", example = "알림 이름")
+    @NotBlank(message = "알림 이름은 필수값")
+    String notificationName,
+
     @Schema(type = "number", description = "스크랩 ID", example = "1")
     long scrapId,
 

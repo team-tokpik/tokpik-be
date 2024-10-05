@@ -2,7 +2,6 @@ package org.example.tokpik_be.notification.repository;
 
 import static org.example.tokpik_be.notification.domain.QNotification.notification;
 import static org.example.tokpik_be.notification.domain.QNotificationTalkTopic.notificationTalkTopic;
-import static org.example.tokpik_be.scrap.domain.QScrap.scrap;
 import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
 import static org.example.tokpik_be.user.domain.QUser.user;
@@ -65,16 +64,15 @@ public class QueryDslNotificationRepository {
         // 알림과 알림 포함된 대화 주제들의 대화 종류 데이터 조회
         List<Tuple> results = queryFactory.from(notification)
             .select(notification.id,
+                notification.name,
                 notification.noticeDate,
                 notification.startTime,
                 notification.endTime,
                 notification.intervalMinutes,
                 notificationTalkTopic.id,
-                scrap.title,
                 topicTag.id,
                 topicTag.content)
             .join(notification.notificationTalkTopics, notificationTalkTopic)
-            .join(notification.scrap, scrap)
             .join(notificationTalkTopic.talkTopic, talkTopic)
             .join(talkTopic.topicTag, topicTag)
             .where(usersNotificationCondition.and(notification.id.in(notificationIds)))
@@ -109,7 +107,7 @@ public class QueryDslNotificationRepository {
                     tuple.get(notification.startTime),
                     tuple.get(notification.endTime),
                     tuple.get(notification.intervalMinutes),
-                    tuple.get(scrap.title),
+                    tuple.get(notification.name),
                     notificationTopicTotal,
                     talkTopicTypeResponses);
             })
@@ -126,6 +124,8 @@ public class QueryDslNotificationRepository {
 
         return queryFactory.from(notification)
             .select(Projections.constructor(NotificationScheduledResponse.class,
+                notification.id,
+                notificationTalkTopic.id,
                 user.notificationToken,
                 talkTopic.title,
                 talkTopic.subtitle,
@@ -135,9 +135,11 @@ public class QueryDslNotificationRepository {
             .join(notification.notificationTalkTopics, notificationTalkTopic)
             .join(notificationTalkTopic.talkTopic, talkTopic)
             .join(notification.user, user)
-            .where(notification.deleted.isFalse().and(notification.noticeDate.eq(sendDate)
-                .and(notification.startTime.loe(sendTime))
-                .and(notification.endTime.goe(sendTime))))
+            .where(user.notificationToken.isNotNull()
+                .and(notification.deleted.isFalse())
+                .and(notification.noticeDate.eq(sendDate)
+                    .and(notification.startTime.loe(sendTime))
+                    .and(notification.endTime.goe(sendTime))))
             .fetch();
     }
 }

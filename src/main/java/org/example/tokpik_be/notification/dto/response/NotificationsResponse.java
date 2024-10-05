@@ -35,8 +35,8 @@ public record NotificationsResponse(
         @Schema(type = "number", description = "알림 간격(분 단위)", example = "30")
         int notificationInterval,
 
-        @Schema(type = "string", description = "스크랩 이름", example = "부장님 개그 모음")
-        String scrapName,
+        @Schema(type = "string", description = "알림 이름", example = "부장님 개그 모음")
+        String notificationName,
 
         @Schema(type = "number", description = "스크랩에 저장된 대화 주제 합계", example = "30")
         long notificationTopicTotal,
