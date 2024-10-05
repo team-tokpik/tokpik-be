@@ -15,11 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.NotificationException;
 import org.example.tokpik_be.notification.domain.Notification;
+import org.example.tokpik_be.notification.domain.NotificationTalkTopic;
+import org.example.tokpik_be.notification.dto.response.NotificationDetailResponse;
+import org.example.tokpik_be.notification.dto.response.NotificationDetailResponse.NotificationTalkTopicResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationScheduledResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse;
 import org.example.tokpik_be.notification.event.NotificationSendEvent;
 import org.example.tokpik_be.notification.repository.NotificationRepository;
 import org.example.tokpik_be.notification.repository.QueryDslNotificationRepository;
+import org.example.tokpik_be.talk_topic.domain.TalkTopic;
+import org.example.tokpik_be.user.domain.User;
+import org.example.tokpik_be.user.service.UserQueryService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,6 +40,8 @@ public class NotificationQueryService {
 
     private final NotificationRepository notificationRepository;
     private final QueryDslNotificationRepository queryDslNotificationRepository;
+
+    private final UserQueryService userQueryService;
     private final ApplicationEventPublisher eventPublisher;
 
     public Notification findById(long notificationId) {
@@ -47,6 +55,45 @@ public class NotificationQueryService {
 
         return queryDslNotificationRepository.getNotifications(userId, nextCursorId, pageSize);
     }
+
+    public NotificationDetailResponse getNotificationDetail(long userId, long notificationId) {
+        User user = userQueryService.findById(userId);
+        Notification notification = findById(notificationId);
+
+        if (!notification.getUser().equals(user)) {
+            throw new GeneralException(NotificationException.UNAUTHORIZED_NOTIFICATION_ACCESS);
+        }
+
+        List<LocalTime> noticeTimes = generateTimeIntervals(notification.getStartTime(),
+            notification.getEndTime(),
+            notification.getIntervalMinutes());
+        List<TalkTopic> talkTopics = notification.getNotificationTalkTopics().stream()
+            .map(NotificationTalkTopic::getTalkTopic)
+            .toList();
+
+        // 각 알림 대화 주제와 송신 일시 매핑
+        List<NotificationTalkTopicResponse> talkTopicResponses = new ArrayList<>();
+        for (int index = 0; index < noticeTimes.size(); index++) {
+            int talkTopicIndex = index % talkTopics.size();
+
+            TalkTopic talkTopic = talkTopics.get(talkTopicIndex);
+            LocalTime noticeTime = noticeTimes.get(index);
+            NotificationTalkTopicResponse talkTopicResponse = new NotificationTalkTopicResponse(
+                talkTopic.getTitle(),
+                talkTopic.getTopicTag().getId(),
+                talkTopic.getTopicTag().getContent(),
+                noticeTime);
+
+            talkTopicResponses.add(talkTopicResponse);
+        }
+
+        return new NotificationDetailResponse(notification.getName(),
+            notification.getStartTime(),
+            notification.getEndTime(),
+            notification.getIntervalMinutes(),
+            talkTopicResponses);
+    }
+
 
     /**
      * 1분마다 알림 송신을 수행하는 스케줄러, 이하 과정에 따라 작업 수행 <br/> <br/>
