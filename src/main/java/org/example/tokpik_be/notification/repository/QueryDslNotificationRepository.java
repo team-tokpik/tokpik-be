@@ -124,6 +124,8 @@ public class QueryDslNotificationRepository {
 
         return queryFactory.from(notification)
             .select(Projections.constructor(NotificationScheduledResponse.class,
+                notification.id,
+                notificationTalkTopic.id,
                 user.notificationToken,
                 talkTopic.title,
                 talkTopic.subtitle,
@@ -133,9 +135,11 @@ public class QueryDslNotificationRepository {
             .join(notification.notificationTalkTopics, notificationTalkTopic)
             .join(notificationTalkTopic.talkTopic, talkTopic)
             .join(notification.user, user)
-            .where(notification.deleted.isFalse().and(notification.noticeDate.eq(sendDate)
-                .and(notification.startTime.loe(sendTime))
-                .and(notification.endTime.goe(sendTime))))
+            .where(user.notificationToken.isNotNull()
+                .and(notification.deleted.isFalse())
+                .and(notification.noticeDate.eq(sendDate)
+                    .and(notification.startTime.loe(sendTime))
+                    .and(notification.endTime.goe(sendTime))))
             .fetch();
     }
 }
