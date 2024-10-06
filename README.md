@@ -21,5 +21,6 @@
 ## 서비스 아키텍처
 
 ## CI/CD 
+<img width="901" alt="image" src="https://github.com/user-attachments/assets/1f09fe0b-d736-446c-aee0-39557c0d884d">
 
 ## 주요 기술적 성과
