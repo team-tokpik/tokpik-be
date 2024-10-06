@@ -19,6 +19,7 @@
 <img width="775" alt="Infra 기술 스택" src="https://github.com/user-attachments/assets/847ab83a-2f49-4ebf-83d9-007af2bd5577">
 
 ## 서비스 아키텍처
+<img width="897" alt="image" src="https://github.com/user-attachments/assets/6437569b-cf07-47f2-88b8-d2a5dd91fc95">
 
 ## CI/CD 
 <img width="901" alt="image" src="https://github.com/user-attachments/assets/1f09fe0b-d736-446c-aee0-39557c0d884d">
