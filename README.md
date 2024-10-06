@@ -25,3 +25,9 @@
 <img width="901" alt="image" src="https://github.com/user-attachments/assets/1f09fe0b-d736-446c-aee0-39557c0d884d">
 
 ## 주요 기술적 성과
+
+## 팀원 소개 
+[안민재](https://github.com/Minjae-An)|[박현지](https://github.com/hhyuun)|
+|:-:|:-:|
+<img src="https://avatars.githubusercontent.com/u/101340860?v=4" height=160 width=160px></img> | <img src="https://avatars.githubusercontent.com/u/119161420?v=4" height=160 width=160px></img> |
+
