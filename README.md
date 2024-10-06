@@ -13,10 +13,12 @@
 
 ## 기술 스택
 ### BE
-<img width="779" alt="BE 기술스택" src="https://github.com/user-attachments/assets/8856bba8-4fcd-4eb2-a7fb-3b684b13f9a3">
+<img width="785" alt="BE 기술스택 (1)" src="https://github.com/user-attachments/assets/040d8383-92c2-447b-b923-bb3ea4cb5ee8">
 
 ### Infra
-<img width="771" alt="Infra 기술 스택 (1)" src="https://github.com/user-attachments/assets/2844415c-820a-4a17-aeb7-0de446634b0f">
+<img width="775" alt="Infra 기술 스택" src="https://github.com/user-attachments/assets/847ab83a-2f49-4ebf-83d9-007af2bd5577">
+
+## 서비스 아키텍처
 
 ## CI/CD 
 
