@@ -5,6 +5,8 @@ on:
     branches:
       - dev
       - main
+    paths-ignore:
+      - 'README.md'
 
 # repository에 대한 읽기 권한만 부여
 permissions:
