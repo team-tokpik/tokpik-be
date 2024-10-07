@@ -25,7 +25,7 @@
 <img width="901" alt="image" src="https://github.com/user-attachments/assets/1f09fe0b-d736-446c-aee0-39557c0d884d">
 
 ## 주요 기술적 성과
-
+### RTR(Refresh Token Rotation) 도입을 통한 인증/인가 보안 강화
 ## 팀원 소개 
 [안민재](https://github.com/Minjae-An)|[박현지](https://github.com/hhyuun)|
 |:-:|:-:|
