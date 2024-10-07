@@ -120,10 +120,12 @@ public class ScrapController {
     @GetMapping("/users/scraps/{scrapId}/topics")
     public ResponseEntity<ScrapResponse> getScrapTopics(
         @PathVariable @Parameter(description = "스크랩 ID") Long scrapId,
-        @RequestParam(defaultValue = "0") @Parameter(description = "마지막으로 받은 컨텐츠 ID") Long lastContentId,
-        @RequestParam(defaultValue = "10") @Parameter(description = "페이지 크기") int size
+        @RequestParam(defaultValue = "0")
+        @Parameter(description = "마지막 스크랩된 주제 ID, 커서 페이징에 사용") Long lastCursorId,
+        @RequestParam(defaultValue = "10")
+        @Parameter(description = "페이지 크기") int size
     ) {
-        ScrapResponse response = scrapService.getScrapTopics(scrapId, lastContentId, size);
+        ScrapResponse response = scrapService.getScrapTopics(scrapId, lastCursorId, size);
         return ResponseEntity.ok(response);
     }
 
