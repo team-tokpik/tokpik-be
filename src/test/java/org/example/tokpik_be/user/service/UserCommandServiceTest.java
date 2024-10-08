@@ -1,114 +1,191 @@
 package org.example.tokpik_be.user.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.assertj.core.api.SoftAssertions;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.UserException;
+import org.example.tokpik_be.support.ServiceTestSupport;
 import org.example.tokpik_be.tag.domain.PlaceTag;
 import org.example.tokpik_be.tag.domain.TopicTag;
-import org.example.tokpik_be.tag.repository.PlaceTagRepository;
-import org.example.tokpik_be.tag.repository.TopicTagRepository;
-import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
-import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
+import org.example.tokpik_be.user.dto.request.UserUpdateNotificationTokenRequest;
 import org.example.tokpik_be.user.enums.Gender;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
-class UserCommandServiceTest {
+class UserCommandServiceTest extends ServiceTestSupport {
 
-    @Mock
-    private TopicTagRepository topicTagRepository;
-
-    @Mock
-    private PlaceTagRepository placeTagRepository;
-
-    @Mock
-    private UserTopicTagRepository userTopicTagRepository;
-
-    @Mock
-    private UserPlaceTagRepository userPlaceTagRepository;
-
-    @Mock
     private UserQueryService userQueryService;
-
-    @InjectMocks
     private UserCommandService userCommandService;
+
+    @BeforeEach
+    void setUp() {
+        this.userQueryService = new UserQueryService(userRepository);
+        this.userCommandService = new UserCommandService(
+            topicTagRepository,
+            placeTagRepository,
+            userRepository,
+            userTopicTagRepository,
+            userPlaceTagRepository,
+            userQueryService);
+    }
 
     @Nested
     @DisplayName("프로필 생성 시 ")
     class MakeProfileTest {
 
-        private final long userId = 1L;
-        private final UserMakeProfileRequest request = new UserMakeProfileRequest(
-            LocalDate.now().minusYears(20),
-            true,
-            List.of(1L, 2L, 3L),
-            List.of(1L, 2L, 3L)
-        );
+        private UserMakeProfileRequest request;
+
+        @BeforeEach
+        void setUp() {
+            List<TopicTag> topicTags = List.of(new TopicTag("친목"),
+                new TopicTag("1대1"),
+                new TopicTag("비즈니스"));
+            topicTagRepository.saveAll(topicTags);
+
+            List<PlaceTag> placeTags = List.of(new PlaceTag("직장"),
+                new PlaceTag("학교"),
+                new PlaceTag("카페"));
+            placeTagRepository.saveAll(placeTags);
+
+            List<Long> topicTagIds = topicTags.stream().map(TopicTag::getId).toList();
+            List<Long> placeTagIds = placeTags.stream().map(PlaceTag::getId).toList();
+            request = new UserMakeProfileRequest(
+                LocalDate.now().minusYears(20),
+                Gender.MALE.toBoolean(),
+                topicTagIds,
+                placeTagIds);
+        }
 
         @DisplayName("성공한다.")
         @Test
         void success() {
             // given
-            User user = mock(User.class);
-            given(user.getId()).willReturn(userId);
-            given(userQueryService.findById(userId)).willReturn(user);
-            Gender gender = Gender.from(request.gender());
-
-            doNothing().when(userTopicTagRepository).deleteByUserId(eq(userId));
-
-            TopicTag topicTag = mock(TopicTag.class);
-            List<TopicTag> topicTags = List.of(topicTag);
-            given(topicTagRepository.findAllById(eq(request.topicTagIds())))
-                .willReturn(topicTags);
-
-            doNothing().when(userPlaceTagRepository).deleteByUserId(eq(userId));
-
-            PlaceTag placeTag = mock(PlaceTag.class);
-            List<PlaceTag> placeTags = List.of(placeTag);
-            given(placeTagRepository.findAllById(eq(request.placeTagIds())))
-                .willReturn(placeTags);
+            User user = new User("mj3242@naver.com", "profilePhotoUrl");
+            userRepository.save(user);
 
             // when
-            userCommandService.makeProfile(userId, request);
+            userCommandService.makeProfile(user.getId(), request);
 
             // then
-            Assertions.assertAll(
-                () -> verify(userQueryService).findById(userId),
-                () -> verify(user).updateProfile(eq(request.birth()), eq(gender)),
-                () -> verify(user).updateUserTopicTags(anyList()),
-                () -> verify(user).updateUserPlaceTags(anyList())
-            );
+            List<Long> topicTagIds = topicTagRepository.findAll().stream().map(TopicTag::getId)
+                .toList();
+            List<Long> placeTagIds = placeTagRepository.findAll().stream().map(PlaceTag::getId)
+                .toList();
+
+            SoftAssertions.assertSoftly(softly -> {
+                assertThat(user.getBirth()).as("생일 일치 확인").isEqualTo(request.birth());
+                assertThat(user.getGender()).as("성별 일치 확인")
+                    .isEqualTo(Gender.from(request.gender()));
+
+                List<Long> userTopicTagIds = user.getUserTopicTags().stream()
+                    .map(userTopicTag -> userTopicTag.getTopicTag().getId()).toList();
+                assertThat(userTopicTagIds).as("사용자 대화 주제 분류 목록 일치 확인")
+                    .containsAnyElementsOf(topicTagIds);
+
+                List<Long> userPlaceTagIds = user.getUserPlaceTags().stream()
+                    .map(userPlaceTag -> userPlaceTag.getPlaceTag().getId()).toList();
+                assertThat(userPlaceTagIds).as("사용자 대화 장소 목록 일치 확인")
+                    .containsAnyElementsOf(placeTagIds);
+            });
         }
 
-        @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
+        @DisplayName("존재하지 않는 사용자일 경우 예외가 발생한다.")
         @Test
         void userNotFound() {
             // given
-            given(userQueryService.findById(userId))
-                .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
+            long userId = 1L;
 
             // when
 
             // then
             assertThatThrownBy(() -> userCommandService.makeProfile(userId, request))
+                .isInstanceOf(GeneralException.class)
+                .extracting("exception")
+                .isEqualTo(UserException.USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("notification token 업데이트 시 ")
+    class UpdateNotificationTokenTest {
+
+        @DisplayName("성공한다.")
+        @Test
+        void success() {
+            // given
+            User user = new User("mj3242@naver.com", "profilePhotoUrl");
+            userRepository.save(user);
+
+            long userId = user.getId();
+            String token = "header.payload.signature";
+            UserUpdateNotificationTokenRequest request = new UserUpdateNotificationTokenRequest(
+                token);
+
+            // when
+            userCommandService.updateNotificationToken(userId, request);
+
+            // then
+            assertThat(user.getNotificationToken()).isEqualTo(token);
+        }
+
+        @DisplayName("존재하지 않는 사용자일 경우 예외가 발생한다.")
+        @Test
+        void userNotFound() {
+            // given
+            long userId = 1L;
+            UserUpdateNotificationTokenRequest request = new UserUpdateNotificationTokenRequest(
+                "header.payload.signature");
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> userCommandService.updateNotificationToken(userId, request))
+                .isInstanceOf(GeneralException.class)
+                .extracting("exception")
+                .isEqualTo(UserException.USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 탈퇴 시 ")
+    class DeleteUserTest {
+
+        @DisplayName("성공한다.")
+        @Test
+        void success() {
+            // given
+            User user = new User("ex@example.com", "http://users/profile-photos");
+            userRepository.save(user);
+
+            long userId = user.getId();
+
+            // when
+            userCommandService.deleteUser(userId);
+
+            // then
+            Optional<User> foundUser = userRepository.findById(userId);
+            assertThat(foundUser).isEmpty();
+        }
+
+        @DisplayName("존재하지 않는 사용자일 경우 예외가 발생한다.")
+        @Test
+        void userNotFound() {
+            // given
+            long userId = 1L;
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> userCommandService.deleteUser(userId))
                 .isInstanceOf(GeneralException.class)
                 .extracting("exception")
                 .isEqualTo(UserException.USER_NOT_FOUND);
