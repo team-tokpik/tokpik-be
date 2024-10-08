@@ -13,7 +13,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
 
   ai:
     openai:
       api-key: ${OPEN_AI_API_KEY}
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
