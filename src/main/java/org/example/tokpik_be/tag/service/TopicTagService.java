@@ -9,7 +9,7 @@ import org.example.tokpik_be.tag.dto.request.UserTopicTagsRequest;
 import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse;
 import org.example.tokpik_be.tag.dto.response.TopicTagTotalResponse.TopicTagResponse;
 import org.example.tokpik_be.tag.dto.response.UserTopicTagResponse;
-import org.example.tokpik_be.tag.entity.UserTopicTag;
+import org.example.tokpik_be.tag.domain.UserTopicTag;
 import org.example.tokpik_be.tag.repository.TopicTagRepository;
 import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
 import org.example.tokpik_be.user.domain.User;
@@ -50,6 +50,10 @@ public class TopicTagService {
 
         if (request.topicTagIds() == null || request.topicTagIds().isEmpty()) {
             throw new GeneralException(TagException.INVALID_REQUEST);
+        }
+
+        if(request.topicTagIds().size() != request.topicTagIds().stream().distinct().count()) {
+            throw new GeneralException(TagException.DUPLICATE_TAGS);
         }
 
         userTopicTagRepository.deleteByUserId(user.getId());

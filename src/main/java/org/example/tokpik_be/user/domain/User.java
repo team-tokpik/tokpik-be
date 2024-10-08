@@ -19,8 +19,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tokpik_be.common.BaseTimeEntity;
-import org.example.tokpik_be.tag.entity.UserPlaceTag;
-import org.example.tokpik_be.tag.entity.UserTopicTag;
+import org.example.tokpik_be.tag.domain.UserPlaceTag;
+import org.example.tokpik_be.tag.domain.UserTopicTag;
 import org.example.tokpik_be.user.converter.GenderConverter;
 import org.example.tokpik_be.user.enums.Gender;
 

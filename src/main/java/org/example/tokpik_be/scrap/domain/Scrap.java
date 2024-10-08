@@ -1,10 +1,5 @@
 package org.example.tokpik_be.scrap.domain;
 
-import java.util.List;
-
-import org.example.tokpik_be.common.BaseTimeEntity;
-import org.example.tokpik_be.user.domain.User;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,9 +10,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.tokpik_be.common.BaseTimeEntity;
+import org.example.tokpik_be.user.domain.User;
 
 @Table(name = "scraps")
 @Getter
@@ -39,8 +37,12 @@ public class Scrap extends BaseTimeEntity {
     @OneToMany(mappedBy = "scrap", cascade = CascadeType.REMOVE)
     private List<ScrapTopic> scrapTopics;
 
-    public Scrap(String title, User user){
+    public Scrap(String title, User user) {
         this.title = title;
         this.user = user;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
     }
 }

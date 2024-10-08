@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @DataJpaTest
+
 public abstract class ServiceTestSupport {
 
     @Autowired
@@ -35,11 +36,12 @@ public abstract class ServiceTestSupport {
 
     @AfterEach
     void tearDown() {
+        userTopicTagRepository.deleteAllInBatch();
+        userPlaceTagRepository.deleteAllInBatch();
+
         topicTagRepository.deleteAllInBatch();
         placeTagRepository.deleteAllInBatch();
 
-        userTopicTagRepository.deleteAllInBatch();
-        userPlaceTagRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
     }
 }

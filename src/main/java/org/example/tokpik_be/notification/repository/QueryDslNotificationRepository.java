@@ -2,7 +2,6 @@ package org.example.tokpik_be.notification.repository;
 
 import static org.example.tokpik_be.notification.domain.QNotification.notification;
 import static org.example.tokpik_be.notification.domain.QNotificationTalkTopic.notificationTalkTopic;
-import static org.example.tokpik_be.scrap.domain.QScrap.scrap;
 import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
 import static org.example.tokpik_be.user.domain.QUser.user;
@@ -65,16 +64,15 @@ public class QueryDslNotificationRepository {
         // 알림과 알림 포함된 대화 주제들의 대화 종류 데이터 조회
         List<Tuple> results = queryFactory.from(notification)
             .select(notification.id,
+                notification.name,
                 notification.noticeDate,
                 notification.startTime,
                 notification.endTime,
                 notification.intervalMinutes,
                 notificationTalkTopic.id,
-                scrap.title,
                 topicTag.id,
                 topicTag.content)
             .join(notification.notificationTalkTopics, notificationTalkTopic)
-            .join(notification.scrap, scrap)
             .join(notificationTalkTopic.talkTopic, talkTopic)
             .join(talkTopic.topicTag, topicTag)
             .where(usersNotificationCondition.and(notification.id.in(notificationIds)))
@@ -84,7 +82,7 @@ public class QueryDslNotificationRepository {
         Map<Long, List<Tuple>> groupByNotificationId = results.stream()
             .collect(Collectors.groupingBy(result -> result.get(notification.id)));
 
-        // group 바탕으로 알림별 알림 대화 주제 ID(알림 지정 순서)에 따라 정렬, 첫 세 알림 대화 주제 선정, 응답 DTO로 매핑
+        // group 바탕으로 알림별 알림 대화 주제 ID(알림 지정 순서)에 따라 정렬, 첫 네 알림 대화 주제 선정, 응답 DTO로 매핑
         List<NotificationResponse> contents = groupByNotificationId.entrySet().stream()
             .map(entry -> {
                 long notificationId = entry.getKey();
@@ -92,10 +90,11 @@ public class QueryDslNotificationRepository {
 
                 long notificationTopicTotal = tuples.size();
 
+                int toIndex = Math.min(tuples.size(), 4);
                 List<NotificationTalkTopicTypeResponse> talkTopicTypeResponses = tuples
                     .stream()
                     .sorted(Comparator.comparing(r -> r.get(notificationTalkTopic.id)))
-                    .toList().subList(0, 3)
+                    .toList().subList(0, toIndex)
                     .stream()
                     .map(r -> new NotificationTalkTopicTypeResponse(r.get(topicTag.id),
                         r.get(topicTag.content)))
@@ -108,7 +107,7 @@ public class QueryDslNotificationRepository {
                     tuple.get(notification.startTime),
                     tuple.get(notification.endTime),
                     tuple.get(notification.intervalMinutes),
-                    tuple.get(scrap.title),
+                    tuple.get(notification.name),
                     notificationTopicTotal,
                     talkTopicTypeResponses);
             })
@@ -125,6 +124,8 @@ public class QueryDslNotificationRepository {
 
         return queryFactory.from(notification)
             .select(Projections.constructor(NotificationScheduledResponse.class,
+                notification.id,
+                notificationTalkTopic.id,
                 user.notificationToken,
                 talkTopic.title,
                 talkTopic.subtitle,
@@ -134,9 +135,11 @@ public class QueryDslNotificationRepository {
             .join(notification.notificationTalkTopics, notificationTalkTopic)
             .join(notificationTalkTopic.talkTopic, talkTopic)
             .join(notification.user, user)
-            .where(notification.deleted.isFalse().and(notification.noticeDate.eq(sendDate)
-                .and(notification.startTime.loe(sendTime))
-                .and(notification.endTime.goe(sendTime))))
+            .where(user.notificationToken.isNotNull()
+                .and(notification.deleted.isFalse())
+                .and(notification.noticeDate.eq(sendDate)
+                    .and(notification.startTime.loe(sendTime))
+                    .and(notification.endTime.goe(sendTime))))
             .fetch();
     }
 }

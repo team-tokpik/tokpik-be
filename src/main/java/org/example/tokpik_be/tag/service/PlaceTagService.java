@@ -9,7 +9,7 @@ import org.example.tokpik_be.tag.dto.request.UserPlaceTagsRequest;
 import org.example.tokpik_be.tag.dto.response.PlaceTagTotalResponse;
 import org.example.tokpik_be.tag.dto.response.PlaceTagTotalResponse.PlaceTagResponse;
 import org.example.tokpik_be.tag.dto.response.UserPlaceTagResponse;
-import org.example.tokpik_be.tag.entity.UserPlaceTag;
+import org.example.tokpik_be.tag.domain.UserPlaceTag;
 import org.example.tokpik_be.tag.repository.PlaceTagRepository;
 import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
 import org.example.tokpik_be.user.domain.User;
@@ -51,6 +51,10 @@ public class PlaceTagService {
 
         if (request.placeTagIds() == null || request.placeTagIds().isEmpty()) {
             throw new GeneralException(TagException.INVALID_REQUEST);
+        }
+
+        if(request.placeTagIds().size() != request.placeTagIds().stream().distinct().count()) {
+            throw new GeneralException(TagException.DUPLICATE_TAGS);
         }
 
         userPlaceTagRepository.deleteByUserId(user.getId());

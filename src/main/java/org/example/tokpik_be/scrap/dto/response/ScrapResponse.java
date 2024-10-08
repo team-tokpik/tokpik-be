@@ -10,7 +10,7 @@ public record ScrapResponse(
 
     @JsonProperty(required = true)
     @Schema(type = "number", description = "제공된 데이터 중 가장 마지막 데이터 ID", example = "4")
-    Long lastContentId,
+    Long nextCursorId,
 
     @JsonProperty(required = true)
     @Schema(type = "boolean", description = "첫 페이지 여부", example = "true")
