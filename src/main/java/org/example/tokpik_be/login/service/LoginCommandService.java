@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.LoginException;
 import org.example.tokpik_be.login.dto.request.AccessTokenRefreshRequest;
+import org.example.tokpik_be.login.dto.request.LoginByKakaoRequest;
 import org.example.tokpik_be.login.dto.response.AccessTokenRefreshResponse;
 import org.example.tokpik_be.login.dto.response.KakaoUserResponse;
 import org.example.tokpik_be.login.dto.response.LoginResponse;
@@ -25,9 +26,9 @@ public class LoginCommandService {
     private final KakaoApiClient kakaoApiClient;
     private final JwtUtil jwtUtil;
 
-    public LoginResponse kakaoLogin(String code) {
+    public LoginResponse kakaoLogin(LoginByKakaoRequest request) {
 
-        KakaoUserResponse kakaoUserResponse = kakaoApiClient.requestKakaoUser(code);
+        KakaoUserResponse kakaoUserResponse = kakaoApiClient.requestKakaoUser(request.code());
         String email = kakaoUserResponse.email();
 
         if (userQueryService.notExistByEmail(email)) {
