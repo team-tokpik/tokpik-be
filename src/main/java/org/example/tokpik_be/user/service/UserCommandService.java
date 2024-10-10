@@ -95,7 +95,6 @@ public class UserCommandService {
         user.updateNotificationToken(notificationToken);
     }
 
-    @Transactional
     public void deleteUser(long userId) {
         User user = userQueryService.findById(userId);
 

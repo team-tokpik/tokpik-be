@@ -121,11 +121,11 @@ public class ScrapController {
     public ResponseEntity<ScrapResponse> getScrapTopics(
         @PathVariable @Parameter(description = "스크랩 ID") Long scrapId,
         @RequestParam(defaultValue = "0")
-        @Parameter(description = "마지막 스크랩된 주제 ID, 커서 페이징에 사용") Long lastCursorId,
+        @Parameter(description = "마지막 스크랩된 주제 ID, 커서 페이징에 사용") Long nextCursorId,
         @RequestParam(defaultValue = "10")
         @Parameter(description = "페이지 크기") int size
     ) {
-        ScrapResponse response = scrapService.getScrapTopics(scrapId, lastCursorId, size);
+        ScrapResponse response = scrapService.getScrapTopics(scrapId, nextCursorId, size);
         return ResponseEntity.ok(response);
     }
 

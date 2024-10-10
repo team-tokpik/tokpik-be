@@ -2,6 +2,7 @@ package org.example.tokpik_be.support;
 
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
+import jakarta.persistence.EntityManager;
 import org.example.tokpik_be.tag.repository.PlaceTagRepository;
 import org.example.tokpik_be.tag.repository.TopicTagRepository;
 import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
@@ -13,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import jakarta.persistence.EntityManager;
-
 @ActiveProfiles("test")
 @DataJpaTest
+
 public abstract class ServiceTestSupport {
 
     @Autowired

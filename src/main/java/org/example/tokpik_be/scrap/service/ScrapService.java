@@ -135,21 +135,21 @@ public class ScrapService {
 
     }
 
-    public ScrapResponse getScrapTopics(Long scrapId, Long lastCursorId, int size) {
+    public ScrapResponse getScrapTopics(Long scrapId, Long nextCursorId, int size) {
 
         Scrap scrap = findById(scrapId);
 
-        if (lastCursorId != null && lastCursorId > 0) {
-            boolean isValidLastCursor = scrapTopicRepository.existsByScrapIdAndId(scrapId,
-                lastCursorId);
-            if (!isValidLastCursor) {
+        if (nextCursorId != null && nextCursorId > 0) {
+            boolean isValidNextCursor = scrapTopicRepository.existsByScrapIdAndId(scrapId,
+                nextCursorId);
+            if (!isValidNextCursor) {
                 throw new GeneralException(ScrapException.INVALID_SCRAP_TOPIC);
             }
         }
 
         Pageable pageable = PageRequest.of(0, size);
         List<ScrapTopic> scrapTopics = scrapTopicRepository
-            .findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, lastCursorId, pageable);
+            .findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, nextCursorId, pageable);
 
         List<ScrapResponse.ScrapTopicResponse> contents = scrapTopics.stream()
             .map(scrapTopic -> {
@@ -165,23 +165,23 @@ public class ScrapService {
             })
             .toList();
 
-        Long newLastCursorId = contents.isEmpty() ? lastCursorId :
+        Long newNextCursorId = contents.isEmpty() ? nextCursorId :
             scrapTopics.get(scrapTopics.size() - 1).getId();
 
         boolean isFirst;
-        if (lastCursorId == null || lastCursorId == 0) {
+        if (nextCursorId == null || nextCursorId == 0) {
             isFirst = true;
         } else {
-            long countAfterLastCursor = scrapTopicRepository
-                .countByScrapIdAndIdGreaterThan(scrapId, lastCursorId);
-            isFirst = countAfterLastCursor == 0;
+            long countAfterNextCursor = scrapTopicRepository
+                .countByScrapIdAndIdGreaterThan(scrapId, nextCursorId);
+            isFirst = countAfterNextCursor == 0;
         }
 
         boolean isLast = scrapTopics.size() < size;
 
         return new ScrapResponse(
             contents,
-            newLastCursorId,
+            newNextCursorId,
             isFirst,
             isLast
         );
