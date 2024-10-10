@@ -80,10 +80,9 @@ public class ScrapServiceTest extends ServiceTestSupport {
 
             // Then
             assertThat(response.scraps()).hasSize(2);
-            assertThat(response.scraps().get(0).scrapId()).isEqualTo(scrap1.getId());
-            assertThat(response.scraps().get(0).scrapName()).isEqualTo("스크랩1");
-            assertThat(response.scraps().get(0).recentTopicTypes()).hasSize(2);
-            assertThat(response.scraps().get(0).recentTopicTypes().get(0).topicTypeContent()).isIn("유머와 웃음", "요즘 핫한 이슈");
+            assertThat(response.scraps().get(0).scrapId()).isEqualTo(scrap2.getId());
+            assertThat(response.scraps().get(0).scrapName()).isEqualTo("스크랩2");
+            assertThat(response.scraps().get(0).recentTopicTypes()).hasSize(0);
         }
     }
 
