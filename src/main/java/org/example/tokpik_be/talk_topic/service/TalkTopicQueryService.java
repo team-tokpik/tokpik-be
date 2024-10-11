@@ -16,6 +16,7 @@ import org.example.tokpik_be.user.service.UserQueryService;
 import org.example.tokpik_be.util.llm.client.LLMApiClient;
 import org.example.tokpik_be.util.llm.dto.request.LLMTalkTopicDetailRequest;
 import org.example.tokpik_be.util.llm.dto.response.LLMTalkTopicDetailResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class TalkTopicQueryService {
             .orElseThrow(() -> new GeneralException(TalkTopicException.TALK_TOPIC_NOT_FOUND));
     }
 
+    @Cacheable(value = "relatedTalkTopics", key = "#topicId")
     public TalkTopicsRelatedResponse getRelatedTopics(long userId, long topicId) {
         User user = userQueryService.findById(userId);
         TalkTopic baseTopic = findById(topicId);
