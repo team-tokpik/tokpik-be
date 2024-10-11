@@ -1,7 +1,7 @@
 <img width="1920" alt="0" src="https://github.com/user-attachments/assets/275a6550-854a-4afc-9b64-fb34197e954f">
 <br/><br/>
 <div align="center">
-<a href="https://github.com/team-tokpik/tokpik-be/wiki"> 📚 BE 위키<a/> | <a href=""> 📑 DB 설계<a/> | <a href="https://github.com/team-tokpik/tokpik-be/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C"> 📜 API 명세서<a/> | <a href="https://github.com/team-tokpik/tokpik-be/wiki/Commit-&-Branch-Convention"> 🌳 Commit & Branch Convention<a/>
+<a href="https://github.com/team-tokpik/tokpik-be/wiki"> 📚 BE 위키<a/> | <a href="https://github.com/team-tokpik/tokpik-be/wiki/DB-%EC%84%A4%EA%B3%84(ERD-&-Index)"> 📑 DB 설계<a/> | <a href="https://github.com/team-tokpik/tokpik-be/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C"> 📜 API 명세서<a/> | <a href="https://github.com/team-tokpik/tokpik-be/wiki/Commit-&-Branch-Convention"> 🌳 Commit & Branch Convention<a/>
 </div>
   
 ## 서비스 개요
@@ -19,7 +19,7 @@
 <img width="686" alt="Infra 기술 스택 (1)" src="https://github.com/user-attachments/assets/ede2c7fc-b730-4272-8dbf-a26e179ac102">
 
 ## 서비스 아키텍처
-<img width="1208" alt="image" src="https://github.com/user-attachments/assets/0f5d9968-b384-42fd-9144-7f9d38f473ec">
+<img width="710" alt="image" src="https://github.com/user-attachments/assets/e34705c2-38b0-41ab-8999-874afd7749e1">
 
 ## CI/CD 
 <img width="1071" alt="image" src="https://github.com/user-attachments/assets/8556e562-7fc0-4b83-a3e5-059be179436b">
