@@ -38,11 +38,11 @@ public class TalkTopic {
     private TalkPartner partner;
 
     @ManyToOne
-    @JoinColumn(name = "talk_topic_tag_id")
+    @JoinColumn(name = "talk_topic_type_id")
     private TopicType topicType;
 
     @ManyToOne
-    @JoinColumn(name = "talk_place_tag_id")
+    @JoinColumn(name = "talk_place_type_id")
     private PlaceType placeType;
 
     public TalkTopic(String title,

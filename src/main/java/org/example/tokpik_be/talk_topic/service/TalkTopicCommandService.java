@@ -80,26 +80,26 @@ public class TalkTopicCommandService {
     private List<TalkTopic> createTalkTopics(LLMTalkTopicsResponse llmResponse,
         List<TopicType> topicTypes,
         List<PlaceType> placeTypes) {
-        Map<String, TopicType> topicTagMap = createTagMap(topicTypes, TopicType::getContent);
-        Map<String, PlaceType> placeTagMap = createTagMap(placeTypes, PlaceType::getContent);
+        Map<String, TopicType> topicTypeMap = createTypeMap(topicTypes, TopicType::getContent);
+        Map<String, PlaceType> placeTypeMap = createTypeMap(placeTypes, PlaceType::getContent);
 
         return llmResponse.responses().stream()
-            .map(response -> createTalkTopic(response, topicTagMap, placeTagMap))
+            .map(response -> createTalkTopic(response, topicTypeMap, placeTypeMap))
             .toList();
     }
 
-    private <T> Map<String, T> createTagMap(List<T> tags, Function<T, String> keyExtractor) {
+    private <T> Map<String, T> createTypeMap(List<T> types, Function<T, String> keyExtractor) {
 
-        return tags.stream().collect(Collectors.toMap(keyExtractor, Function.identity()));
+        return types.stream().collect(Collectors.toMap(keyExtractor, Function.identity()));
     }
 
     private TalkTopic createTalkTopic(LLMTalkTopicResponse response,
-        Map<String, TopicType> topicTagMap,
-        Map<String, PlaceType> placeTagMap) {
-        TopicType topicType = Optional.ofNullable(topicTagMap.get(response.topicTag()))
-            .orElseThrow(() -> new GeneralException(TypeException.TAG_NOT_FOUND));
-        PlaceType placeType = Optional.ofNullable(placeTagMap.get(response.placeTag()))
-            .orElseThrow(() -> new GeneralException(TypeException.TAG_NOT_FOUND));
+        Map<String, TopicType> topicTypeMap,
+        Map<String, PlaceType> placeTypeMap) {
+        TopicType topicType = Optional.ofNullable(topicTypeMap.get(response.topicType()))
+            .orElseThrow(() -> new GeneralException(TypeException.TYPE_NOT_FOUND));
+        PlaceType placeType = Optional.ofNullable(placeTypeMap.get(response.placeType()))
+            .orElseThrow(() -> new GeneralException(TypeException.TYPE_NOT_FOUND));
 
         TalkPartner talkPartner = new TalkPartner(
             Gender.from(response.talkPartnerGender()),
