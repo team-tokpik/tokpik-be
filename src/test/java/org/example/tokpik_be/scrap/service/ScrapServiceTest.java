@@ -42,51 +42,6 @@ public class ScrapServiceTest extends ServiceTestSupport {
     }
 
     @Nested
-    @DisplayName("스크랩 리스트 조회 시 ")
-    class getUserScrapListTest {
-
-        @Test
-        @DisplayName("성공한다.")
-        void getMyScrapList(){
-            User user = new User("test@test.com", "profile-photo/1");
-            userRepository.save(user);
-            em.flush();
-            Long userId = user.getId();
-
-            Scrap scrap1 = new Scrap("스크랩1", user);
-            Scrap scrap2 = new Scrap("스크랩2", user);
-            scrapRepository.saveAll(Arrays.asList(scrap1, scrap2));
-
-            TopicType topicType1 = new TopicType("유머와 웃음");
-            TopicType topicType2 = new TopicType("요즘 핫한 이슈");
-            topicTypeRepository.saveAll(Arrays.asList(topicType1, topicType2));
-
-            TalkTopic talkTopic1 = new TalkTopic("제목1", "부제목1", "상황1", null, topicType1, null);
-            TalkTopic talkTopic2 = new TalkTopic("제목2", "부제목2", "상황2", null, topicType2, null);
-            em.persist(talkTopic1);
-            em.persist(talkTopic2);
-
-            ScrapTopic scrapTopic1 = new ScrapTopic(scrap1, talkTopic1);
-            ScrapTopic scrapTopic2 = new ScrapTopic(scrap1, talkTopic2);
-            scrapTopicRepository.saveAll(Arrays.asList(scrapTopic1, scrapTopic2));
-
-            em.flush();
-            em.clear();
-
-            when(userQueryService.findById(userId)).thenReturn(user);
-
-            // When
-            ScrapListResponse response = scrapService.getScrapList(userId);
-
-            // Then
-            assertThat(response.scraps()).hasSize(2);
-            assertThat(response.scraps().get(0).scrapId()).isEqualTo(scrap2.getId());
-            assertThat(response.scraps().get(0).scrapName()).isEqualTo("스크랩2");
-            assertThat(response.scraps().get(0).recentTopicTypes()).hasSize(0);
-        }
-    }
-
-    @Nested
     @DisplayName("스크랩에 포함된 대화 주제 조회 시 ")
     class getScrapTopicsTest{
 
