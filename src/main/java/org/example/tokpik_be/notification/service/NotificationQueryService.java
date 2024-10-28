@@ -80,8 +80,8 @@ public class NotificationQueryService {
             LocalTime noticeTime = noticeTimes.get(index);
             NotificationTalkTopicResponse talkTopicResponse = new NotificationTalkTopicResponse(
                 talkTopic.getTitle(),
-                talkTopic.getTopicTag().getId(),
-                talkTopic.getTopicTag().getContent(),
+                talkTopic.getTopicType().getId(),
+                talkTopic.getTopicType().getContent(),
                 noticeTime);
 
             talkTopicResponses.add(talkTopicResponse);

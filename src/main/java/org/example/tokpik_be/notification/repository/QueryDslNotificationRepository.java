@@ -2,7 +2,7 @@ package org.example.tokpik_be.notification.repository;
 
 import static org.example.tokpik_be.notification.domain.QNotification.notification;
 import static org.example.tokpik_be.notification.domain.QNotificationTalkTopic.notificationTalkTopic;
-import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
+import static org.example.tokpik_be.type.domain.QTopicTag.topicTag;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
 import static org.example.tokpik_be.user.domain.QUser.user;
 

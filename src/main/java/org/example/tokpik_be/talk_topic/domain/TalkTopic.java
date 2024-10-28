@@ -12,8 +12,8 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.tokpik_be.tag.domain.PlaceTag;
-import org.example.tokpik_be.tag.domain.TopicTag;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
 
 @Table(name = "talk_topics")
 @Getter
@@ -39,23 +39,23 @@ public class TalkTopic {
 
     @ManyToOne
     @JoinColumn(name = "talk_topic_tag_id")
-    private TopicTag topicTag;
+    private TopicType topicType;
 
     @ManyToOne
     @JoinColumn(name = "talk_place_tag_id")
-    private PlaceTag placeTag;
+    private PlaceType placeType;
 
     public TalkTopic(String title,
         String subtitle,
         String situation,
         TalkPartner partner,
-        TopicTag topicTag,
-        PlaceTag placeTag) {
+        TopicType topicType,
+        PlaceType placeType) {
         this.title = title;
         this.subtitle = subtitle;
         this.situation = situation;
         this.partner = partner;
-        this.topicTag = topicTag;
-        this.placeTag = placeTag;
+        this.topicType = topicType;
+        this.placeType = placeType;
     }
 }

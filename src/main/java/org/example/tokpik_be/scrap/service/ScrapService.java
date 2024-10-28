@@ -62,8 +62,8 @@ public class ScrapService {
     private ScrapListResponse.TopicTypeResponse mapToTopicTypeResponse(ScrapTopic scrapTopic) {
         TalkTopic talkTopic = scrapTopic.getTalkTopic();
         return new ScrapListResponse.TopicTypeResponse(
-            talkTopic.getTopicTag().getId(),
-            talkTopic.getTopicTag().getContent()
+            talkTopic.getTopicType().getId(),
+            talkTopic.getTopicType().getContent()
         );
     }
 
@@ -159,7 +159,7 @@ public class ScrapService {
                     scrapTopic.getId(),
                     talkTopic.getId(),
                     talkTopic.getTitle(),
-                    talkTopic.getTopicTag().getContent(),
+                    talkTopic.getTopicType().getContent(),
                     isScraped
                 );
             })

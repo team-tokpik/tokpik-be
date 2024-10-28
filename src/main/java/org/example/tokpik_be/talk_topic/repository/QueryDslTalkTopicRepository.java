@@ -2,8 +2,8 @@ package org.example.tokpik_be.talk_topic.repository;
 
 import static org.example.tokpik_be.scrap.domain.QScrap.scrap;
 import static org.example.tokpik_be.scrap.domain.QScrapTopic.scrapTopic;
-import static org.example.tokpik_be.tag.domain.QPlaceTag.placeTag;
-import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
+import static org.example.tokpik_be.type.domain.QPlaceTag.placeTag;
+import static org.example.tokpik_be.type.domain.QTopicTag.topicTag;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
 
 import com.querydsl.core.types.Projections;
@@ -38,8 +38,8 @@ public class QueryDslTalkTopicRepository {
             .innerJoin(talkTopic.topicTag, topicTag)
             .innerJoin(talkTopic.placeTag, placeTag)
             .where(
-                talkTopic.topicTag.id.eq(baseTopic.getTopicTag().getId()),
-                talkTopic.placeTag.id.eq(baseTopic.getPlaceTag().getId()),
+                talkTopic.topicTag.id.eq(baseTopic.getTopicType().getId()),
+                talkTopic.placeTag.id.eq(baseTopic.getPlaceType().getId()),
                 talkTopic.situation.contains(baseTopic.getSituation()),
                 talkTopic.partner.gender.eq(baseTopic.getPartner().getGender()),
                 talkTopic.partner.ageLowerBound.goe(baseTopic.getPartner().getAgeLowerBound()),

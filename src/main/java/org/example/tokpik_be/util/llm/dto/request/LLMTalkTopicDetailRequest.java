@@ -18,8 +18,8 @@ public record LLMTalkTopicDetailRequest(
             talkTopic.getSubtitle(),
             talkTopic.getSituation(),
             talkTopic.getPartner(),
-            talkTopic.getTopicTag().getContent(),
-            talkTopic.getPlaceTag().getContent());
+            talkTopic.getTopicType().getContent(),
+            talkTopic.getPlaceType().getContent());
     }
 
     public String toPromptContent() {
