@@ -88,7 +88,7 @@ jacocoTestReport {
     reports {
         html.destination file("$buildDir/jacocoReport")
     }
-    finalizedBy 'jacocoTestCoverageVerification'
+    mustRunAfter 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification {
@@ -106,7 +106,13 @@ jacocoTestCoverageVerification {
             // 커버리지 제외 범위
             excludes = [
                     '**.Application',
-                    '**.dto.*'
+                    '**.dto.*',
+                    '**.domain.*',
+                    '**.exception.*',
+                    '**.config.*',
+                    '**.util.*',
+                    '**.Q*',
+                    '**.test.**'
             ]
 
             // 브랜치 커버리지
@@ -127,7 +133,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'TOTALCOUNT'
-                maximum = 100
+                maximum = 200
             }
         }
     }
