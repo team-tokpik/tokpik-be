@@ -2,8 +2,8 @@ package org.example.tokpik_be.util.llm.dto.request;
 
 import java.util.List;
 import lombok.Builder;
-import org.example.tokpik_be.tag.domain.PlaceTag;
-import org.example.tokpik_be.tag.domain.TopicTag;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
 import org.springframework.util.CollectionUtils;
 
@@ -19,11 +19,11 @@ public record LLMTalkTopicSearchRequest(
     Integer talkPartnerAgeUpperBound
 ) {
 
-    public static LLMTalkTopicSearchRequest from(List<TopicTag> topicTags,
-        List<PlaceTag> placeTags) {
+    public static LLMTalkTopicSearchRequest from(List<TopicType> topicTypes,
+        List<PlaceType> placeTypes) {
 
-        List<String> topicTagContents = topicTags.stream().map(TopicTag::getContent).toList();
-        List<String> talkPlaces = placeTags.stream().map(PlaceTag::getContent).toList();
+        List<String> topicTagContents = topicTypes.stream().map(TopicType::getContent).toList();
+        List<String> talkPlaces = placeTypes.stream().map(PlaceType::getContent).toList();
 
         return LLMTalkTopicSearchRequest.builder()
             .topicTags(topicTagContents)
@@ -32,12 +32,12 @@ public record LLMTalkTopicSearchRequest(
     }
 
     public static LLMTalkTopicSearchRequest from(
-        List<TopicTag> topicTags,
-        List<PlaceTag> placeTags,
+        List<TopicType> topicTypes,
+        List<PlaceType> placeTypes,
         TalkTopicSearchRequest request) {
 
-        List<String> topicTagContents = topicTags.stream().map(TopicTag::getContent).toList();
-        List<String> talkPlaces = placeTags.stream().map(PlaceTag::getContent).toList();
+        List<String> topicTagContents = topicTypes.stream().map(TopicType::getContent).toList();
+        List<String> talkPlaces = placeTypes.stream().map(PlaceType::getContent).toList();
 
         return LLMTalkTopicSearchRequest.builder()
             .topicTags(topicTagContents)

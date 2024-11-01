@@ -19,8 +19,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tokpik_be.common.BaseTimeEntity;
-import org.example.tokpik_be.tag.domain.UserPlaceTag;
-import org.example.tokpik_be.tag.domain.UserTopicTag;
+import org.example.tokpik_be.type.domain.UserPlaceType;
+import org.example.tokpik_be.type.domain.UserTopicType;
 import org.example.tokpik_be.user.converter.GenderConverter;
 import org.example.tokpik_be.user.enums.Gender;
 
@@ -50,11 +50,11 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private List<UserTopicTag> userTopicTags = new ArrayList<>();
+    private List<UserTopicType> userTopicTypes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private List<UserPlaceTag> userPlaceTags = new ArrayList<>();
+    private List<UserPlaceType> userPlaceTypes = new ArrayList<>();
 
     public User(String email, String profilePhotoUrl) {
         this.email = email;
@@ -80,12 +80,12 @@ public class User extends BaseTimeEntity {
         return !this.refreshToken.equals(refreshToken);
     }
 
-    public void updateUserTopicTags(List<UserTopicTag> userTopicTags) {
-        this.userTopicTags.addAll(userTopicTags);
+    public void updateUserTopicTags(List<UserTopicType> userTopicTypes) {
+        this.userTopicTypes.addAll(userTopicTypes);
     }
 
-    public void updateUserPlaceTags(List<UserPlaceTag> userPlaceTags) {
-        this.userPlaceTags.addAll(userPlaceTags);
+    public void updateUserPlaceTags(List<UserPlaceType> userPlaceTypes) {
+        this.userPlaceTypes.addAll(userPlaceTypes);
     }
 
     public void updateNotificationToken(String notificationToken) {

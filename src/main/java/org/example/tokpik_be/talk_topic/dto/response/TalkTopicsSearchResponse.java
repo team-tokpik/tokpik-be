@@ -33,8 +33,8 @@ public record TalkTopicsSearchResponse(
             return new TalkTopicSearchResponse(talkTopic.getId(),
                 talkTopic.getTitle(),
                 talkTopic.getSubtitle(),
-                talkTopic.getTopicTag().getContent(),
-                talkTopic.getPlaceTag().getContent(),
+                talkTopic.getTopicType().getContent(),
+                talkTopic.getPlaceType().getContent(),
                 scraped
             );
         }

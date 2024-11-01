@@ -10,8 +10,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.support.ServiceTestSupport;
-import org.example.tokpik_be.tag.domain.PlaceTag;
-import org.example.tokpik_be.tag.domain.TopicTag;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
 import org.example.tokpik_be.user.dto.request.UserUpdateNotificationTokenRequest;
@@ -30,11 +30,11 @@ class UserCommandServiceTest extends ServiceTestSupport {
     void setUp() {
         this.userQueryService = new UserQueryService(userRepository);
         this.userCommandService = new UserCommandService(
-            topicTagRepository,
-            placeTagRepository,
+            topicTypeRepository,
+            placeTypeRepository,
             userRepository,
-            userTopicTagRepository,
-            userPlaceTagRepository,
+            userTopicTypeRepository,
+            userPlaceTypeRepository,
             userQueryService);
     }
 
@@ -46,18 +46,18 @@ class UserCommandServiceTest extends ServiceTestSupport {
 
         @BeforeEach
         void setUp() {
-            List<TopicTag> topicTags = List.of(new TopicTag("친목"),
-                new TopicTag("1대1"),
-                new TopicTag("비즈니스"));
-            topicTagRepository.saveAll(topicTags);
+            List<TopicType> topicTypes = List.of(new TopicType("친목"),
+                new TopicType("1대1"),
+                new TopicType("비즈니스"));
+            topicTypeRepository.saveAll(topicTypes);
 
-            List<PlaceTag> placeTags = List.of(new PlaceTag("직장"),
-                new PlaceTag("학교"),
-                new PlaceTag("카페"));
-            placeTagRepository.saveAll(placeTags);
+            List<PlaceType> placeTypes = List.of(new PlaceType("직장"),
+                new PlaceType("학교"),
+                new PlaceType("카페"));
+            placeTypeRepository.saveAll(placeTypes);
 
-            List<Long> topicTagIds = topicTags.stream().map(TopicTag::getId).toList();
-            List<Long> placeTagIds = placeTags.stream().map(PlaceTag::getId).toList();
+            List<Long> topicTagIds = topicTypes.stream().map(TopicType::getId).toList();
+            List<Long> placeTagIds = placeTypes.stream().map(PlaceType::getId).toList();
             request = new UserMakeProfileRequest(
                 LocalDate.now().minusYears(20),
                 Gender.MALE.toBoolean(),
@@ -76,9 +76,9 @@ class UserCommandServiceTest extends ServiceTestSupport {
             userCommandService.makeProfile(user.getId(), request);
 
             // then
-            List<Long> topicTagIds = topicTagRepository.findAll().stream().map(TopicTag::getId)
+            List<Long> topicTagIds = topicTypeRepository.findAll().stream().map(TopicType::getId)
                 .toList();
-            List<Long> placeTagIds = placeTagRepository.findAll().stream().map(PlaceTag::getId)
+            List<Long> placeTagIds = placeTypeRepository.findAll().stream().map(PlaceType::getId)
                 .toList();
 
             SoftAssertions.assertSoftly(softly -> {
@@ -86,13 +86,13 @@ class UserCommandServiceTest extends ServiceTestSupport {
                 assertThat(user.getGender()).as("성별 일치 확인")
                     .isEqualTo(Gender.from(request.gender()));
 
-                List<Long> userTopicTagIds = user.getUserTopicTags().stream()
-                    .map(userTopicTag -> userTopicTag.getTopicTag().getId()).toList();
+                List<Long> userTopicTagIds = user.getUserTopicTypes().stream()
+                    .map(userTopicTag -> userTopicTag.getTopicType().getId()).toList();
                 assertThat(userTopicTagIds).as("사용자 대화 주제 분류 목록 일치 확인")
                     .containsAnyElementsOf(topicTagIds);
 
-                List<Long> userPlaceTagIds = user.getUserPlaceTags().stream()
-                    .map(userPlaceTag -> userPlaceTag.getPlaceTag().getId()).toList();
+                List<Long> userPlaceTagIds = user.getUserPlaceTypes().stream()
+                    .map(userPlaceTag -> userPlaceTag.getPlaceType().getId()).toList();
                 assertThat(userPlaceTagIds).as("사용자 대화 장소 목록 일치 확인")
                     .containsAnyElementsOf(placeTagIds);
             });

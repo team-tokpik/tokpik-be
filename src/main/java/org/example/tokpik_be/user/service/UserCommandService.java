@@ -3,14 +3,14 @@ package org.example.tokpik_be.user.service;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.example.tokpik_be.tag.domain.PlaceTag;
-import org.example.tokpik_be.tag.domain.TopicTag;
-import org.example.tokpik_be.tag.domain.UserPlaceTag;
-import org.example.tokpik_be.tag.domain.UserTopicTag;
-import org.example.tokpik_be.tag.repository.PlaceTagRepository;
-import org.example.tokpik_be.tag.repository.TopicTagRepository;
-import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
-import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
+import org.example.tokpik_be.type.domain.UserPlaceType;
+import org.example.tokpik_be.type.domain.UserTopicType;
+import org.example.tokpik_be.type.repository.PlaceTypeRepository;
+import org.example.tokpik_be.type.repository.TopicTypeRepository;
+import org.example.tokpik_be.type.repository.UserPlaceTypeRepository;
+import org.example.tokpik_be.type.repository.UserTopicTypeRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.dto.request.UserMakeProfileRequest;
 import org.example.tokpik_be.user.dto.request.UserUpdateNotificationTokenRequest;
@@ -24,11 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserCommandService {
 
-    private final TopicTagRepository topicTagRepository;
-    private final PlaceTagRepository placeTagRepository;
+    private final TopicTypeRepository topicTypeRepository;
+    private final PlaceTypeRepository placeTypeRepository;
     private final UserRepository userRepository;
-    private final UserTopicTagRepository userTopicTagRepository;
-    private final UserPlaceTagRepository userPlaceTagRepository;
+    private final UserTopicTypeRepository userTopicTypeRepository;
+    private final UserPlaceTypeRepository userPlaceTypeRepository;
 
     private final UserQueryService userQueryService;
 
@@ -53,18 +53,18 @@ public class UserCommandService {
         }
 
         long userId = user.getId();
-        List<TopicTag> topicTags = topicTagRepository.findAllById(topicTagIds);
-        if (topicTags.isEmpty()) {
+        List<TopicType> topicTypes = topicTypeRepository.findAllById(topicTagIds);
+        if (topicTypes.isEmpty()) {
 
             return;
         }
 
-        List<UserTopicTag> userTopicTags = topicTags.stream()
-            .map(topicTag -> new UserTopicTag(userId, topicTag))
+        List<UserTopicType> userTopicTypes = topicTypes.stream()
+            .map(topicTag -> new UserTopicType(userId, topicTag))
             .toList();
-        userTopicTagRepository.deleteByUserId(userId);
-        userTopicTagRepository.saveAll(userTopicTags);
-        user.updateUserTopicTags(userTopicTags);
+        userTopicTypeRepository.deleteByUserId(userId);
+        userTopicTypeRepository.saveAll(userTopicTypes);
+        user.updateUserTopicTags(userTopicTypes);
     }
 
     private void updateUserPlaceTags(User user, List<Long> placeTagIds) {
@@ -74,18 +74,18 @@ public class UserCommandService {
         }
 
         long userId = user.getId();
-        List<PlaceTag> placeTags = placeTagRepository.findAllById(placeTagIds);
-        if (placeTags.isEmpty()) {
+        List<PlaceType> placeTypes = placeTypeRepository.findAllById(placeTagIds);
+        if (placeTypes.isEmpty()) {
 
             return;
         }
 
-        List<UserPlaceTag> userPlaceTags = placeTags.stream()
-            .map(placeTag -> new UserPlaceTag(userId, placeTag))
+        List<UserPlaceType> userPlaceTypes = placeTypes.stream()
+            .map(placeTag -> new UserPlaceType(userId, placeTag))
             .toList();
-        userPlaceTagRepository.deleteByUserId(userId);
-        userPlaceTagRepository.saveAll(userPlaceTags);
-        user.updateUserPlaceTags(userPlaceTags);
+        userPlaceTypeRepository.deleteByUserId(userId);
+        userPlaceTypeRepository.saveAll(userPlaceTypes);
+        user.updateUserPlaceTags(userPlaceTypes);
     }
 
     public void updateNotificationToken(long userId, UserUpdateNotificationTokenRequest request) {

@@ -7,13 +7,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
-import org.example.tokpik_be.exception.TagException;
-import org.example.tokpik_be.tag.domain.PlaceTag;
-import org.example.tokpik_be.tag.domain.TopicTag;
-import org.example.tokpik_be.tag.domain.UserPlaceTag;
-import org.example.tokpik_be.tag.domain.UserTopicTag;
-import org.example.tokpik_be.tag.repository.PlaceTagRepository;
-import org.example.tokpik_be.tag.repository.TopicTagRepository;
+import org.example.tokpik_be.exception.TypeException;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
+import org.example.tokpik_be.type.domain.UserPlaceType;
+import org.example.tokpik_be.type.domain.UserTopicType;
+import org.example.tokpik_be.type.repository.PlaceTypeRepository;
+import org.example.tokpik_be.type.repository.TopicTypeRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkPartner;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
@@ -35,22 +35,22 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TalkTopicCommandService {
 
-    private final TopicTagRepository topicTagRepository;
-    private final PlaceTagRepository placeTagRepository;
+    private final TopicTypeRepository topicTypeRepository;
+    private final PlaceTypeRepository placeTypeRepository;
     private final TalkTopicRepository talkTopicRepository;
     private final UserQueryService userQueryService;
     private final LLMApiClient llmApiClient;
 
     public TalkTopicsSearchResponse generateTopics(long userId, TalkTopicSearchRequest request) {
-        List<TopicTag> topicTags = topicTagRepository.findAll();
-        List<PlaceTag> placeTags = placeTagRepository.findAll();
+        List<TopicType> topicTypes = topicTypeRepository.findAll();
+        List<PlaceType> placeTypes = placeTypeRepository.findAll();
         User user = userQueryService.findById(userId);
 
-        LLMTalkTopicSearchRequest llmRequest = createLLMRequest(request, user, topicTags,
-            placeTags);
+        LLMTalkTopicSearchRequest llmRequest = createLLMRequest(request, user, topicTypes,
+            placeTypes);
         LLMTalkTopicsResponse llmResponse = llmApiClient.searchTalkTopics(llmRequest);
 
-        List<TalkTopic> talkTopics = createTalkTopics(llmResponse, topicTags, placeTags);
+        List<TalkTopic> talkTopics = createTalkTopics(llmResponse, topicTypes, placeTypes);
         talkTopicRepository.saveAll(talkTopics);
 
         return new TalkTopicsSearchResponse(talkTopics.stream()
@@ -60,46 +60,46 @@ public class TalkTopicCommandService {
 
     private LLMTalkTopicSearchRequest createLLMRequest(TalkTopicSearchRequest request,
         User user,
-        List<TopicTag> topicTags,
-        List<PlaceTag> placeTags) {
+        List<TopicType> topicTypes,
+        List<PlaceType> placeTypes) {
         if (request.includeFilterCondition()) {
 
-            return LLMTalkTopicSearchRequest.from(topicTags, placeTags, request);
+            return LLMTalkTopicSearchRequest.from(topicTypes, placeTypes, request);
         }
 
-        List<TopicTag> userTopicTags = user.getUserTopicTags().stream()
-            .map(UserTopicTag::getTopicTag)
+        List<TopicType> userTopicTypes = user.getUserTopicTypes().stream()
+            .map(UserTopicType::getTopicType)
             .toList();
-        List<PlaceTag> userPlaceTags = user.getUserPlaceTags().stream()
-            .map(UserPlaceTag::getPlaceTag)
+        List<PlaceType> userPlaceTypes = user.getUserPlaceTypes().stream()
+            .map(UserPlaceType::getPlaceType)
             .toList();
 
-        return LLMTalkTopicSearchRequest.from(userTopicTags, userPlaceTags);
+        return LLMTalkTopicSearchRequest.from(userTopicTypes, userPlaceTypes);
     }
 
     private List<TalkTopic> createTalkTopics(LLMTalkTopicsResponse llmResponse,
-        List<TopicTag> topicTags,
-        List<PlaceTag> placeTags) {
-        Map<String, TopicTag> topicTagMap = createTagMap(topicTags, TopicTag::getContent);
-        Map<String, PlaceTag> placeTagMap = createTagMap(placeTags, PlaceTag::getContent);
+        List<TopicType> topicTypes,
+        List<PlaceType> placeTypes) {
+        Map<String, TopicType> topicTypeMap = createTypeMap(topicTypes, TopicType::getContent);
+        Map<String, PlaceType> placeTypeMap = createTypeMap(placeTypes, PlaceType::getContent);
 
         return llmResponse.responses().stream()
-            .map(response -> createTalkTopic(response, topicTagMap, placeTagMap))
+            .map(response -> createTalkTopic(response, topicTypeMap, placeTypeMap))
             .toList();
     }
 
-    private <T> Map<String, T> createTagMap(List<T> tags, Function<T, String> keyExtractor) {
+    private <T> Map<String, T> createTypeMap(List<T> types, Function<T, String> keyExtractor) {
 
-        return tags.stream().collect(Collectors.toMap(keyExtractor, Function.identity()));
+        return types.stream().collect(Collectors.toMap(keyExtractor, Function.identity()));
     }
 
     private TalkTopic createTalkTopic(LLMTalkTopicResponse response,
-        Map<String, TopicTag> topicTagMap,
-        Map<String, PlaceTag> placeTagMap) {
-        TopicTag topicTag = Optional.ofNullable(topicTagMap.get(response.topicTag()))
-            .orElseThrow(() -> new GeneralException(TagException.TAG_NOT_FOUND));
-        PlaceTag placeTag = Optional.ofNullable(placeTagMap.get(response.placeTag()))
-            .orElseThrow(() -> new GeneralException(TagException.TAG_NOT_FOUND));
+        Map<String, TopicType> topicTypeMap,
+        Map<String, PlaceType> placeTypeMap) {
+        TopicType topicType = Optional.ofNullable(topicTypeMap.get(response.topicType()))
+            .orElseThrow(() -> new GeneralException(TypeException.TYPE_NOT_FOUND));
+        PlaceType placeType = Optional.ofNullable(placeTypeMap.get(response.placeType()))
+            .orElseThrow(() -> new GeneralException(TypeException.TYPE_NOT_FOUND));
 
         TalkPartner talkPartner = new TalkPartner(
             Gender.from(response.talkPartnerGender()),
@@ -111,7 +111,7 @@ public class TalkTopicCommandService {
             response.subTitle(),
             response.situation(),
             talkPartner,
-            topicTag,
-            placeTag);
+            topicType,
+            placeType);
     }
 }

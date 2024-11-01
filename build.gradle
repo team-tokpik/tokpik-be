@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.3'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
 }
 
 group = 'org.example'
@@ -79,8 +80,66 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.destination file("$buildDir/jacocoReport")
+    }
+    mustRunAfter 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.30
+            }
+        }
+
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            // 커버리지 제외 범위
+            excludes = [
+                    '**.Application',
+                    '**.dto.*',
+                    '**.domain.*',
+                    '**.exception.*',
+                    '**.config.*',
+                    '**.util.*',
+                    '**.Q*',
+                    '**.test.**'
+            ]
+
+            // 브랜치 커버리지
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
+
+            // 라인 커버리지 기준치
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
+
+            // 코드 라인수 기준치
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+        }
+    }
 }
 
 clean {
     delete file('src/main/generated')
 }
+

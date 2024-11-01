@@ -3,10 +3,10 @@ package org.example.tokpik_be.support;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
 import jakarta.persistence.EntityManager;
-import org.example.tokpik_be.tag.repository.PlaceTagRepository;
-import org.example.tokpik_be.tag.repository.TopicTagRepository;
-import org.example.tokpik_be.tag.repository.UserPlaceTagRepository;
-import org.example.tokpik_be.tag.repository.UserTopicTagRepository;
+import org.example.tokpik_be.type.repository.PlaceTypeRepository;
+import org.example.tokpik_be.type.repository.TopicTypeRepository;
+import org.example.tokpik_be.type.repository.UserPlaceTypeRepository;
+import org.example.tokpik_be.type.repository.UserTopicTypeRepository;
 import org.example.tokpik_be.talk_topic.repository.TalkTopicRepository;
 import org.example.tokpik_be.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -26,16 +26,16 @@ public abstract class ServiceTestSupport {
     protected UserRepository userRepository;
 
     @Autowired
-    protected TopicTagRepository topicTagRepository;
+    protected TopicTypeRepository topicTypeRepository;
 
     @Autowired
-    protected PlaceTagRepository placeTagRepository;
+    protected PlaceTypeRepository placeTypeRepository;
 
     @Autowired
-    protected UserTopicTagRepository userTopicTagRepository;
+    protected UserTopicTypeRepository userTopicTypeRepository;
 
     @Autowired
-    protected UserPlaceTagRepository userPlaceTagRepository;
+    protected UserPlaceTypeRepository userPlaceTypeRepository;
 
     @Autowired
     protected ScrapRepository scrapRepository;
@@ -52,11 +52,11 @@ public abstract class ServiceTestSupport {
         scrapRepository.deleteAllInBatch();
         talkTopicRepository.deleteAllInBatch();
 
-        userTopicTagRepository.deleteAllInBatch();
-        userPlaceTagRepository.deleteAllInBatch();
+        userTopicTypeRepository.deleteAllInBatch();
+        userPlaceTypeRepository.deleteAllInBatch();
 
-        topicTagRepository.deleteAllInBatch();
-        placeTagRepository.deleteAllInBatch();
+        topicTypeRepository.deleteAllInBatch();
+        placeTypeRepository.deleteAllInBatch();
 
         userRepository.deleteAllInBatch();
     }

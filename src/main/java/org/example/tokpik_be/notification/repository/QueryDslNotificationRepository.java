@@ -2,7 +2,7 @@ package org.example.tokpik_be.notification.repository;
 
 import static org.example.tokpik_be.notification.domain.QNotification.notification;
 import static org.example.tokpik_be.notification.domain.QNotificationTalkTopic.notificationTalkTopic;
-import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
+import static org.example.tokpik_be.type.domain.QTopicType.topicType;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
 import static org.example.tokpik_be.user.domain.QUser.user;
 
@@ -70,11 +70,11 @@ public class QueryDslNotificationRepository {
                 notification.endTime,
                 notification.intervalMinutes,
                 notificationTalkTopic.id,
-                topicTag.id,
-                topicTag.content)
+                topicType.id,
+                topicType.content)
             .join(notification.notificationTalkTopics, notificationTalkTopic)
             .join(notificationTalkTopic.talkTopic, talkTopic)
-            .join(talkTopic.topicTag, topicTag)
+            .join(talkTopic.topicType, topicType)
             .where(usersNotificationCondition.and(notification.id.in(notificationIds)))
             .fetch();
 
@@ -96,8 +96,8 @@ public class QueryDslNotificationRepository {
                     .sorted(Comparator.comparing(r -> r.get(notificationTalkTopic.id)))
                     .toList().subList(0, toIndex)
                     .stream()
-                    .map(r -> new NotificationTalkTopicTypeResponse(r.get(topicTag.id),
-                        r.get(topicTag.content)))
+                    .map(r -> new NotificationTalkTopicTypeResponse(r.get(topicType.id),
+                        r.get(topicType.content)))
                     .toList();
 
                 Tuple tuple = tuples.get(0);

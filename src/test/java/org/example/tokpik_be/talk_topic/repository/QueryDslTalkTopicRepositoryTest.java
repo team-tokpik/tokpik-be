@@ -10,8 +10,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.example.tokpik_be.config.QueryDslConfig;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
-import org.example.tokpik_be.tag.domain.PlaceTag;
-import org.example.tokpik_be.tag.domain.TopicTag;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
 import org.example.tokpik_be.talk_topic.domain.TalkPartner;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicsRelatedResponse;
@@ -41,8 +41,8 @@ class QueryDslTalkTopicRepositoryTest {
     private QueryDslTalkTopicRepository queryDslTalkTopicRepository;
 
     private User user;
-    private TopicTag topicTag;
-    private PlaceTag placeTag;
+    private TopicType topicType;
+    private PlaceType placeType;
     private TalkTopic baseTopic;
     private TalkPartner talkPartner;
 
@@ -56,13 +56,13 @@ class QueryDslTalkTopicRepositoryTest {
         em.flush();
 
         // 대화 종류 태그 저장
-        topicTag = new TopicTag("example-topicTag");
-        em.persist(topicTag);
+        topicType = new TopicType("example-topicTag");
+        em.persist(topicType);
         em.flush();
 
         // 대화 장소 태그 저장
-        placeTag = new PlaceTag("example-placeTag");
-        em.persist(placeTag);
+        placeType = new PlaceType("example-placeTag");
+        em.persist(placeType);
         em.flush();
 
         // 6개의 대화 주제들 저장
@@ -72,8 +72,8 @@ class QueryDslTalkTopicRepositoryTest {
                 "subtitle",
                 "situation",
                 talkPartner,
-                topicTag,
-                placeTag))
+                topicType,
+                placeType))
             .toList();
         baseTopic = talkTopics.get(0);
 
@@ -100,8 +100,8 @@ class QueryDslTalkTopicRepositoryTest {
         em.createQuery("DELETE FROM Scrap").executeUpdate();
         em.createQuery("DELETE FROM TalkTopic").executeUpdate();
         em.createQuery("DELETE FROM User").executeUpdate();
-        em.createQuery("DELETE FROM TopicTag").executeUpdate();
-        em.createQuery("DELETE FROM PlaceTag").executeUpdate();
+        em.createQuery("DELETE FROM TopicType").executeUpdate();
+        em.createQuery("DELETE FROM PlaceType").executeUpdate();
         em.flush();
     }
 
@@ -125,7 +125,7 @@ class QueryDslTalkTopicRepositoryTest {
                 .map(TalkTopicRelatedResponse::type)
                 .toList();
             softly.assertThat(topicTagContents).allMatch(
-                topicTagContent -> baseTopic.getTopicTag().getContent().equals(topicTagContent));
+                topicTagContent -> baseTopic.getTopicType().getContent().equals(topicTagContent));
 
             // 조회된 주제들중 스크랩된 주제들의 스크랩 여부 검증
             List<TalkTopicRelatedResponse> scrapedTalkTopics = relatedTalkTopics.stream()
@@ -139,8 +139,8 @@ class QueryDslTalkTopicRepositoryTest {
     @Test
     void differentPlaceTag() {
         // given
-        PlaceTag otherPlaceTag = new PlaceTag("집");
-        em.persist(otherPlaceTag);
+        PlaceType otherPlaceType = new PlaceType("집");
+        em.persist(otherPlaceType);
         em.flush();
 
         List<TalkTopic> unrelatedTalkTopics = IntStream.range(0, 2)
@@ -148,8 +148,8 @@ class QueryDslTalkTopicRepositoryTest {
                 "subtitle",
                 "situation",
                 talkPartner,
-                topicTag,
-                otherPlaceTag))
+                topicType,
+                otherPlaceType))
             .toList();
         unrelatedTalkTopics.forEach(em::persist);
         em.flush();
@@ -168,8 +168,8 @@ class QueryDslTalkTopicRepositoryTest {
     @Test
     void differentTopicTag() {
         // given
-        TopicTag otherTopicTag = new TopicTag("비즈니스");
-        em.persist(otherTopicTag);
+        TopicType otherTopicType = new TopicType("비즈니스");
+        em.persist(otherTopicType);
         em.flush();
 
         List<TalkTopic> unrelatedTalkTopics = IntStream.range(0, 2)
@@ -177,8 +177,8 @@ class QueryDslTalkTopicRepositoryTest {
                 "subtitle",
                 "situation",
                 talkPartner,
-                otherTopicTag,
-                placeTag))
+                otherTopicType,
+                placeType))
             .toList();
         unrelatedTalkTopics.forEach(em::persist);
         em.flush();
@@ -203,8 +203,8 @@ class QueryDslTalkTopicRepositoryTest {
                 "subtitle",
                 otherSituation,
                 talkPartner,
-                topicTag,
-                placeTag))
+                topicType,
+                placeType))
             .toList();
         unrelatedTalkTopics.forEach(em::persist);
         em.flush();
@@ -233,8 +233,8 @@ class QueryDslTalkTopicRepositoryTest {
                 "subtitle",
                 "situation",
                 differentPartner,
-                topicTag,
-                placeTag))
+                topicType,
+                placeType))
             .toList();
         unrelatedTalkTopics.forEach(em::persist);
         em.flush();
@@ -266,8 +266,8 @@ class QueryDslTalkTopicRepositoryTest {
                 "subtitle",
                 "situation",
                 partner,
-                topicTag,
-                placeTag))
+                topicType,
+                placeType))
             .toList();
         unrelatedTalkTopics.forEach(em::persist);
         em.flush();

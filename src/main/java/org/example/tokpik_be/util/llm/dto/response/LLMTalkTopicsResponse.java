@@ -16,10 +16,10 @@ public record LLMTalkTopicsResponse(
         String subTitle,
 
         @JsonProperty(required = true)
-        String topicTag,
+        String topicType,
 
         @JsonProperty(required = true)
-        String placeTag,
+        String placeType,
 
         @JsonProperty(required = true)
         String situation,

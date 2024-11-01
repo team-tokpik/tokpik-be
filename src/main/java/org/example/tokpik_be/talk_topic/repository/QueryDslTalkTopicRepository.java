@@ -2,8 +2,8 @@ package org.example.tokpik_be.talk_topic.repository;
 
 import static org.example.tokpik_be.scrap.domain.QScrap.scrap;
 import static org.example.tokpik_be.scrap.domain.QScrapTopic.scrapTopic;
-import static org.example.tokpik_be.tag.domain.QPlaceTag.placeTag;
-import static org.example.tokpik_be.tag.domain.QTopicTag.topicTag;
+import static org.example.tokpik_be.type.domain.QPlaceType.placeType;
+import static org.example.tokpik_be.type.domain.QTopicType.topicType;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
 
 import com.querydsl.core.types.Projections;
@@ -26,7 +26,7 @@ public class QueryDslTalkTopicRepository {
         List<TalkTopicRelatedResponse> relatedTopics = queryFactory.from(talkTopic)
             .select(Projections.constructor(TalkTopicRelatedResponse.class,
                 talkTopic.id,
-                talkTopic.topicTag.content,
+                talkTopic.topicType.content,
                 talkTopic.title,
                 JPAExpressions.selectOne()
                     .from(scrapTopic)
@@ -35,11 +35,11 @@ public class QueryDslTalkTopicRepository {
                     .exists()
                     .as("scraped")
             ))
-            .innerJoin(talkTopic.topicTag, topicTag)
-            .innerJoin(talkTopic.placeTag, placeTag)
+            .innerJoin(talkTopic.topicType, topicType)
+            .innerJoin(talkTopic.placeType, placeType)
             .where(
-                talkTopic.topicTag.id.eq(baseTopic.getTopicTag().getId()),
-                talkTopic.placeTag.id.eq(baseTopic.getPlaceTag().getId()),
+                talkTopic.topicType.id.eq(baseTopic.getTopicType().getId()),
+                talkTopic.placeType.id.eq(baseTopic.getPlaceType().getId()),
                 talkTopic.situation.contains(baseTopic.getSituation()),
                 talkTopic.partner.gender.eq(baseTopic.getPartner().getGender()),
                 talkTopic.partner.ageLowerBound.goe(baseTopic.getPartner().getAgeLowerBound()),
