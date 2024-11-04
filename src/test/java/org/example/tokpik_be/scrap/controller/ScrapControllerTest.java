@@ -85,7 +85,7 @@ public class ScrapControllerTest extends ControllerTestSupport {
                     new ScrapListResponse.TopicTypeResponse(8L, "인간관계")
                 ))
             ));
-            given(scrapService.getScrapList(userId)).willReturn(response);
+            given(scrapService.getScraps(userId)).willReturn(response);
 
             // When
             ResultActions resultActions = mockMvc.perform(get("/users/scraps"));
@@ -119,7 +119,7 @@ public class ScrapControllerTest extends ControllerTestSupport {
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
         void userNotFound() throws Exception {
             // Given
-            given(scrapService.getScrapList(userId))
+            given(scrapService.getScraps(userId))
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
             // When
