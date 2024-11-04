@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,7 +36,7 @@ public class Scrap extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "scrap", cascade = CascadeType.REMOVE)
-    private List<ScrapTopic> scrapTopics;
+    private List<ScrapTopic> scrapTopics = new ArrayList<>();
 
     public Scrap(String title, User user) {
         this.title = title;
