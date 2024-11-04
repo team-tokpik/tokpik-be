@@ -35,9 +35,9 @@ public class ScrapController {
     @Operation(summary = "스크랩 리스트 조회", description = "스크랩 리스트 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 리스트 조회 성공")
     @GetMapping("/users/scraps")
-    public ResponseEntity<ScrapListResponse> getScrapList(
+    public ResponseEntity<ScrapListResponse> getScraps(
         @RequestAttribute("userId") long userId) {
-        ScrapListResponse scrapListResponse = scrapService.getScrapList(userId);
+        ScrapListResponse scrapListResponse = scrapService.getScraps(userId);
         return ResponseEntity.ok(scrapListResponse);
     }
 
@@ -45,18 +45,18 @@ public class ScrapController {
     @Operation(summary = "총 스크랩 수 조회", description = "총 스크랩 수 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 수 조회 성공")
     @GetMapping("/users/scraps/count")
-    public ResponseEntity<ScrapCountResponse> getScrapCounts(
+    public ResponseEntity<ScrapCountResponse> getScrapCount(
         @RequestAttribute("userId") long userId) {
-        ScrapCountResponse scrapCountResponse = scrapService.getUserSrcapCounts(userId);
+        ScrapCountResponse scrapCountResponse = scrapService.getUserScrapCount(userId);
         return ResponseEntity.ok(scrapCountResponse);
     }
 
     @Operation(summary = "총 스크랩 톡픽 수 조회", description = "사용자 총 스크랩 톡픽 수 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 톡픽 수 조회 성공")
     @GetMapping("/users/scraps/topics/count")
-    public ResponseEntity<ScrapCountResponse> getTopicCounts(
+    public ResponseEntity<ScrapCountResponse> getTopicCount(
         @RequestAttribute("userId") long userId) {
-        ScrapCountResponse scrapCountResponse = scrapService.getUserTopicCounts(userId);
+        ScrapCountResponse scrapCountResponse = scrapService.getUserTopicCount(userId);
         return ResponseEntity.ok(scrapCountResponse);
     }
 
