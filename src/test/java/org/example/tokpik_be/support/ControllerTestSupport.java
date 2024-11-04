@@ -2,6 +2,7 @@ package org.example.tokpik_be.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.format.DateTimeFormatter;
 import org.example.tokpik_be.config.TestAuthInterceptor;
 import org.example.tokpik_be.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,8 @@ public abstract class ControllerTestSupport {
 
     protected final ObjectMapper objectMapper = new ObjectMapper()
         .registerModule(new JavaTimeModule());
+    protected final DateTimeFormatter localTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
     protected MockMvc mockMvc;
 
     @BeforeEach
