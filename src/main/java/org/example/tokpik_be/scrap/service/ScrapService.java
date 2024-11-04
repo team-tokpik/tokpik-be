@@ -32,7 +32,7 @@ public class ScrapService {
     private final UserQueryService userQueryService;
     private final TalkTopicQueryService talkTopicQueryService;
 
-    public ScrapListResponse getScrapList(long userId) {
+    public ScrapListResponse getScraps(long userId) {
 
         User user = userQueryService.findById(userId);
 
@@ -67,7 +67,7 @@ public class ScrapService {
         );
     }
 
-    public ScrapCountResponse getUserSrcapCounts(long userId) {
+    public ScrapCountResponse getUserScrapCount(long userId) {
 
         User user = userQueryService.findById(userId);
 
@@ -76,7 +76,7 @@ public class ScrapService {
         return new ScrapCountResponse(count);
     }
 
-    public ScrapCountResponse getUserTopicCounts(long userId) {
+    public ScrapCountResponse getUserTopicCount(long userId) {
 
         User user = userQueryService.findById(userId);
 
@@ -90,9 +90,9 @@ public class ScrapService {
         User user = userQueryService.findById(userId);
 
         Scrap scrap = new Scrap(request.scrapName(), user);
-        scrapRepository.save(scrap);
+        Scrap savedScrap = scrapRepository.save(scrap);
 
-        return new ScrapCreateResponse(scrap.getId());
+        return new ScrapCreateResponse(savedScrap.getId());
     }
 
     @Transactional
