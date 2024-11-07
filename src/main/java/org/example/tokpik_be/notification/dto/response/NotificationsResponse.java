@@ -42,7 +42,7 @@ public record NotificationsResponse(
         @Schema(type = "string", description = "알림 이름", example = "부장님 개그 모음")
         String notificationName,
 
-        @Schema(type = "number", description = "스크랩에 저장된 대화 주제 합계", example = "30")
+        @Schema(type = "number", description = "알림 지정된 대화 주제 합계", example = "30")
         long notificationTopicTotal,
 
         @Schema(type = "array", description = "알림 지정 순서에 따른 첫 네 대화 주제 종류들")
