@@ -76,7 +76,7 @@ public class NotificationCommandService {
 
         // 요청된 알림 간격 검증
         int intervalMinutes = request.notificationIntervalMinutes();
-        if (notificationIntervalMinutes.contains(intervalMinutes)) {
+        if (!notificationIntervalMinutes.contains(intervalMinutes)) {
             throw new GeneralException(NotificationException.INVALID_NOTIFICATION_INTERVAL);
         }
 
@@ -88,7 +88,7 @@ public class NotificationCommandService {
             intervalMinutes,
             user,
             scrap);
-        notificationRepository.save(notification);
+        Notification savedNotification = notificationRepository.save(notification);
 
         // 알림 대화 주제 ID들 지정한 스크랩 포함 여부, 개수 검증
         List<Long> notificationTalkTopicIds =
@@ -113,11 +113,11 @@ public class NotificationCommandService {
             .toList();
 
         // 알림 대화 주제 생성 및 저장, 알림 & 알림 대화 주제 관계 설정
-        long notificationId = notification.getId();
+        long notificationId = savedNotification.getId();
         List<NotificationTalkTopic> notificationTalkTopics = sortedTalkTopics.stream()
             .map(talkTopic -> new NotificationTalkTopic(notificationId, talkTopic))
             .toList();
         notificationTalkTopicRepository.saveAll(notificationTalkTopics);
-        notification.addNotificationTalkTopics(notificationTalkTopics);
+        savedNotification.addNotificationTalkTopics(notificationTalkTopics);
     }
 }
