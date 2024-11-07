@@ -25,29 +25,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PlaceTypeControllerTest extends ControllerTestSupport {
     @Mock
     private PlaceTypeService placeTypeService;
+
     @InjectMocks
     private PlaceTypeController placeTypeController;
+
     @Override
     protected Object initController(){
         return placeTypeController;
     }
+
     private final long userId = 1L;
+
     @Nested
     @DisplayName("사용자 장소 태그 조회 시 ")
     class GetUserPlaceTypesTest{
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
-            // Given
+            // given
             UserPlaceTypeResponse response = new UserPlaceTypeResponse(userId, List.of(
                 new UserPlaceTypeResponse.PlaceTypeDTO(1L, "Type 1")
             ));
             given(placeTypeService.getUserPlaceTypes(userId)).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/place-types").requestAttr("userId", userId));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
@@ -58,14 +62,14 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
         void userNotFound() throws Exception {
-            // Given
+            // given
             given(placeTypeService.getUserPlaceTypes(userId))
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/place-types").requestAttr("userId", userId));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
         }
@@ -77,7 +81,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
-            // Given
+            // given
             UserPlaceTypesRequest request = new UserPlaceTypesRequest(List.of(1L, 2L));
             UserPlaceTypeResponse response = new UserPlaceTypeResponse(userId, List.of(
                 new UserPlaceTypeResponse.PlaceTypeDTO(1L, "Type 1"),
@@ -85,13 +89,13 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
             ));
             given(placeTypeService.updateUserPlaceTypes(eq(userId), any(UserPlaceTypesRequest.class))).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(patch("/users/place-types")
                 .requestAttr("userId", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(request)));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
@@ -104,15 +108,15 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
         void userNotFound() throws Exception {
-            // Given
+            // given
             given(placeTypeService.getUserPlaceTypes(userId))
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/place-types")
                 .requestAttr("userId", userId));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
         }
@@ -120,38 +124,38 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("요청 데이터가 없으면 예외가 발생한다.")
         void noRequestData() throws Exception {
-            // Given
+            // given
             given(placeTypeService.updateUserPlaceTypes(anyLong(), any(UserPlaceTypesRequest.class)))
                 .willThrow(new GeneralException(TypeException.INVALID_REQUEST));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(patch("/users/place-types")
                 .requestAttr("userId", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(TypeException.INVALID_REQUEST.getMessage()));
         }
     }
     @Nested
     @DisplayName("장소 태그 전체 조회 시 ")
-    class getAllTypesTest{
+    class GetAllTypesTest{
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception{
-            // Given
+            // given
             PlaceTypeTotalResponse response = new PlaceTypeTotalResponse(List.of(
                 new PlaceTypeTotalResponse.PlaceTypeResponse(1L, "Type 1"),
                 new PlaceTypeTotalResponse.PlaceTypeResponse(2L, "Type 2")
             ));
             given(placeTypeService.getAllPlaceTypes()).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/place-types"));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.placeTypes[0].content").value("Type 1"))

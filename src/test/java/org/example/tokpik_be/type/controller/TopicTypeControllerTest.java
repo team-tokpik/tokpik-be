@@ -45,13 +45,16 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
+            // given
             UserTopicTypeResponse response = new UserTopicTypeResponse(userId, List.of(
                 new UserTopicTypeResponse.TopicTypeDTO(1L, "Type 1")
             ));
             given(topicTypeService.getUserTopicTypes(userId)).willReturn(response);
 
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/types").requestAttr("userId", userId));
 
+            // then
             resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.talkTopicTypes[0].content").value("Type 1"));
@@ -60,11 +63,14 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
         void userNotFound() throws Exception {
+            // given
             given(topicTypeService.getUserTopicTypes(userId))
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/types").requestAttr("userId", userId));
 
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
         }
@@ -72,12 +78,12 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
 
     @Nested
     @DisplayName("사용자 대화 태그 수정 시 ")
-    class updateUserTopicTypesTest {
+    class UpdateUserTopicTypesTest {
 
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
-            // Given
+            // given
             UserTopicTypesRequest request = new UserTopicTypesRequest(List.of(1L, 2L));
             UserTopicTypeResponse response = new UserTopicTypeResponse(userId, List.of(
                 new UserTopicTypeResponse.TopicTypeDTO(1L, "Type 1"),
@@ -85,13 +91,13 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
             ));
             given(topicTypeService.updateUserTopicTypes(eq(userId), any(UserTopicTypesRequest.class))).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(patch("/users/types")
                 .requestAttr("userId", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(request)));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
@@ -104,15 +110,15 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
         void userNotFound() throws Exception {
-            // Given
+            // given
             given(topicTypeService.getUserTopicTypes(userId))
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/types")
                 .requestAttr("userId", userId));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
         }
@@ -120,17 +126,17 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("요청 데이터가 없으면 예외가 발생한다.")
         void noRequestData() throws Exception {
-            //Given
+            // given
             given(topicTypeService.updateUserTopicTypes(anyLong(), any(UserTopicTypesRequest.class)))
                 .willThrow(new GeneralException(TypeException.INVALID_REQUEST));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(patch("/users/types")
                 .requestAttr("userId", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(TypeException.INVALID_REQUEST.getMessage()));
         }
@@ -138,21 +144,21 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
 
     @Nested
     @DisplayName("대화 태그 전체 조회 시 ")
-    class getAllTypesTest{
+    class GetAllTypesTest{
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception{
-            // Given
+            // given
             TopicTypeTotalResponse response = new TopicTypeTotalResponse(List.of(
                 new TopicTypeTotalResponse.TopicTypeResponse(1L, "Type 1"),
                 new TopicTypeTotalResponse.TopicTypeResponse(2L, "Type 2")
             ));
             given(topicTypeService.getAllTopicTypes()).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/topic-types"));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.topicTypes[0].content").value("Type 1"))
