@@ -57,14 +57,16 @@ public class PlaceTypeService {
             throw new GeneralException(TypeException.DUPLICATE_TYPES);
         }
 
+        List<PlaceType> placeTypes = placeTypeRepository.findAllById(request.placeTypeIds());
+
+        if (placeTypes.size() != request.placeTypeIds().size()) {
+            throw new GeneralException(TypeException.TYPE_NOT_FOUND);
+        }
+
         userPlaceTypeRepository.deleteByUserId(user.getId());
 
-        for (long typeId : request.placeTypeIds()) {
-            if (!placeTypeRepository.existsById(typeId)) {
-                throw new GeneralException(TypeException.TYPE_NOT_FOUND);
-            }
-            UserPlaceType userPlaceType = new UserPlaceType(user.getId(),
-                placeTypeRepository.findById(typeId).get());
+        for (PlaceType placeType : placeTypes) {
+            UserPlaceType userPlaceType = new UserPlaceType(user.getId(), placeType);
             userPlaceTypeRepository.save(userPlaceType);
         }
 
