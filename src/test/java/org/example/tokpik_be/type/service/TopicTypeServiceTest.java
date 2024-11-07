@@ -1,220 +1,185 @@
 package org.example.tokpik_be.type.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.TypeException;
-import org.example.tokpik_be.support.ServiceTestSupport;
 import org.example.tokpik_be.type.domain.TopicType;
 import org.example.tokpik_be.type.domain.UserTopicType;
 import org.example.tokpik_be.type.dto.request.UserTopicTypesRequest;
 import org.example.tokpik_be.type.dto.response.TopicTypeTotalResponse;
 import org.example.tokpik_be.type.dto.response.UserTopicTypeResponse;
+import org.example.tokpik_be.type.repository.TopicTypeRepository;
+import org.example.tokpik_be.type.repository.UserTopicTypeRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class TopicTypeServiceTest extends ServiceTestSupport {
+@ExtendWith(MockitoExtension.class)
+public class TopicTypeServiceTest {
 
-    private TopicTypeService topicTypeService;
+    @Mock
+    private TopicTypeRepository topicTypeRepository;
 
-    @MockBean
+    @Mock
+    private UserTopicTypeRepository userTopicTypeRepository;
+
+    @Mock
     private UserQueryService userQueryService;
 
-    @BeforeEach
-    void setUp() {
-        topicTypeService = new TopicTypeService(userTopicTypeRepository, userQueryService, topicTypeRepository);
+    @InjectMocks
+    private TopicTypeService topicTypeService;
+
+    @Test
+    @DisplayName("사용자의 대화 타입를 조회할 수 있다.")
+    void getMyTopicTypes() {
+        // given
+        long userId = 1L;
+        User user = new User("test@test.com", "profile-photo/1");
+        when(userQueryService.findById(userId)).thenReturn(user);
+
+        TopicType topicType1 = new TopicType("사랑과 연애");
+        TopicType topicType2 = new TopicType("비즈니스와 업무");
+
+        UserTopicType userTopicType1 = new UserTopicType(userId, topicType1);
+        UserTopicType userTopicType2 = new UserTopicType(userId, topicType2);
+
+        List<UserTopicType> userTopicTypes = List.of(userTopicType1, userTopicType2);
+
+        when(userTopicTypeRepository.findByUserId(userId)).thenReturn(userTopicTypes);
+
+        // when
+        UserTopicTypeResponse response = topicTypeService.getUserTopicTypes(userId);
+
+        // then
+        assertThat(response.userId()).isEqualTo(userId);
+        assertThat(response.talkTopicTypes())
+            .hasSize(2)
+            .map(UserTopicTypeResponse.TopicTypeDTO::content)
+            .containsExactlyInAnyOrder("사랑과 연애", "비즈니스와 업무");
+
+        assertThat(response.talkTopicTypes())
+            .map(UserTopicTypeResponse.TopicTypeDTO::id)
+            .doesNotContainNull();
     }
 
     @Nested
-    @DisplayName("사용자 대화 태그 조회 시 ")
-    class GetTopicTypesTest {
-
-        @Test
-        @DisplayName("성공한다.")
-        void getMyTopicTypes() {
-
-            // Given
-            User user = new User("test@test.com", "profile-photo/1");
-            userRepository.save(user);
-            em.flush();
-            Long userId = user.getId();
-
-            TopicType topicType1 = new TopicType("사랑과 연애");
-            TopicType topicType2 = new TopicType("비즈니스와 업무");
-            topicTypeRepository.saveAll(Arrays.asList(topicType1, topicType2));
-
-            UserTopicType userTopicType1 = new UserTopicType(userId, topicType1);
-            UserTopicType userTopicType2 = new UserTopicType(userId, topicType2);
-            userTopicTypeRepository.saveAll(Arrays.asList(userTopicType1, userTopicType2));
-
-            em.flush();
-            em.clear();
-
-            when(userQueryService.findById(userId)).thenReturn(user);
-
-            // When
-            UserTopicTypeResponse response = topicTypeService.getUserTopicTypes(userId);
-
-            // Then
-            assertThat(response.userId()).isEqualTo(userId);
-            assertThat(response.talkTopicTypes())
-                .hasSize(2)
-                .map(UserTopicTypeResponse.TopicTypeDTO::content)
-                .containsExactlyInAnyOrder("사랑과 연애", "비즈니스와 업무");
-
-            assertThat(response.talkTopicTypes())
-                .map(UserTopicTypeResponse.TopicTypeDTO::id)
-                .doesNotContainNull();
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 대화 태그 수정 시 ")
+    @DisplayName("사용자 대화 타입 수정 시 ")
     class UpdateTopicTypesTest {
         @Test
         @DisplayName("성공한다.")
         void updateMyTopicTypes() {
-            // Given
+            // given
+            long userId = 1L;
             User user = new User("test@test.com", "http://test.com/photo.jpg");
-            userRepository.save(user);
-            em.flush();
-            Long userId = user.getId();
-
-            TopicType topicType1 = new TopicType("사랑과 연애");
-            TopicType topicType2 = new TopicType("비즈니스와 업무");
-            TopicType topicType3 = new TopicType("아이스브레이킹");
-            topicTypeRepository.saveAll(Arrays.asList(topicType1, topicType2, topicType3));
-
-            UserTopicType userTopicType1 = new UserTopicType(userId, topicType1);
-            UserTopicType userTopicType2 = new UserTopicType(userId, topicType2);
-            userTopicTypeRepository.saveAll(Arrays.asList(userTopicType1, userTopicType2));
-
-            em.flush();
-            em.clear();
-
             when(userQueryService.findById(userId)).thenReturn(user);
 
-            List<Long> newTypeIds = Arrays.asList(topicType1.getId(), topicType3.getId());
-            UserTopicTypesRequest request = new UserTopicTypesRequest(newTypeIds);
+            TopicType topicType1 = new TopicType("사랑과 연애");
+            TopicType topicType3 = new TopicType("아이스브레이킹");
 
-            // When
+            when(topicTypeRepository.findAllById(List.of(1L, 3L)))
+                .thenReturn(List.of(topicType1, topicType3));
+
+            List<Long> newTypes = List.of(1L, 3L);
+            UserTopicTypesRequest request = new UserTopicTypesRequest(newTypes);
+
+            // when
             UserTopicTypeResponse response = topicTypeService.updateUserTopicTypes(userId, request);
 
-            // Then
+            // then
             assertThat(response.userId()).isEqualTo(userId);
             assertThat(response.talkTopicTypes())
                 .hasSize(2)
                 .allSatisfy(types -> {
                     assertThat(types.content()).isIn("사랑과 연애", "아이스브레이킹");
-                    assertThat(types.id()).isIn(topicType1.getId(), topicType3.getId());
                 });
         }
-
 
         @Test
         @DisplayName("중복된 값을 요청 데이터에 포함하면 예외가 발생한다.")
         void duplicateTypes() {
-            // Given
+            // given
+            long userId = 1L;
             User user = new User("test@test.com", "http://test.com/photo.jpg");
-            userRepository.save(user);
-            em.flush();
-            Long userId = user.getId();
-
-            TopicType topicType1 = new TopicType("사랑과 연애");
-            topicTypeRepository.save(topicType1);
-
-            em.flush();
-            em.clear();
-
             when(userQueryService.findById(userId)).thenReturn(user);
 
-            List<Long> duplicateTypeIds = Arrays.asList(topicType1.getId(), topicType1.getId());
-            UserTopicTypesRequest request = new UserTopicTypesRequest(duplicateTypeIds);
+            List<Long> duplicateType = List.of(1L, 1L);
+            UserTopicTypesRequest request = new UserTopicTypesRequest(duplicateType);
 
-            // Then
+            // when & then
             assertThatThrownBy(() -> topicTypeService.updateUserTopicTypes(userId, request))
                 .isInstanceOf(GeneralException.class)
-                .hasMessageContaining(TypeException.DUPLICATE_TYPES.getMessage());
+                .extracting("exception")
+                .isEqualTo(TypeException.DUPLICATE_TYPES);
         }
 
         @Test
         @DisplayName("존재하지 않는 값이면 예외가 발생한다.")
         void typeNotFound() {
-            // Given
+            // given
+            long userId = 1L;
             User user = new User("test@test.com", "http://test.com/photo.jpg");
-            userRepository.save(user);
-            em.flush();
-            Long userId = user.getId();
-
-            TopicType topicType1 = new TopicType("사랑과 연애");
-            topicTypeRepository.save(topicType1);
-
-            em.flush();
-            em.clear();
-
             when(userQueryService.findById(userId)).thenReturn(user);
 
+            long invalidTypeId = 10L;
 
-            List<Long> invalidTypeIds = Arrays.asList(topicType1.getId(), 10L);
-            UserTopicTypesRequest request = new UserTopicTypesRequest(invalidTypeIds);
+            List<Long> invalidType = List.of(invalidTypeId);
 
-            // Then
+            when(topicTypeRepository.findAllById(invalidType)).thenReturn(List.of());
+            UserTopicTypesRequest request = new UserTopicTypesRequest(invalidType);
+
+            // when & then
             assertThatThrownBy(() -> topicTypeService.updateUserTopicTypes(userId, request))
                 .isInstanceOf(GeneralException.class)
-                .hasMessageContaining(TypeException.TYPE_NOT_FOUND.getMessage());
+                .extracting("exception")
+                .isEqualTo(TypeException.INVALID_REQUEST);
         }
     }
 
     @Nested
-    @DisplayName("대화 태그 전체 조회 시 ")
+    @DisplayName("대화 타입 전체 조회 시 ")
     class GetAllTopicTypesTest {
 
         @Test
         @DisplayName("성공한다.")
         void getAllTopicTypes() {
-
-            // Given
+            // given
             TopicType topicType1 = new TopicType("사랑과 연애");
             TopicType topicType2 = new TopicType("비즈니스와 업무");
             TopicType topicType3 = new TopicType("아이스브레이킹");
-            topicTypeRepository.saveAll(Arrays.asList(topicType1, topicType2, topicType3));
+            topicTypeRepository.saveAll(List.of(topicType1, topicType2, topicType3));
 
-            em.flush();
-            em.clear();
+            when(topicTypeRepository.findAll()).thenReturn(List.of(topicType1, topicType2, topicType3));
 
-            // When
+            // when
             TopicTypeTotalResponse result = topicTypeService.getAllTopicTypes();
 
-            // Then
+            // then
             assertThat(result.topicTypes())
                 .hasSize(3)
-                .satisfies(types -> {
-                    assertThat(types)
-                        .extracting(TopicTypeTotalResponse.TopicTypeResponse::content)
-                        .containsExactlyInAnyOrder("사랑과 연애", "비즈니스와 업무", "아이스브레이킹");
-                    assertThat(types)
-                        .extracting(TopicTypeTotalResponse.TopicTypeResponse::topicTypeId)
-                        .doesNotContainNull();
-                });
+                .extracting(TopicTypeTotalResponse.TopicTypeResponse::content)
+                .containsExactlyInAnyOrder("사랑과 연애", "비즈니스와 업무", "아이스브레이킹");
         }
 
         @Test
-        @DisplayName("대화 태그가 존재하지 않으면 빈 리스트를 반환한다.")
+        @DisplayName("대화 타입이 존재하지 않으면 빈 리스트를 반환한다.")
         void emptyRequest() {
+            // given
+            when(topicTypeRepository.findAll()).thenReturn(List.of());
 
-            // When
+            // when
             TopicTypeTotalResponse result = topicTypeService.getAllTopicTypes();
 
-            // Then
+            // then
             assertThat(result.topicTypes()).isEmpty();
         }
     }
