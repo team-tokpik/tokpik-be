@@ -27,4 +27,9 @@ public class PlaceType extends BaseTimeEntity {
     public PlaceType(String content) {
         this.content = content;
     }
+
+    public PlaceType(Long id, String content) {
+        this.id = id;
+        this.content = content;
+    }
 }
