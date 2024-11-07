@@ -37,14 +37,14 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
     private final long userId = 1L;
 
     @Nested
-    @DisplayName("사용자 장소 태그 조회 시 ")
+    @DisplayName("사용자 장소 타입 조회 시 ")
     class GetUserPlaceTypesTest{
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
             // given
             UserPlaceTypeResponse response = new UserPlaceTypeResponse(userId, List.of(
-                new UserPlaceTypeResponse.PlaceTypeDTO(1L, "Type 1")
+                new UserPlaceTypeResponse.PlaceTypeDTO(1L, "집")
             ));
             given(placeTypeService.getUserPlaceTypes(userId)).willReturn(response);
 
@@ -56,7 +56,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.placeTopicTypes[0].id").value(1L))
-                .andExpect(jsonPath("$.placeTopicTypes[0].content").value("Type 1"));
+                .andExpect(jsonPath("$.placeTopicTypes[0].content").value("집"));
         }
 
         @Test
@@ -76,7 +76,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
     }
 
     @Nested
-    @DisplayName("사용자 장소 태그 수정 시 ")
+    @DisplayName("사용자 장소 타입 수정 시 ")
     class UpdateUserPlaceTypesTest {
         @Test
         @DisplayName("성공한다.")
@@ -84,8 +84,8 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
             // given
             UserPlaceTypesRequest request = new UserPlaceTypesRequest(List.of(1L, 2L));
             UserPlaceTypeResponse response = new UserPlaceTypeResponse(userId, List.of(
-                new UserPlaceTypeResponse.PlaceTypeDTO(1L, "Type 1"),
-                new UserPlaceTypeResponse.PlaceTypeDTO(2L, "Type 2")
+                new UserPlaceTypeResponse.PlaceTypeDTO(1L, "집"),
+                new UserPlaceTypeResponse.PlaceTypeDTO(2L, "회사")
             ));
             given(placeTypeService.updateUserPlaceTypes(eq(userId), any(UserPlaceTypesRequest.class))).willReturn(response);
 
@@ -100,9 +100,9 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.placeTopicTypes[0].id").value(1L))
-                .andExpect(jsonPath("$.placeTopicTypes[0].content").value("Type 1"))
+                .andExpect(jsonPath("$.placeTopicTypes[0].content").value("집"))
                 .andExpect(jsonPath("$.placeTopicTypes[1].id").value(2L))
-                .andExpect(jsonPath("$.placeTopicTypes[1].content").value("Type 2"));
+                .andExpect(jsonPath("$.placeTopicTypes[1].content").value("회사"));
         }
 
         @Test
@@ -140,15 +140,15 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
         }
     }
     @Nested
-    @DisplayName("장소 태그 전체 조회 시 ")
+    @DisplayName("장소 타입 전체 조회 시 ")
     class GetAllTypesTest{
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception{
             // given
             PlaceTypeTotalResponse response = new PlaceTypeTotalResponse(List.of(
-                new PlaceTypeTotalResponse.PlaceTypeResponse(1L, "Type 1"),
-                new PlaceTypeTotalResponse.PlaceTypeResponse(2L, "Type 2")
+                new PlaceTypeTotalResponse.PlaceTypeResponse(1L, "집"),
+                new PlaceTypeTotalResponse.PlaceTypeResponse(2L, "회사")
             ));
             given(placeTypeService.getAllPlaceTypes()).willReturn(response);
 
@@ -158,8 +158,8 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
             // then
             resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.placeTypes[0].content").value("Type 1"))
-                .andExpect(jsonPath("$.placeTypes[1].content").value("Type 2"));
+                .andExpect(jsonPath("$.placeTypes[0].content").value("집"))
+                .andExpect(jsonPath("$.placeTypes[1].content").value("회사"));
         }
     }
 }

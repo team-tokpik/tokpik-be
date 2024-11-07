@@ -39,7 +39,7 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
     private final long userId = 1L;
 
     @Nested
-    @DisplayName("사용자 대화 태그 조회 시 ")
+    @DisplayName("사용자 대화 타입 조회 시 ")
     class GetUserTopicTypesTest {
 
         @Test
@@ -47,7 +47,7 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
         void success() throws Exception {
             // given
             UserTopicTypeResponse response = new UserTopicTypeResponse(userId, List.of(
-                new UserTopicTypeResponse.TopicTypeDTO(1L, "Type 1")
+                new UserTopicTypeResponse.TopicTypeDTO(1L, "사랑과 연애")
             ));
             given(topicTypeService.getUserTopicTypes(userId)).willReturn(response);
 
@@ -57,7 +57,7 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
             // then
             resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
-                .andExpect(jsonPath("$.talkTopicTypes[0].content").value("Type 1"));
+                .andExpect(jsonPath("$.talkTopicTypes[0].content").value("사랑과 연애"));
         }
 
         @Test
@@ -77,7 +77,7 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
     }
 
     @Nested
-    @DisplayName("사용자 대화 태그 수정 시 ")
+    @DisplayName("사용자 대화 타입 수정 시 ")
     class UpdateUserTopicTypesTest {
 
         @Test
@@ -86,8 +86,8 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
             // given
             UserTopicTypesRequest request = new UserTopicTypesRequest(List.of(1L, 2L));
             UserTopicTypeResponse response = new UserTopicTypeResponse(userId, List.of(
-                new UserTopicTypeResponse.TopicTypeDTO(1L, "Type 1"),
-                new UserTopicTypeResponse.TopicTypeDTO(2L, "Type 2")
+                new UserTopicTypeResponse.TopicTypeDTO(1L, "사랑과 연애"),
+                new UserTopicTypeResponse.TopicTypeDTO(2L, "비즈니스와 업무")
             ));
             given(topicTypeService.updateUserTopicTypes(eq(userId), any(UserTopicTypesRequest.class))).willReturn(response);
 
@@ -102,9 +102,9 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.talkTopicTypes[0].id").value(1L))
-                .andExpect(jsonPath("$.talkTopicTypes[0].content").value("Type 1"))
+                .andExpect(jsonPath("$.talkTopicTypes[0].content").value("사랑과 연애"))
                 .andExpect(jsonPath("$.talkTopicTypes[1].id").value(2L))
-                .andExpect(jsonPath("$.talkTopicTypes[1].content").value("Type 2"));
+                .andExpect(jsonPath("$.talkTopicTypes[1].content").value("비즈니스와 업무"));
         }
 
         @Test
@@ -143,15 +143,15 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
     }
 
     @Nested
-    @DisplayName("대화 태그 전체 조회 시 ")
+    @DisplayName("대화 타입 전체 조회 시 ")
     class GetAllTypesTest{
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception{
             // given
             TopicTypeTotalResponse response = new TopicTypeTotalResponse(List.of(
-                new TopicTypeTotalResponse.TopicTypeResponse(1L, "Type 1"),
-                new TopicTypeTotalResponse.TopicTypeResponse(2L, "Type 2")
+                new TopicTypeTotalResponse.TopicTypeResponse(1L, "사랑과 연애"),
+                new TopicTypeTotalResponse.TopicTypeResponse(2L, "비즈니스와 업무")
             ));
             given(topicTypeService.getAllTopicTypes()).willReturn(response);
 
@@ -161,8 +161,8 @@ public class TopicTypeControllerTest extends ControllerTestSupport {
             // then
             resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.topicTypes[0].content").value("Type 1"))
-                .andExpect(jsonPath("$.topicTypes[1].content").value("Type 2"));
+                .andExpect(jsonPath("$.topicTypes[0].content").value("사랑과 연애"))
+                .andExpect(jsonPath("$.topicTypes[1].content").value("비즈니스와 업무"));
         }
     }
 }
