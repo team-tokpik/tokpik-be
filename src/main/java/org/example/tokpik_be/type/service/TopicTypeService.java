@@ -56,14 +56,16 @@ public class TopicTypeService {
             throw new GeneralException(TypeException.DUPLICATE_TYPES);
         }
 
+        List<TopicType> topicTypes = topicTypeRepository.findAllById(request.topicTypeIds());
+
+        if (topicTypes.size() != request.topicTypeIds().size()) {
+            throw new GeneralException(TypeException.TYPE_NOT_FOUND);
+        }
+
         userTopicTypeRepository.deleteByUserId(user.getId());
 
-        for (long typeId : request.topicTypeIds()) {
-            if (!topicTypeRepository.existsById(typeId)) {
-                throw new GeneralException(TypeException.TYPE_NOT_FOUND);
-            }
-            UserTopicType userTopicType = new UserTopicType(user.getId(),
-                topicTypeRepository.findById(typeId).get());
+        for (TopicType topicType : topicTypes) {
+            UserTopicType userTopicType = new UserTopicType(user.getId(), topicType);
             userTopicTypeRepository.save(userTopicType);
         }
 

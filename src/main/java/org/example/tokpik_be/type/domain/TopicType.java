@@ -28,4 +28,10 @@ public class TopicType extends BaseTimeEntity {
     public TopicType(String content) {
         this.content = content;
     }
+
+    public TopicType(Long id, String content) {
+        this.id = id;
+        this.content = content;
+    }
+
 }
