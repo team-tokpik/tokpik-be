@@ -85,7 +85,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
             UserPlaceTypesRequest request = new UserPlaceTypesRequest(List.of(1L, 2L));
             UserPlaceTypeResponse response = new UserPlaceTypeResponse(userId, List.of(
                 new UserPlaceTypeResponse.PlaceTypeDTO(1L, "집"),
-                new UserPlaceTypeResponse.PlaceTypeDTO(2L, "회사")
+                new UserPlaceTypeResponse.PlaceTypeDTO(2L, "학교")
             ));
             given(placeTypeService.updateUserPlaceTypes(eq(userId), any(UserPlaceTypesRequest.class))).willReturn(response);
 
@@ -102,7 +102,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.placeTopicTypes[0].id").value(1L))
                 .andExpect(jsonPath("$.placeTopicTypes[0].content").value("집"))
                 .andExpect(jsonPath("$.placeTopicTypes[1].id").value(2L))
-                .andExpect(jsonPath("$.placeTopicTypes[1].content").value("회사"));
+                .andExpect(jsonPath("$.placeTopicTypes[1].content").value("학교"));
         }
 
         @Test
@@ -148,7 +148,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
             // given
             PlaceTypeTotalResponse response = new PlaceTypeTotalResponse(List.of(
                 new PlaceTypeTotalResponse.PlaceTypeResponse(1L, "집"),
-                new PlaceTypeTotalResponse.PlaceTypeResponse(2L, "회사")
+                new PlaceTypeTotalResponse.PlaceTypeResponse(2L, "학교")
             ));
             given(placeTypeService.getAllPlaceTypes()).willReturn(response);
 
@@ -159,7 +159,7 @@ public class PlaceTypeControllerTest extends ControllerTestSupport {
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.placeTypes[0].content").value("집"))
-                .andExpect(jsonPath("$.placeTypes[1].content").value("회사"));
+                .andExpect(jsonPath("$.placeTypes[1].content").value("학교"));
         }
     }
 }
