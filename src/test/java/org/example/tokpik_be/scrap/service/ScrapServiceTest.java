@@ -1,7 +1,7 @@
 package org.example.tokpik_be.scrap.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
@@ -10,11 +10,15 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import org.example.tokpik_be.exception.GeneralException;
+import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
+import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
@@ -23,11 +27,13 @@ import org.example.tokpik_be.type.domain.TopicType;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class ScrapServiceTest {
@@ -132,5 +138,77 @@ public class ScrapServiceTest {
         assertThat(firstTopicType.topicTypeContent()).isEqualTo("요즘 이슈");
     }
 
+    @Nested
+    @DisplayName("스크랩 조회 시 ")
+    class GetScrapTest {
 
+        @DisplayName("성공한다.")
+        @Test
+        void getScrap() {
+            // given
+            long scrapId = 1L;
+            Scrap scrap = mock(Scrap.class);
+            given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
+
+            long nextCursorId = 1L;
+            int size = 3;
+
+            TalkTopic talkTopic1 = new TalkTopic("제목1", "부제목1", "상황1", null, new TopicType(1L, "자기 계발"), null);
+            TalkTopic talkTopic2 = new TalkTopic("제목2", "부제목2", "상황2", null, new TopicType(2L, "인간관계"), null);
+
+            ScrapTopic scrapTopic1 = new ScrapTopic(scrap, talkTopic1);
+            ScrapTopic scrapTopic2 = new ScrapTopic(scrap, talkTopic2);
+
+            List<ScrapTopic> scrapTopics = List.of(scrapTopic1, scrapTopic2);
+
+            when(scrapTopicRepository.findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, nextCursorId, PageRequest.of(0, size)))
+                .thenReturn(scrapTopics);
+
+            when(scrapTopicRepository.existsByScrapIdAndId(scrapId, nextCursorId)).thenReturn(true);
+
+            // when
+            ScrapResponse response = scrapService.getScrapTopics(scrapId, nextCursorId, size);
+
+            // then
+            assertThat(response.contents()).hasSize(scrapTopics.size());
+            assertThat(response.nextCursorId()).isEqualTo(scrapTopics.get(scrapTopics.size() - 1).getId());
+            assertThat(response.first()).isTrue();
+        }
+
+        @DisplayName("스크랩이 존재하지 않으면 예외가 발생한다.")
+        @Test
+        void invalidScrap(){
+            // given
+            long invalidScrapId = 1L;
+            given(scrapRepository.findById(invalidScrapId)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> scrapService.getScrapTopics(invalidScrapId, 0L, 3))
+                .isInstanceOf(GeneralException.class)
+                .extracting("exception")
+                .isEqualTo(ScrapException.SCRAP_NOT_FOUND);
+        }
+
+        @DisplayName("스크랩에 포함되지 않은 대화주제를 페이징에 사용하면 예외가 발생한다.")
+        @Test
+        void invalidTalkTopic(){
+            // given
+            long scrapId = 1L;
+            Scrap scrap = mock(Scrap.class);
+            given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
+
+            long invalidNextCursorId = 999L;
+            int size = 3;
+
+            given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
+
+            when(scrapTopicRepository.existsByScrapIdAndId(scrapId, invalidNextCursorId)).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> scrapService.getScrapTopics(scrapId, invalidNextCursorId, size))
+                .isInstanceOf(GeneralException.class)
+                .extracting("exception")
+                .isEqualTo(ScrapException.INVALID_SCRAP_TOPIC);
+        }
+    }
 }
