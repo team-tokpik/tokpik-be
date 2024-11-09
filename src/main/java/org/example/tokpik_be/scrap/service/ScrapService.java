@@ -36,7 +36,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        List<Scrap> scraps = scrapRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        List<Scrap> scraps = scrapRepository.findByUserOrderByCreatedAtDesc(user);
 
         List<ScrapListResponse.ScrapResponse> scrapResponses = scraps.stream()
             .map(this::mapToScrapResponse)

@@ -32,15 +32,14 @@ public class ScrapController {
 
     private final ScrapService scrapService;
 
-    @Operation(summary = "스크랩 리스트 조회", description = "스크랩 리스트 조회")
-    @ApiResponse(responseCode = "200", description = "스크랩 리스트 조회 성공")
+    @Operation(summary = "스크랩 목록 조회", description = "스크랩 목록 조회")
+    @ApiResponse(responseCode = "200", description = "스크랩 목록 조회 성공")
     @GetMapping("/users/scraps")
     public ResponseEntity<ScrapListResponse> getScraps(
         @RequestAttribute("userId") long userId) {
         ScrapListResponse scrapListResponse = scrapService.getScraps(userId);
         return ResponseEntity.ok(scrapListResponse);
     }
-
 
     @Operation(summary = "총 스크랩 수 조회", description = "총 스크랩 수 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 수 조회 성공")

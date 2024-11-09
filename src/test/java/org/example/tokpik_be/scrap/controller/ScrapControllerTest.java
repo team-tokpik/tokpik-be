@@ -66,14 +66,12 @@ public class ScrapControllerTest extends ControllerTestSupport {
     }
 
     @Nested
-    @DisplayName("스크랩 리스트 목록 조회 시 ")
+    @DisplayName("스크랩 목록 조회 시 ")
     class GetScrapListTest {
-
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
-
-            // Given
+            // given
             ScrapListResponse response = new ScrapListResponse(List.of(
                 new ScrapListResponse.ScrapResponse(1L, "스크랩 1", List.of(
                     new ScrapListResponse.TopicTypeResponse(3L, "아이스브레이킹"),
@@ -87,10 +85,10 @@ public class ScrapControllerTest extends ControllerTestSupport {
             ));
             given(scrapService.getScraps(userId)).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/scraps"));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 // .andExpect(jsonPath("$.userId").value(userId))
@@ -118,14 +116,14 @@ public class ScrapControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
         void userNotFound() throws Exception {
-            // Given
+            // given
             given(scrapService.getScraps(userId))
                 .willThrow(new GeneralException(UserException.USER_NOT_FOUND));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc.perform(get("/users/scraps"));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(UserException.USER_NOT_FOUND.getMessage()));
         }
@@ -138,8 +136,7 @@ public class ScrapControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("성공한다.")
         void success() throws Exception {
-
-            // Given
+            // given
             ScrapResponse response = new ScrapResponse(
                 List.of(
                     new ScrapResponse.ScrapTopicResponse(1L, 1L, "첫만남에 스몰토크", "아이스브레이킹", true),
@@ -149,13 +146,13 @@ public class ScrapControllerTest extends ControllerTestSupport {
             );
             given(scrapService.getScrapTopics(scrapId, nextCursorId, size)).willReturn(response);
 
-            // When
+            // when
             ResultActions resultActions = mockMvc
                 .perform(get("/users/scraps/{scrapId}/topics", scrapId)
                     .param("nextCursorId", String.valueOf(nextCursorId))
                     .param("size", String.valueOf(size)));
 
-            // Then
+            // then
             resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents.[0].scrapTopicId").value(1L))
@@ -176,17 +173,17 @@ public class ScrapControllerTest extends ControllerTestSupport {
         @Test
         @DisplayName("스크랩이 존재하지 않으면 예외가 발생한다.")
         void scrapNotFound() throws Exception {
-            // Given
+            // given
             given(scrapService.getScrapTopics(scrapId, nextCursorId, size))
                 .willThrow(new GeneralException(ScrapException.SCRAP_NOT_FOUND));
 
-            // When
+            // when
             ResultActions resultActions = mockMvc
                 .perform(get("/users/scraps/{scrapId}/topics", scrapId)
                     .param("nextCursorId", String.valueOf(nextCursorId))
                     .param("size", String.valueOf(size)));
 
-            // Then
+            // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(
                     jsonPath("$.message").value(ScrapException.SCRAP_NOT_FOUND.getMessage()));
