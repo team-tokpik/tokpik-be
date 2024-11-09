@@ -91,7 +91,6 @@ public class ScrapControllerTest extends ControllerTestSupport {
             // then
             resultActions
                 .andExpect(status().isOk())
-                // .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.scraps.[0].scrapId").value(1L))
                 .andExpect(jsonPath("$.scraps[0].scrapName").value("스크랩 1"))
                 .andExpect(jsonPath("$.scraps[0].recentTopicTypes[0].topicTypeId").value(3L))
