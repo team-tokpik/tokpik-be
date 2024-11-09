@@ -18,9 +18,9 @@ public interface ScrapTopicRepository extends JpaRepository<ScrapTopic, Long> {
     @Query("SELECT COUNT(st) FROM ScrapTopic st WHERE st.scrap.user.id = :userId")
     Long countByUserId(@Param("userId") Long userId);
 
-    List<ScrapTopic> findByScrapIdAndIdGreaterThanOrderByIdAsc(Long scrapId, Long lastCursorId, Pageable pageable);
+    List<ScrapTopic> findByScrapIdAndIdGreaterThanOrderByIdAsc(Long scrapId, Long nextCursorId, Pageable pageable);
 
-    long countByScrapIdAndIdGreaterThan(Long scrapId, Long lastContentId);
+    long countByScrapIdAndIdGreaterThan(Long scrapId, Long nextCursorId);
 
     boolean existsByScrapIdAndId(Long scrapId, Long topicId);
 }

@@ -45,7 +45,7 @@ public class ScrapService {
         return new ScrapListResponse(scrapResponses);
     }
 
-    private ScrapListResponse.ScrapResponse mapToScrapResponse(Scrap scrap) {
+    public ScrapListResponse.ScrapResponse mapToScrapResponse(Scrap scrap) {
         List<ScrapTopic> scrapTopics = scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scrap);
 
         List<ScrapListResponse.TopicTypeResponse> topicTypes = scrapTopics.stream()
@@ -139,19 +139,50 @@ public class ScrapService {
 
         Scrap scrap = findById(scrapId);
 
-        if (nextCursorId != null && nextCursorId > 0) {
-            boolean isValidNextCursor = scrapTopicRepository.existsByScrapIdAndId(scrapId,
-                nextCursorId);
-            if (!isValidNextCursor) {
-                throw new GeneralException(ScrapException.INVALID_SCRAP_TOPIC);
-            }
-        }
+        validNextCursorId(scrapId, nextCursorId);
 
         Pageable pageable = PageRequest.of(0, size);
         List<ScrapTopic> scrapTopics = scrapTopicRepository
             .findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, nextCursorId, pageable);
 
-        List<ScrapResponse.ScrapTopicResponse> contents = scrapTopics.stream()
+        List<ScrapResponse.ScrapTopicResponse> contents = mapToScrapTopicResponses(scrapId, scrapTopics);
+
+        Long newNextCursorId = getNewNextCursorId(contents, nextCursorId, scrapTopics);
+
+        boolean isFirst = isAtFirst(scrapId, nextCursorId);
+        boolean isLast = scrapTopics.size() < size;
+
+        return new ScrapResponse(contents, newNextCursorId, isFirst, isLast);
+    }
+
+    public void validNextCursorId(Long scrapId, Long nextCursorId) {
+        if (nextCursorId != null && nextCursorId > 0) {
+            boolean isValidNextCursorId = scrapTopicRepository.existsByScrapIdAndId(scrapId, nextCursorId);
+            if (!isValidNextCursorId) {
+                throw new GeneralException(ScrapException.INVALID_SCRAP_TOPIC);
+            }
+        }
+    }
+
+    private boolean isTopicScraped(Long scrapId, Long topicId) {
+        return scrapRepository.existsByIdAndScrapTopicsTalkTopicId(scrapId, topicId);
+    }
+
+    public Long getNewNextCursorId(List<ScrapResponse.ScrapTopicResponse> contents, Long nextCursorId, List<ScrapTopic> scrapTopics) {
+        return contents.isEmpty() ? nextCursorId : scrapTopics.get(scrapTopics.size() - 1).getId();
+    }
+
+    public boolean isAtFirst(Long scrapId, Long nextCursorId) {
+        if (nextCursorId == null || nextCursorId == 0) {
+            return true;
+        } else {
+            long countAfterNextCursor = scrapTopicRepository.countByScrapIdAndIdGreaterThan(scrapId, nextCursorId);
+            return countAfterNextCursor == 0;
+        }
+    }
+
+    public List<ScrapResponse.ScrapTopicResponse> mapToScrapTopicResponses(Long scrapId, List<ScrapTopic> scrapTopics) {
+        return scrapTopics.stream()
             .map(scrapTopic -> {
                 TalkTopic talkTopic = scrapTopic.getTalkTopic();
                 boolean isScraped = isTopicScraped(scrapId, talkTopic.getId());
@@ -164,31 +195,6 @@ public class ScrapService {
                 );
             })
             .toList();
-
-        Long newNextCursorId = contents.isEmpty() ? nextCursorId :
-            scrapTopics.get(scrapTopics.size() - 1).getId();
-
-        boolean isFirst;
-        if (nextCursorId == null || nextCursorId == 0) {
-            isFirst = true;
-        } else {
-            long countAfterNextCursor = scrapTopicRepository
-                .countByScrapIdAndIdGreaterThan(scrapId, nextCursorId);
-            isFirst = countAfterNextCursor == 0;
-        }
-
-        boolean isLast = scrapTopics.size() < size;
-
-        return new ScrapResponse(
-            contents,
-            newNextCursorId,
-            isFirst,
-            isLast
-        );
-    }
-
-    private boolean isTopicScraped(Long scrapId, Long topicId) {
-        return scrapRepository.existsByIdAndScrapTopicsTalkTopicId(scrapId, topicId);
     }
 
     @Transactional
