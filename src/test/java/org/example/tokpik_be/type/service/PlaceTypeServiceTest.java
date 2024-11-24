@@ -160,7 +160,7 @@ public class PlaceTypeServiceTest {
         }
     }
 
-    @DisplayName("장소 타입을 전체 조회할 수 있다.")
+    @DisplayName("모든 장소 타입을 조회할 수 있다.")
     @Test
     void getAllPlaceTypes() {
         // given

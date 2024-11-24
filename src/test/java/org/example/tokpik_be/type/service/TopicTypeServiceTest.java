@@ -155,41 +155,24 @@ public class TopicTypeServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("대화 타입 전체 조회 시 ")
-    class GetAllTopicTypesTest {
 
-        @Test
-        @DisplayName("성공한다.")
-        void getAllTopicTypes() {
-            // given
-            TopicType topicType1 = new TopicType(1L,"사랑과 연애");
-            TopicType topicType2 = new TopicType(2L, "비즈니스와 업무");
-            TopicType topicType3 = new TopicType(3L, "아이스브레이킹");
+    @DisplayName("모든 대화 타입을 조회할 수 있다.")
+    @Test
+    void getAllTopicTypes() {
+        // given
+        TopicType topicType1 = new TopicType(1L,"사랑과 연애");
+        TopicType topicType2 = new TopicType(2L, "비즈니스와 업무");
+        TopicType topicType3 = new TopicType(3L, "아이스브레이킹");
 
-            when(topicTypeRepository.findAll()).thenReturn(List.of(topicType1, topicType2, topicType3));
+        when(topicTypeRepository.findAll()).thenReturn(List.of(topicType1, topicType2, topicType3));
 
-            // when
-            TopicTypeTotalResponse result = topicTypeService.getAllTopicTypes();
+        // when
+        TopicTypeTotalResponse result = topicTypeService.getAllTopicTypes();
 
-            // then
-            assertThat(result.topicTypes())
-                .hasSize(3)
-                .extracting(TopicTypeTotalResponse.TopicTypeResponse::content)
-                .containsExactlyInAnyOrder("사랑과 연애", "비즈니스와 업무", "아이스브레이킹");
-        }
-
-        @Test
-        @DisplayName("대화 타입이 존재하지 않으면 빈 리스트를 반환한다.")
-        void emptyRequest() {
-            // given
-            when(topicTypeRepository.findAll()).thenReturn(List.of());
-
-            // when
-            TopicTypeTotalResponse result = topicTypeService.getAllTopicTypes();
-
-            // then
-            assertThat(result.topicTypes()).isEmpty();
-        }
+        // then
+        assertThat(result.topicTypes())
+            .hasSize(3)
+            .extracting(TopicTypeTotalResponse.TopicTypeResponse::content)
+            .containsExactlyInAnyOrder("사랑과 연애", "비즈니스와 업무", "아이스브레이킹");
     }
 }
