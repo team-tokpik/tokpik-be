@@ -45,7 +45,7 @@ public class ScrapService {
         return new ScrapListResponse(scrapResponses);
     }
 
-    public ScrapListResponse.ScrapResponse mapToScrapResponse(Scrap scrap) {
+    private ScrapListResponse.ScrapResponse mapToScrapResponse(Scrap scrap) {
         List<ScrapTopic> scrapTopics = scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scrap);
 
         List<ScrapListResponse.TopicTypeResponse> topicTypes = scrapTopics.stream()
