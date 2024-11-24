@@ -2,7 +2,7 @@ package org.example.tokpik_be.type.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import java.util.List;
 
@@ -54,17 +54,17 @@ public class PlaceTypeServiceTest {
         // given
         long userId = 1L;
         User user = mockUser(userId);
-        when(userQueryService.findById(userId)).thenReturn(user);
+        given(userQueryService.findById(userId)).willReturn(user);
 
-        PlaceType placeType1 = new PlaceType("집");
-        PlaceType placeType2 = new PlaceType("학교");
+        List<PlaceType> placeTypes = List.of(
+            new PlaceType("집"),
+            new PlaceType("학교"));
 
-        UserPlaceType userPlaceType1 = new UserPlaceType(userId, placeType1);
-        UserPlaceType userPlaceType2 = new UserPlaceType(userId, placeType2);
+        List<UserPlaceType> userPlaceTypes = List.of(
+            new UserPlaceType(userId, placeTypes.get(0)),
+            new UserPlaceType(userId, placeTypes.get(1)));
 
-        List<UserPlaceType> userPlaceTypes = List.of(userPlaceType1, userPlaceType2);
-
-        when(userPlaceTypeRepository.findByUserId(anyLong())).thenReturn(userPlaceTypes);
+        given(userPlaceTypeRepository.findByUserId(anyLong())).willReturn(userPlaceTypes);
 
         // when
         UserPlaceTypeResponse response = placeTypeService.getUserPlaceTypes(userId);
@@ -86,21 +86,25 @@ public class PlaceTypeServiceTest {
             // given
             long userId = 1L;
             User user = mockUser(userId);
-            when(userQueryService.findById(userId)).thenReturn(user);
+            given(userQueryService.findById(userId)).willReturn(user);
 
-            PlaceType placeType1 = new PlaceType(1L, "집");
-            PlaceType placeType3 = new PlaceType(3L, "직장");
+            List<PlaceType> placeTypes = List.of(
+                new PlaceType(1L, "집"),
+                new PlaceType(3L, "직장")
+            );
 
-            when(placeTypeRepository.findAllById(List.of(1L, 3L)))
-                .thenReturn(List.of(placeType1, placeType3));
+            given(placeTypeRepository.findAllById(List.of(1L, 3L)))
+                .willReturn(List.of(placeTypes.get(0), placeTypes.get(1)));
 
             List<Long> newTypes = List.of(1L, 3L);
             UserPlaceTypesRequest request = new UserPlaceTypesRequest(newTypes);
 
-            UserPlaceType userPlaceType1 = new UserPlaceType(userId, placeType1);
-            UserPlaceType userPlaceType3 = new UserPlaceType(userId, placeType3);
-            when(userPlaceTypeRepository.findByUserId(userId))
-                .thenReturn(List.of(userPlaceType1, userPlaceType3));
+            List<UserPlaceType> userPlaceTypes = List.of(
+                new UserPlaceType(userId, placeTypes.get(0)),
+                new UserPlaceType(userId, placeTypes.get(1)));
+
+            given(userPlaceTypeRepository.findByUserId(userId))
+                .willReturn(List.of(userPlaceTypes.get(0), userPlaceTypes.get(1)));
 
             // when
             UserPlaceTypeResponse response = placeTypeService.updateUserPlaceTypes(userId, request);
@@ -120,7 +124,7 @@ public class PlaceTypeServiceTest {
             // given
             long userId = 1L;
             User user = mockUser(userId);
-            when(userQueryService.findById(userId)).thenReturn(user);
+            given(userQueryService.findById(userId)).willReturn(user);
 
             List<Long> duplicateType = List.of(1L, 1L);
             UserPlaceTypesRequest request = new UserPlaceTypesRequest(duplicateType);
@@ -138,13 +142,13 @@ public class PlaceTypeServiceTest {
             // given
             long userId = 1L;
             User user = mockUser(userId);
-            when(userQueryService.findById(userId)).thenReturn(user);
+            given(userQueryService.findById(userId)).willReturn(user);
 
             long invalidTypeId = 10L;
 
             List<Long> invalidType = List.of(invalidTypeId);
 
-            when(placeTypeRepository.findAllById(invalidType)).thenReturn(List.of());
+            given(placeTypeRepository.findAllById(invalidType)).willReturn(List.of());
             UserPlaceTypesRequest request = new UserPlaceTypesRequest(invalidType);
 
             // when & then
@@ -163,11 +167,12 @@ public class PlaceTypeServiceTest {
         @DisplayName("성공한다.")
         void getAllPlaceTypes() {
             // given
-            PlaceType placeType1 = new PlaceType(1L,"집");
-            PlaceType placeType2 = new PlaceType(2L, "학교");
-            PlaceType placeType3 = new PlaceType(3L, "직장");
+            List<PlaceType> placeTypes = List.of(
+                new PlaceType(1L,"집"),
+                new PlaceType(2L, "학교"),
+                new PlaceType(3L, "직장"));
 
-            when(placeTypeRepository.findAll()).thenReturn(List.of(placeType1, placeType2, placeType3));
+            given(placeTypeRepository.findAll()).willReturn(placeTypes);
 
             // when
             PlaceTypeTotalResponse result = placeTypeService.getAllPlaceTypes();
@@ -183,7 +188,7 @@ public class PlaceTypeServiceTest {
         @DisplayName("장소 타입이 존재하지 않으면 빈 리스트를 반환한다.")
         void emptyRequest() {
             // given
-            when(placeTypeRepository.findAll()).thenReturn(List.of());
+            given(placeTypeRepository.findAll()).willReturn(List.of());
 
             // when
             PlaceTypeTotalResponse result = placeTypeService.getAllPlaceTypes();
