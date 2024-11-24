@@ -48,23 +48,23 @@ public class TopicTypeServiceTest {
         };
     }
 
-    @Test
     @DisplayName("사용자의 대화 타입을 조회할 수 있다.")
+    @Test
     void getMyTopicTypes() {
         // given
         long userId = 1L;
         User user = mockUser(userId);
-        when(userQueryService.findById(userId)).thenReturn(user);
+        given(userQueryService.findById(userId)).willReturn(user);
 
-        TopicType topicType1 = new TopicType("사랑과 연애");
-        TopicType topicType2 = new TopicType("비즈니스와 업무");
+        List<TopicType> topicTypes = List.of(
+            new TopicType("사랑과 연애"),
+            new TopicType("비즈니스와 업무"));
 
-        UserTopicType userTopicType1 = new UserTopicType(userId, topicType1);
-        UserTopicType userTopicType2 = new UserTopicType(userId, topicType2);
+        List<UserTopicType> userTopicTypes = List.of(
+            new UserTopicType(userId, topicTypes.get(0)),
+            new UserTopicType(userId, topicTypes.get(1)));
 
-        List<UserTopicType> userTopicTypes = List.of(userTopicType1, userTopicType2);
-
-        when(userTopicTypeRepository.findByUserId(anyLong())).thenReturn(userTopicTypes);
+        given(userTopicTypeRepository.findByUserId(anyLong())).willReturn(userTopicTypes);
 
         // when
         UserTopicTypeResponse response = topicTypeService.getUserTopicTypes(userId);
@@ -80,27 +80,28 @@ public class TopicTypeServiceTest {
     @Nested
     @DisplayName("사용자 대화 타입 수정 시 ")
     class UpdateTopicTypesTest {
-        @Test
         @DisplayName("성공한다.")
+        @Test
         void updateMyTopicTypes() {
             // given
             long userId = 1L;
             User user = mockUser(userId);
-            when(userQueryService.findById(userId)).thenReturn(user);
+            given(userQueryService.findById(userId)).willReturn(user);
 
-            TopicType topicType1 = new TopicType(1L, "사랑과 연애");
-            TopicType topicType3 = new TopicType(3L, "아이스브레이킹");
+            List<TopicType> topicTypes = List.of(
+                new TopicType(1L, "사랑과 연애"),
+                new TopicType(3L, "아이스브레이킹"));
 
-            when(topicTypeRepository.findAllById(List.of(1L, 3L)))
-                .thenReturn(List.of(topicType1, topicType3));
+            given(topicTypeRepository.findAllById(List.of(1L, 3L))).willReturn(topicTypes);
 
             List<Long> newTypes = List.of(1L, 3L);
             UserTopicTypesRequest request = new UserTopicTypesRequest(newTypes);
 
-            UserTopicType userTopicType1 = new UserTopicType(userId, topicType1);
-            UserTopicType userTopicType3 = new UserTopicType(userId, topicType3);
-            when(userTopicTypeRepository.findByUserId(userId))
-                .thenReturn(List.of(userTopicType1, userTopicType3));
+            List<UserTopicType> userTopicTypes = List.of(
+                new UserTopicType(userId, topicTypes.get(0)),
+                new UserTopicType(userId, topicTypes.get(1)));
+
+            given(userTopicTypeRepository.findByUserId(userId)).willReturn(userTopicTypes);
 
             // when
             UserTopicTypeResponse response = topicTypeService.updateUserTopicTypes(userId, request);
@@ -114,13 +115,13 @@ public class TopicTypeServiceTest {
                 });
         }
 
-        @Test
         @DisplayName("중복된 값을 요청 데이터에 포함하면 예외가 발생한다.")
+        @Test
         void duplicateTypes() {
             // given
             long userId = 1L;
             User user = mockUser(userId);
-            when(userQueryService.findById(userId)).thenReturn(user);
+            given(userQueryService.findById(userId)).willReturn(user);
 
             List<Long> duplicateType = List.of(1L, 1L);
             UserTopicTypesRequest request = new UserTopicTypesRequest(duplicateType);
@@ -132,19 +133,19 @@ public class TopicTypeServiceTest {
                 .isEqualTo(TypeException.DUPLICATE_TYPES);
         }
 
-        @Test
         @DisplayName("존재하지 않는 값이면 예외가 발생한다.")
+        @Test
         void typeNotFound() {
             // given
             long userId = 1L;
             User user = mockUser(userId);
-            when(userQueryService.findById(userId)).thenReturn(user);
+            given(userQueryService.findById(userId)).willReturn(user);
 
             long invalidTypeId = 10L;
 
             List<Long> invalidType = List.of(invalidTypeId);
 
-            when(topicTypeRepository.findAllById(invalidType)).thenReturn(List.of());
+            given(topicTypeRepository.findAllById(invalidType)).willReturn(List.of());
             UserTopicTypesRequest request = new UserTopicTypesRequest(invalidType);
 
             // when & then
@@ -155,16 +156,16 @@ public class TopicTypeServiceTest {
         }
     }
 
-
     @DisplayName("모든 대화 타입을 조회할 수 있다.")
     @Test
     void getAllTopicTypes() {
         // given
-        TopicType topicType1 = new TopicType(1L,"사랑과 연애");
-        TopicType topicType2 = new TopicType(2L, "비즈니스와 업무");
-        TopicType topicType3 = new TopicType(3L, "아이스브레이킹");
+        List<TopicType> topicTypes = List.of(
+            new TopicType(1L,"사랑과 연애"),
+            new TopicType(2L, "비즈니스와 업무"),
+            new TopicType(3L, "아이스브레이킹"));
 
-        when(topicTypeRepository.findAll()).thenReturn(List.of(topicType1, topicType2, topicType3));
+        given(topicTypeRepository.findAll()).willReturn(topicTypes);
 
         // when
         TopicTypeTotalResponse result = topicTypeService.getAllTopicTypes();
