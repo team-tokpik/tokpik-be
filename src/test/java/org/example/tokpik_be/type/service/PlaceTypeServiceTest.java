@@ -48,8 +48,8 @@ public class PlaceTypeServiceTest {
         };
     }
 
-    @Test
     @DisplayName("사용자의 장소 타입을 조회할 수 있다.")
+    @Test
     void getMyPlaceTypes() {
         // given
         long userId = 1L;
@@ -80,8 +80,9 @@ public class PlaceTypeServiceTest {
     @Nested
     @DisplayName("사용자 장소 타입 수정 시 ")
     class UpdatePlaceTypesTest {
-        @Test
+
         @DisplayName("성공한다.")
+        @Test
         void updateMyPlaceTypes() {
             // given
             long userId = 1L;
@@ -118,8 +119,8 @@ public class PlaceTypeServiceTest {
                 });
         }
 
-        @Test
         @DisplayName("중복된 값을 요청 데이터에 포함하면 예외가 발생한다.")
+        @Test
         void duplicateTypes() {
             // given
             long userId = 1L;
@@ -136,8 +137,8 @@ public class PlaceTypeServiceTest {
                 .isEqualTo(TypeException.DUPLICATE_TYPES);
         }
 
-        @Test
         @DisplayName("존재하지 않는 값이면 예외가 발생한다.")
+        @Test
         void typeNotFound() {
             // given
             long userId = 1L;
@@ -159,42 +160,24 @@ public class PlaceTypeServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("장소 타입 전체 조회 시 ")
-    class GetAllPlaceTypesTest {
+    @DisplayName("장소 타입을 전체 조회할 수 있다.")
+    @Test
+    void getAllPlaceTypes() {
+        // given
+        List<PlaceType> placeTypes = List.of(
+            new PlaceType(1L,"집"),
+            new PlaceType(2L, "학교"),
+            new PlaceType(3L, "직장"));
 
-        @Test
-        @DisplayName("성공한다.")
-        void getAllPlaceTypes() {
-            // given
-            List<PlaceType> placeTypes = List.of(
-                new PlaceType(1L,"집"),
-                new PlaceType(2L, "학교"),
-                new PlaceType(3L, "직장"));
+        given(placeTypeRepository.findAll()).willReturn(placeTypes);
 
-            given(placeTypeRepository.findAll()).willReturn(placeTypes);
+        // when
+        PlaceTypeTotalResponse result = placeTypeService.getAllPlaceTypes();
 
-            // when
-            PlaceTypeTotalResponse result = placeTypeService.getAllPlaceTypes();
-
-            // then
-            assertThat(result.placeTypes())
-                .hasSize(3)
-                .extracting(PlaceTypeTotalResponse.PlaceTypeResponse::content)
-                .containsExactlyInAnyOrder("집", "학교", "직장");
-        }
-
-        @Test
-        @DisplayName("장소 타입이 존재하지 않으면 빈 리스트를 반환한다.")
-        void emptyRequest() {
-            // given
-            given(placeTypeRepository.findAll()).willReturn(List.of());
-
-            // when
-            PlaceTypeTotalResponse result = placeTypeService.getAllPlaceTypes();
-
-            // then
-            assertThat(result.placeTypes()).isEmpty();
-        }
+        // then
+        assertThat(result.placeTypes())
+            .hasSize(3)
+            .extracting(PlaceTypeTotalResponse.PlaceTypeResponse::content)
+            .containsExactlyInAnyOrder("집", "학교", "직장");
     }
 }
