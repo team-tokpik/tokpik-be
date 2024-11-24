@@ -14,6 +14,7 @@ import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
@@ -68,8 +69,8 @@ public class ScrapControllerTest extends ControllerTestSupport {
     @Nested
     @DisplayName("스크랩 목록 조회 시 ")
     class GetScrapListTest {
-        @Test
         @DisplayName("성공한다.")
+        @Test
         void success() throws Exception {
             // given
             ScrapListResponse response = new ScrapListResponse(List.of(
@@ -112,8 +113,8 @@ public class ScrapControllerTest extends ControllerTestSupport {
                     jsonPath("$.scraps[1].recentTopicTypes[2].topicTypeContent").value("인간관계"));
         }
 
-        @Test
         @DisplayName("사용자가 존재하지 않으면 예외가 발생한다.")
+        @Test
         void userNotFound() throws Exception {
             // given
             given(scrapService.getScraps(userId))
@@ -131,9 +132,8 @@ public class ScrapControllerTest extends ControllerTestSupport {
     @Nested
     @DisplayName("스크랩에 포함된 대화 주제 조회 시 ")
     class GetScrapTopicsTest {
-
-        @Test
         @DisplayName("성공한다.")
+        @Test
         void success() throws Exception {
             // given
             ScrapResponse response = new ScrapResponse(
@@ -169,8 +169,8 @@ public class ScrapControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.last").value(false));
         }
 
-        @Test
         @DisplayName("스크랩이 존재하지 않으면 예외가 발생한다.")
+        @Test
         void scrapNotFound() throws Exception {
             // given
             given(scrapService.getScrapTopics(scrapId, nextCursorId, size))
@@ -230,6 +230,22 @@ public class ScrapControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.message['scrapName']")
                     .value("스크랩 이름은 필수값"));
         }
+    }
+
+    @DisplayName("사용자의 총 스크랩 수 조회를 성공한다.")
+    @Test
+    void getScrapCountSuccess() throws Exception{
+        // given
+        long userId = 1L;
+
+        ScrapCountResponse scrapCountResponse = new ScrapCountResponse(10L);
+        given(scrapService.getUserScrapCount(userId)).willReturn(scrapCountResponse);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/users/scraps/count"));
+
+        // then
+        resultActions.andExpect(status().isOk());
     }
 }
 
