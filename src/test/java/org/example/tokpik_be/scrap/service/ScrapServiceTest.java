@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.assertj.core.api.SoftAssertions;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
@@ -102,40 +103,54 @@ public class ScrapServiceTest {
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
         given(userQueryService.findById(userId)).willReturn(user);
 
-        TopicType topicType1 = new TopicType(1L, "요즘 이슈");
-        TopicType topicType2 = new TopicType(2L, "비즈니스");
-        TalkTopic talkTopic1 = new TalkTopic("제목1", "부제목1", "상황1", null, topicType1, null);
-        TalkTopic talkTopic2 = new TalkTopic("제목2", "부제목2", "상황2", null, topicType2, null);
+        List<TopicType> topicTypes = List.of(
+            new TopicType(1L, "요즘 이슈"),
+            new TopicType(2L, "비즈니스"));
 
-        Scrap scrap1 = new Scrap("스크랩 1", user);
-        Scrap scrap2 = new Scrap("스크랩 2", user);
+        List<TalkTopic> talkTopics = List.of(
+            new TalkTopic("제목1", "부제목1", "상황1", null, topicTypes.get(0), null),
+            new TalkTopic("제목2", "부제목2", "상황2", null, topicTypes.get(1), null));
 
-        ScrapTopic scrapTopic1 = new ScrapTopic(scrap1, talkTopic1);
-        ScrapTopic scrapTopic2 = new ScrapTopic(scrap1, talkTopic2);
-        ScrapTopic scrapTopic3 = new ScrapTopic(scrap2, talkTopic1);
-        ScrapTopic scrapTopic4 = new ScrapTopic(scrap2, talkTopic2);
+        List<Scrap> scraps = List.of(
+            new Scrap("스크랩 1", user),
+            new Scrap("스크랩 2", user));
 
-        List<Scrap> scraps = List.of(scrap1, scrap2);
-        List<ScrapTopic> scrapTopicsForScrap1 = List.of(scrapTopic1, scrapTopic2);
-        List<ScrapTopic> scrapTopicsForScrap2 = List.of(scrapTopic3, scrapTopic4);
+        List<ScrapTopic> scrapTopics = List.of(
+            new ScrapTopic(scraps.get(0),talkTopics.get(0)),
+            new ScrapTopic(scraps.get(0),talkTopics.get(1)),
+            new ScrapTopic(scraps.get(1),talkTopics.get(0)),
+            new ScrapTopic(scraps.get(1),talkTopics.get(1)));
+
+        List<ScrapTopic> scrapTopicsForScrap1 = List.of(scrapTopics.get(0), scrapTopics.get(1));
+        List<ScrapTopic> scrapTopicsForScrap2 = List.of(scrapTopics.get(2), scrapTopics.get(3));
 
         given(scrapRepository.findByUserOrderByCreatedAtDesc(user)).willReturn(scraps);
-        given(scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scrap1)).willReturn(scrapTopicsForScrap1);
-        given(scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scrap2)).willReturn(scrapTopicsForScrap2);
+        given(scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scraps.get(0))).willReturn(scrapTopicsForScrap1);
+        given(scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scraps.get(1))).willReturn(scrapTopicsForScrap2);
 
         // when
         ScrapListResponse response = scrapService.getScraps(userId);
 
         // then
-        assertThat(response.scraps()).hasSize(2);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.scraps()).hasSize(scraps.size());
 
-        ScrapListResponse.ScrapResponse firstScrapResponse = response.scraps().get(0);
-        assertThat(firstScrapResponse.scrapName()).isEqualTo("스크랩 1");
-        assertThat(firstScrapResponse.recentTopicTypes()).hasSize(2);
+            ScrapListResponse.ScrapResponse firstScrapResponse = response.scraps().get(0);
+            softly.assertThat(firstScrapResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("scrapId")
+                .isEqualTo(new ScrapListResponse.ScrapResponse(
+                    1L,
+                    "스크랩 1",
+                    List.of(new ScrapListResponse.TopicTypeResponse(1L, "요즘 이슈"),
+                        new ScrapListResponse.TopicTypeResponse(2L, "비즈니스"))
+                ));
 
-        ScrapListResponse.TopicTypeResponse firstTopicType = firstScrapResponse.recentTopicTypes().get(0);
-        assertThat(firstTopicType.topicTypeId()).isEqualTo(1L);
-        assertThat(firstTopicType.topicTypeContent()).isEqualTo("요즘 이슈");
+            ScrapListResponse.TopicTypeResponse firstTopicType = firstScrapResponse.recentTopicTypes().get(0);
+            softly.assertThat(firstTopicType)
+                .usingRecursiveComparison()
+                .isEqualTo(new ScrapListResponse.TopicTypeResponse(1L, "요즘 이슈"));
+        });
     }
 
     @Nested
@@ -153,26 +168,27 @@ public class ScrapServiceTest {
             long nextCursorId = 1L;
             int size = 3;
 
-            TalkTopic talkTopic1 = new TalkTopic("제목1", "부제목1", "상황1", null, new TopicType(1L, "자기 계발"), null);
-            TalkTopic talkTopic2 = new TalkTopic("제목2", "부제목2", "상황2", null, new TopicType(2L, "인간관계"), null);
+            List<TalkTopic> talkTopics = List.of(
+                new TalkTopic("제목1", "부제목1", "상황1", null, new TopicType(1L, "자기 계발"), null),
+                new TalkTopic("제목2", "부제목2", "상황2", null, new TopicType(2L, "인간관계"), null));
 
-            ScrapTopic scrapTopic1 = new ScrapTopic(scrap, talkTopic1);
-            ScrapTopic scrapTopic2 = new ScrapTopic(scrap, talkTopic2);
+            List<ScrapTopic> scrapTopics = List.of(
+                new ScrapTopic(scrap, talkTopics.get(0)),
+                new ScrapTopic(scrap, talkTopics.get(1)));
 
-            List<ScrapTopic> scrapTopics = List.of(scrapTopic1, scrapTopic2);
-
-            when(scrapTopicRepository.findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, nextCursorId, PageRequest.of(0, size)))
-                .thenReturn(scrapTopics);
-
-            when(scrapTopicRepository.existsByScrapIdAndId(scrapId, nextCursorId)).thenReturn(true);
+            given(scrapTopicRepository.findByScrapIdAndIdGreaterThanOrderByIdAsc(scrapId, nextCursorId, PageRequest.of(0, size)))
+                .willReturn(scrapTopics);
+            given(scrapTopicRepository.existsByScrapIdAndId(scrapId, nextCursorId)).willReturn(true);
 
             // when
             ScrapResponse response = scrapService.getScrapTopics(scrapId, nextCursorId, size);
 
             // then
-            assertThat(response.contents()).hasSize(scrapTopics.size());
-            assertThat(response.nextCursorId()).isEqualTo(scrapTopics.get(scrapTopics.size() - 1).getId());
-            assertThat(response.first()).isTrue();
+            SoftAssertions.assertSoftly(softly -> {
+                softly.assertThat(response.contents()).hasSize(scrapTopics.size());
+                softly.assertThat(response.nextCursorId()).isEqualTo(scrapTopics.get(scrapTopics.size() - 1).getId());
+                softly.assertThat(response.first()).isTrue();
+            });
         }
 
         @DisplayName("스크랩이 존재하지 않으면 예외가 발생한다.")
@@ -201,8 +217,7 @@ public class ScrapServiceTest {
             int size = 3;
 
             given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
-
-            when(scrapTopicRepository.existsByScrapIdAndId(scrapId, invalidNextCursorId)).thenReturn(false);
+            given(scrapTopicRepository.existsByScrapIdAndId(scrapId, invalidNextCursorId)).willReturn(false);
 
             // when & then
             assertThatThrownBy(() -> scrapService.getScrapTopics(scrapId, invalidNextCursorId, size))
