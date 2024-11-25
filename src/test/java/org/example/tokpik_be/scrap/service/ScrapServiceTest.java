@@ -17,6 +17,7 @@ import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.scrap.domain.Scrap;
 import org.example.tokpik_be.scrap.domain.ScrapTopic;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
+import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
@@ -225,5 +226,39 @@ public class ScrapServiceTest {
                 .extracting("exception")
                 .isEqualTo(ScrapException.INVALID_SCRAP_TOPIC);
         }
+    }
+
+    @DisplayName("스크랩의 개수를 조회할 수 있다.")
+    @Test
+    void getScrapCount(){
+        // given
+        long userId = 1L;
+        User user = new User("ex@example.com", "https://www.example.com/profile-photo");
+        given(userQueryService.findById(userId)).willReturn(user);
+
+        given(scrapRepository.countByUser(user)).willReturn(10L);
+
+        // when
+        ScrapCountResponse response = scrapService.getUserScrapCount(userId);
+
+        // then
+        assertThat(response.count()).isEqualTo(10L);
+    }
+
+    @DisplayName("전체 스크랩에 포함된 총 대화주제 개수를 조회할 수 있다.")
+    @Test
+    void getScrapTopicCount(){
+        // given
+        long userId = 1L;
+        User user = new User("ex@example.com", "https://www.example.com/profile-photo");
+        given(userQueryService.findById(userId)).willReturn(user);
+
+        given(scrapTopicRepository.countByUserId(userId)).willReturn(20L);
+
+        // when
+        ScrapCountResponse response = scrapService.getUserTopicCount(userId);
+
+        // then
+        assertThat(response.count()).isEqualTo(20L);
     }
 }
