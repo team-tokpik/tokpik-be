@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicDetailResponse;
@@ -33,7 +34,7 @@ public class TalkTopicController {
     @PostMapping("/topics")
     public ResponseEntity<TalkTopicsSearchResponse> searchTalkTopics(
         @RequestAttribute("userId") long userId,
-        @RequestBody TalkTopicSearchRequest request) {
+        @RequestBody @Valid TalkTopicSearchRequest request) {
 
         TalkTopicsSearchResponse response = talkTopicCommandService
             .generateTopics(userId, request);
