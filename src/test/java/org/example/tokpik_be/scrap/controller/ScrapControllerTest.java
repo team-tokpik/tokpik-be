@@ -232,9 +232,9 @@ public class ScrapControllerTest extends ControllerTestSupport {
         }
     }
 
-    @DisplayName("사용자의 총 스크랩 수 조회를 성공한다.")
+    @DisplayName("사용자의 총 스크랩 개수 조회를 할 수 있다.")
     @Test
-    void getScrapCountSuccess() throws Exception{
+    void getScrapCountSuccess() throws Exception {
         // given
         long userId = 1L;
 
@@ -243,6 +243,22 @@ public class ScrapControllerTest extends ControllerTestSupport {
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/scraps/count"));
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @DisplayName("사용자는 스크랩에 포함된 총 대화주제 개수 조회를 할 수 있다.")
+    @Test
+    void getScrapTopicCountSuccess() throws Exception {
+        // given
+        long userId = 1;
+
+        ScrapCountResponse scrapCountResponse = new ScrapCountResponse(20L);
+        given(scrapService.getUserTopicCount(userId)).willReturn(scrapCountResponse);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/users/scraps/topics/count"));
 
         // then
         resultActions.andExpect(status().isOk());
