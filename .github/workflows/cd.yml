@@ -1,13 +1,13 @@
 name: CD 수행
 
 on:
-  push:
-    branches:
+  push: ~
+#    branches:
 #      - dev
 #      - main
-    paths-ignore:
-      - 'README.md'
-      - 'src/test/**'
+#    paths-ignore:
+#      - 'README.md'
+#      - 'src/test/**'
 
 # repository에 대한 읽기 권한만 부여
 permissions:
