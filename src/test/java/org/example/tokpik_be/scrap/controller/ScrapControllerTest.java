@@ -2,10 +2,8 @@ package org.example.tokpik_be.scrap.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -252,7 +250,7 @@ public class ScrapControllerTest extends ControllerTestSupport {
     @Test
     void getScrapTopicCountSuccess() throws Exception {
         // given
-        long userId = 1;
+        long userId = 1L;
 
         ScrapCountResponse scrapCountResponse = new ScrapCountResponse(20L);
         given(scrapService.getUserTopicCount(userId)).willReturn(scrapCountResponse);
@@ -262,6 +260,42 @@ public class ScrapControllerTest extends ControllerTestSupport {
 
         // then
         resultActions.andExpect(status().isOk());
+    }
+
+    @Nested
+    @DisplayName("스크랩 삭제 시 ")
+    class DeleteScrapTest{
+        
+        @DisplayName("성공한다.")
+        @Test
+        void success() throws Exception {
+            // given
+            long scrapId = 1L;
+            doNothing().when(scrapService).deleteScrap(scrapId);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(delete("/users/scraps/{scrapId}", scrapId));
+            
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+        
+        @DisplayName("존재하지 않는 스크랩이면 예외가 발생한다.")
+        @Test
+        void scrapNotFound() throws Exception {
+            // given
+            long scrapId = 1L;
+            doThrow(new GeneralException(ScrapException.SCRAP_NOT_FOUND))
+                .when(scrapService).deleteScrap(scrapId);
+            
+            // when
+            ResultActions resultActions = mockMvc.perform(delete("/users/scraps/{scrapId}", scrapId));
+            
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(
+                    jsonPath("$.message").value(ScrapException.SCRAP_NOT_FOUND.getMessage()));
+        }
     }
 }
 
