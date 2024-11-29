@@ -271,7 +271,7 @@ public class ScrapControllerTest extends ControllerTestSupport {
         void success() throws Exception {
             // given
             long scrapId = 1L;
-            doNothing().when(scrapService).deleteScrap(scrapId);
+            willDoNothing().given(scrapService).deleteScrap(scrapId);
 
             // when
             ResultActions resultActions = mockMvc.perform(delete("/users/scraps/{scrapId}", scrapId));
@@ -285,8 +285,9 @@ public class ScrapControllerTest extends ControllerTestSupport {
         void scrapNotFound() throws Exception {
             // given
             long scrapId = 1L;
-            doThrow(new GeneralException(ScrapException.SCRAP_NOT_FOUND))
-                .when(scrapService).deleteScrap(scrapId);
+
+            willThrow(new GeneralException(ScrapException.SCRAP_NOT_FOUND))
+                .given(scrapService).deleteScrap(scrapId);
             
             // when
             ResultActions resultActions = mockMvc.perform(delete("/users/scraps/{scrapId}", scrapId));
@@ -295,6 +296,68 @@ public class ScrapControllerTest extends ControllerTestSupport {
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(
                     jsonPath("$.message").value(ScrapException.SCRAP_NOT_FOUND.getMessage()));
+        }
+    }
+
+    @Nested
+    @DisplayName("스크랩된 대화주제 삭제 시 ")
+    class DeleteScrapTopicTest {
+
+        @DisplayName("성공한다.")
+        @Test
+        void success() throws Exception {
+            // given
+            long scrapId = 1L;
+            long scrapTopicId = 1L;
+
+            willDoNothing().given(scrapService).deleteScrapTopic(scrapId, scrapTopicId);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(
+                delete("/users/scraps/{scrapId}/topics/{scrapTopicId}", scrapId, scrapTopicId));
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+
+        @DisplayName("존재하지 않는 스크랩이면 예외가 발생한다.")
+        @Test
+        void scrapNotFound() throws Exception {
+            // given
+            long scrapId = 1L;
+            long scrapTopicId = 1L;
+
+            willThrow(new GeneralException(ScrapException.SCRAP_NOT_FOUND))
+                .given(scrapService).deleteScrapTopic(scrapId, scrapTopicId);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(
+                delete("/users/scraps/{scrapId}/topics/{scrapTopicId}", scrapId, scrapTopicId));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(
+                    jsonPath("$.message").value(ScrapException.SCRAP_NOT_FOUND.getMessage()));
+        }
+
+        @DisplayName("존재하지 않는 대화주제이면 예외가 발생한다.")
+        @Test
+        void scrapTopicNotFound() throws Exception {
+            // given
+            long scrapId = 1L;
+            long scrapTopicId = 1L;
+
+            willThrow(new GeneralException(ScrapException.SCRAP_TOPIC_NOT_FOUND))
+                .given(scrapService).deleteScrapTopic(scrapId, scrapTopicId);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(
+                delete("/users/scraps/{scrapId}/topics/{scrapTopicId}", scrapId, scrapTopicId));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(
+                    jsonPath("$.message").value(ScrapException.SCRAP_TOPIC_NOT_FOUND.getMessage()));
         }
     }
 }
