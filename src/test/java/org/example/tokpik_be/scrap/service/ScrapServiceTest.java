@@ -276,7 +276,7 @@ public class ScrapServiceTest {
 
     @Nested
     @DisplayName("스크랩된 대화주제 삭제 시 ")
-    class DeleteScrapTopic {
+    class DeleteScrapTopicTest {
 
         @DisplayName("성공한다.")
         @Test
