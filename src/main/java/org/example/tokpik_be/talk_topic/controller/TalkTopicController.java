@@ -1,12 +1,5 @@
 package org.example.tokpik_be.talk_topic.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicDetailResponse;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicsRelatedResponse;
@@ -20,6 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "대화 주제 API", description = "대화 주제 연관 API")
 @RestController
@@ -47,6 +48,7 @@ public class TalkTopicController {
     @GetMapping("/topics/{topicId}/related")
     public ResponseEntity<TalkTopicsRelatedResponse> getRelatedTalkTopics(
         @RequestAttribute("userId") long userId,
+        @Parameter(name = "topicId", description = "대화 주제 ID", example = "1", in = ParameterIn.PATH)
         @PathVariable("topicId") long topicId) {
 
         TalkTopicsRelatedResponse response = talkTopicQueryService
