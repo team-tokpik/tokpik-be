@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,7 +95,7 @@ public class ScrapServiceTest {
     
     @DisplayName("스크랩 목록을 조회할 수 있다.")
     @Test
-    void getScraps(){
+    void getScraps() {
         // given
         long userId = 1L;
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
