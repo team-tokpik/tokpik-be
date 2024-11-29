@@ -83,6 +83,21 @@ tasks.named('test') {
     finalizedBy jacocoTestReport
 }
 
+def jacocoExcludePatterns = [
+        'org/example/tokpik_be/TokpikBeApplication.class',
+        '**/common/**',
+        '**/exception/**',
+        '**/dto/**',
+        '**/config/**',
+        '**/enums/**',
+        '**/event/**',
+        '**/converter/**',
+        '**/test/**'
+]
+for (qPattern in '**/QA' .. '**/QZ') {
+    jacocoExcludePatterns.add(qPattern + '*')
+}
+
 jacocoTestReport {
     dependsOn test
     reports {
@@ -91,17 +106,7 @@ jacocoTestReport {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, excludes: [
-                    'org/example/tokpik_be/TokpikBeApplication.class',
-                    '**/common/**',
-                    '**/exception/**',
-                    '**/dto/**',
-                    '**/config/**',
-                    '**/enums/**',
-                    '**/event/**',
-                    '**/converter/**',
-                    '**/test/**'
-            ])
+            fileTree(dir: it, excludes: jacocoExcludePatterns)
         }))
     }
 
@@ -121,17 +126,7 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
 
             // 커버리지 제외 범위
-            excludes = [
-                    'org/example/tokpik_be/TokpikBeApplication.class',
-                    '**/common/**',
-                    '**/exception/**',
-                    '**/dto/**',
-                    '**/config/**',
-                    '**/enums/**',
-                    '**/event/**',
-                    '**/converter/**',
-                    '**/test/**'
-            ]
+            excludes = jacocoExcludePatterns
         }
     }
 }
