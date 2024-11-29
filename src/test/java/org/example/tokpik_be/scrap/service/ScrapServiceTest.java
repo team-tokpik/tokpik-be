@@ -193,7 +193,7 @@ public class ScrapServiceTest {
 
         @DisplayName("스크랩이 존재하지 않으면 예외가 발생한다.")
         @Test
-        void invalidScrap(){
+        void invalidScrap() {
             // given
             long invalidScrapId = 1L;
             given(scrapRepository.findById(invalidScrapId)).willReturn(Optional.empty());
@@ -207,7 +207,7 @@ public class ScrapServiceTest {
 
         @DisplayName("스크랩에 포함되지 않은 대화주제를 페이징에 사용하면 예외가 발생한다.")
         @Test
-        void invalidTalkTopic(){
+        void invalidTalkTopic() {
             // given
             long scrapId = 1L;
             Scrap scrap = mock(Scrap.class);
@@ -229,7 +229,7 @@ public class ScrapServiceTest {
 
     @DisplayName("스크랩의 개수를 조회할 수 있다.")
     @Test
-    void getScrapCount(){
+    void getScrapCount() {
         // given
         long userId = 1L;
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
@@ -246,7 +246,7 @@ public class ScrapServiceTest {
 
     @DisplayName("전체 스크랩에 포함된 총 대화주제 개수를 조회할 수 있다.")
     @Test
-    void getScrapTopicCount(){
+    void getScrapTopicCount() {
         // given
         long userId = 1L;
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
@@ -263,7 +263,7 @@ public class ScrapServiceTest {
 
     @DisplayName("사용자는 스크랩을 삭제할 수 있다.")
     @Test
-    void deleteScrap(){
+    void deleteScrap() {
         // given
         long scrapId = 1L;
         Scrap scrap = mock(Scrap.class);
@@ -274,5 +274,50 @@ public class ScrapServiceTest {
 
         // then
         verify(scrapRepository).delete(any(Scrap.class));
+    }
+
+    @Nested
+    @DisplayName("스크랩된 대화주제 삭제 시 ")
+    class DeleteScrapTopic {
+
+        @DisplayName("성공한다.")
+        @Test
+        void deleteScrapTopic() {
+            // given
+            long scrapId = 1L;
+            Scrap scrap = mock(Scrap.class);
+            given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
+
+            long scrapTopicId = 1L;
+            ScrapTopic scrapTopic = mock(ScrapTopic.class);
+            given(scrapTopicRepository.findById(scrapTopicId)).willReturn(Optional.of(scrapTopic));
+
+            given(scrap.getScrapTopics()).willReturn(List.of(scrapTopic));
+
+            // when
+            scrapService.deleteScrapTopic(scrapId, scrapTopicId);
+
+            // then
+            verify(scrapTopicRepository).delete(any(ScrapTopic.class));
+        }
+
+        @DisplayName("스크랩에 포함되지 않은 대화주제이면 예외가 발생한다.")
+        @Test
+        void invalidScrapTopic() {
+            // given
+            long scrapId = 1L;
+            Scrap scrap = mock(Scrap.class);
+            given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
+
+            long invalidScrapTopicId = 1L;
+            ScrapTopic scrapTopic = mock(ScrapTopic.class);
+            given(scrapTopicRepository.findById(invalidScrapTopicId)).willReturn(Optional.of(scrapTopic));
+
+            // when & then
+            assertThatThrownBy(() -> scrapService.deleteScrapTopic(scrapId, invalidScrapTopicId))
+                .isInstanceOf(GeneralException.class)
+                .extracting("exception")
+                .isEqualTo(ScrapException.INVALID_SCRAP_TOPIC);
+        }
     }
 }
