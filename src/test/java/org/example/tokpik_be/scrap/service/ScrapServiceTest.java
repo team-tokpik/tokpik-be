@@ -3,8 +3,7 @@ package org.example.tokpik_be.scrap.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -260,5 +259,20 @@ public class ScrapServiceTest {
 
         // then
         assertThat(response.count()).isEqualTo(20L);
+    }
+
+    @DisplayName("사용자는 스크랩을 삭제할 수 있다.")
+    @Test
+    void deleteScrap(){
+        // given
+        long scrapId = 1L;
+        Scrap scrap = mock(Scrap.class);
+        given(scrapRepository.findById(scrapId)).willReturn(Optional.of(scrap));
+
+        // when
+        scrapService.deleteScrap(scrapId);
+
+        // then
+        verify(scrapRepository).delete(any(Scrap.class));
     }
 }
