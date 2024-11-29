@@ -8,18 +8,18 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.TypeException;
-import org.example.tokpik_be.type.domain.PlaceType;
-import org.example.tokpik_be.type.domain.TopicType;
-import org.example.tokpik_be.type.domain.UserPlaceType;
-import org.example.tokpik_be.type.domain.UserTopicType;
-import org.example.tokpik_be.type.repository.PlaceTypeRepository;
-import org.example.tokpik_be.type.repository.TopicTypeRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkPartner;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.talk_topic.dto.request.TalkTopicSearchRequest;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicsSearchResponse;
 import org.example.tokpik_be.talk_topic.dto.response.TalkTopicsSearchResponse.TalkTopicSearchResponse;
 import org.example.tokpik_be.talk_topic.repository.TalkTopicRepository;
+import org.example.tokpik_be.type.domain.PlaceType;
+import org.example.tokpik_be.type.domain.TopicType;
+import org.example.tokpik_be.type.domain.UserPlaceType;
+import org.example.tokpik_be.type.domain.UserTopicType;
+import org.example.tokpik_be.type.repository.PlaceTypeRepository;
+import org.example.tokpik_be.type.repository.TopicTypeRepository;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.enums.Gender;
 import org.example.tokpik_be.user.service.UserQueryService;
@@ -51,11 +51,13 @@ public class TalkTopicCommandService {
         LLMTalkTopicsResponse llmResponse = llmApiClient.searchTalkTopics(llmRequest);
 
         List<TalkTopic> talkTopics = createTalkTopics(llmResponse, topicTypes, placeTypes);
-        talkTopicRepository.saveAll(talkTopics);
+        List<TalkTopic> savedTalkTopics = talkTopicRepository.saveAll(talkTopics);
 
-        return new TalkTopicsSearchResponse(talkTopics.stream()
+        List<TalkTopicSearchResponse> responses = savedTalkTopics.stream()
             .map(talkTopic -> TalkTopicSearchResponse.from(talkTopic, false))
-            .toList());
+            .toList();
+
+        return new TalkTopicsSearchResponse(responses);
     }
 
     private LLMTalkTopicSearchRequest createLLMRequest(TalkTopicSearchRequest request,
