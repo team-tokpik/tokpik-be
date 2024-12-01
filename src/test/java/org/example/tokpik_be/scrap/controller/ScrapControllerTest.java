@@ -1,17 +1,17 @@
 package org.example.tokpik_be.scrap.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.ScrapException;
 import org.example.tokpik_be.exception.UserException;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
+import org.example.tokpik_be.scrap.dto.request.ScrapUpdateTitleRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
@@ -264,8 +264,8 @@ public class ScrapControllerTest extends ControllerTestSupport {
 
     @Nested
     @DisplayName("스크랩 삭제 시 ")
-    class DeleteScrapTest{
-        
+    class DeleteScrapTest {
+
         @DisplayName("성공한다.")
         @Test
         void success() throws Exception {
@@ -275,11 +275,11 @@ public class ScrapControllerTest extends ControllerTestSupport {
 
             // when
             ResultActions resultActions = mockMvc.perform(delete("/users/scraps/{scrapId}", scrapId));
-            
+
             // then
             resultActions.andExpect(status().isOk());
         }
-        
+
         @DisplayName("존재하지 않는 스크랩이면 예외가 발생한다.")
         @Test
         void scrapNotFound() throws Exception {
@@ -288,10 +288,10 @@ public class ScrapControllerTest extends ControllerTestSupport {
 
             willThrow(new GeneralException(ScrapException.SCRAP_NOT_FOUND))
                 .given(scrapService).deleteScrap(scrapId);
-            
+
             // when
             ResultActions resultActions = mockMvc.perform(delete("/users/scraps/{scrapId}", scrapId));
-            
+
             // then
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(
@@ -358,6 +358,46 @@ public class ScrapControllerTest extends ControllerTestSupport {
             resultActions.andExpect(status().isBadRequest())
                 .andExpect(
                     jsonPath("$.message").value(ScrapException.SCRAP_TOPIC_NOT_FOUND.getMessage()));
+        }
+    }
+
+    @Nested
+    @DisplayName("스크랩 제목 수정 시 ")
+    class UpdateScrapTitleTest {
+
+        @DisplayName("성공한다.")
+        @Test
+        void success() throws Exception {
+            // given
+            ScrapUpdateTitleRequest request = new ScrapUpdateTitleRequest("새 스크랩 제목");
+
+            doNothing().when(scrapService).updateScrapTitle(anyLong(), anyLong(), eq(request));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/users/scraps/{scrapId}/titles", scrapId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+
+        @DisplayName("유효하지 않은 스크랩 제목일 경우 예외가 발생한다.")
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" "})
+        void invalidScrapTitle(String scrapTitle) throws Exception {
+            // given
+            ScrapUpdateTitleRequest request = new ScrapUpdateTitleRequest(scrapTitle);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/users/scraps/{scrapId}/titles", scrapId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.scrapTitle").value("스크랩 제목은 필수값"));
         }
     }
 }
