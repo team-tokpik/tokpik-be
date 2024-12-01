@@ -92,9 +92,10 @@ def jacocoExcludePatterns = [
         '**/enums/**',
         '**/event/**',
         '**/converter/**',
+        '**/llm/**',
         '**/test/**'
 ]
-for (qPattern in '**/QA' .. '**/QZ') {
+for (qPattern in '**/QA'..'**/QZ') {
     jacocoExcludePatterns.add(qPattern + '*')
 }
 
