@@ -1,12 +1,5 @@
 package org.example.tokpik_be.scrap.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.scrap.dto.request.ScrapCreateRequest;
 import org.example.tokpik_be.scrap.dto.request.ScrapUpdateTitleRequest;
 import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
@@ -24,6 +17,14 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "스크랩 API", description = "스크랩 연관 API")
 @RestController
@@ -113,7 +114,6 @@ public class ScrapController {
         return ResponseEntity.ok().build();
     }
 
-
     @Operation(summary = "스크랩 조회", description = "특정 스크랩에 포함된 대화 주제들을 조회")
     @ApiResponse(responseCode = "200", description = "스크랩 조회 성공")
     @GetMapping("/users/scraps/{scrapId}/topics")
@@ -134,7 +134,6 @@ public class ScrapController {
     public ResponseEntity<Void> updateScrapTitle(@RequestAttribute("userId") long userId,
         @Parameter(name = "scrapId", description = "스크랩 ID", example = "1")
         @PathVariable("scrapId") long scrapId,
-
         @RequestBody @Valid ScrapUpdateTitleRequest request) {
 
         scrapService.updateScrapTitle(userId, scrapId, request);
