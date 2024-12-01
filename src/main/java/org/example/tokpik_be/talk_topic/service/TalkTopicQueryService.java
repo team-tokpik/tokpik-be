@@ -1,7 +1,7 @@
 package org.example.tokpik_be.talk_topic.service;
 
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+
 import org.example.tokpik_be.exception.GeneralException;
 import org.example.tokpik_be.exception.TalkTopicException;
 import org.example.tokpik_be.scrap.repository.QueryDslScrapRepository;
@@ -19,6 +19,8 @@ import org.example.tokpik_be.util.llm.dto.response.LLMTalkTopicDetailResponse;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +53,7 @@ public class TalkTopicQueryService {
         TalkTopic talkTopic = findById(topicId);
 
         LLMTalkTopicDetailRequest request = LLMTalkTopicDetailRequest.from(talkTopic);
-        LLMTalkTopicDetailResponse llmResponse = llmApiClient
-            .generateTalkTopicDetail(request);
+        LLMTalkTopicDetailResponse llmResponse = llmApiClient.generateTalkTopicDetail(request);
 
         List<TalkTopicDetailItemResponse> details = llmResponse.details().stream()
             .map(item -> new TalkTopicDetailItemResponse(item.itemTitle(), item.itemContent()))
