@@ -2,8 +2,8 @@ package org.example.tokpik_be.notification.repository;
 
 import static org.example.tokpik_be.notification.domain.QNotification.notification;
 import static org.example.tokpik_be.notification.domain.QNotificationTalkTopic.notificationTalkTopic;
-import static org.example.tokpik_be.type.domain.QTopicType.topicType;
 import static org.example.tokpik_be.talk_topic.domain.QTalkTopic.talkTopic;
+import static org.example.tokpik_be.type.domain.QTopicType.topicType;
 import static org.example.tokpik_be.user.domain.QUser.user;
 
 import com.querydsl.core.Tuple;
@@ -93,11 +93,13 @@ public class QueryDslNotificationRepository {
                 int toIndex = Math.min(tuples.size(), 4);
                 List<NotificationTalkTopicTypeResponse> talkTopicTypeResponses = tuples
                     .stream()
-                    .sorted(Comparator.comparing(r -> r.get(notificationTalkTopic.id)))
+                    .sorted(
+                        Comparator.comparing(response -> response.get(notificationTalkTopic.id)))
                     .toList().subList(0, toIndex)
                     .stream()
-                    .map(r -> new NotificationTalkTopicTypeResponse(r.get(topicType.id),
-                        r.get(topicType.content)))
+                    .map(response -> new NotificationTalkTopicTypeResponse(
+                        response.get(topicType.id),
+                        response.get(topicType.content)))
                     .toList();
 
                 Tuple tuple = tuples.get(0);
