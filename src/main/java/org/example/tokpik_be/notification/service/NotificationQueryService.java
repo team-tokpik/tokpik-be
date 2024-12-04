@@ -26,6 +26,7 @@ import org.example.tokpik_be.notification.repository.QueryDslNotificationReposit
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
+import org.example.tokpik_be.util.TimeProvider;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,12 +44,7 @@ public class NotificationQueryService {
 
     private final UserQueryService userQueryService;
     private final ApplicationEventPublisher eventPublisher;
-
-    public Notification findById(long notificationId) {
-
-        return notificationRepository.findById(notificationId)
-            .orElseThrow(() -> new GeneralException(NotificationException.NOTIFICATION_NOT_FOUND));
-    }
+    private final TimeProvider timeProvider;
 
     public NotificationsResponse getNotifications(long userId, Long nextCursorId) {
         int pageSize = 10;
@@ -94,6 +90,31 @@ public class NotificationQueryService {
             talkTopicResponses);
     }
 
+    public Notification findById(long notificationId) {
+
+        return notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new GeneralException(NotificationException.NOTIFICATION_NOT_FOUND));
+    }
+
+    /**
+     * 분 간격에 따라 나눠진 시간 목록을 제공하는 로직
+     *
+     * @param from            시작 시간
+     * @param to              종료 시간
+     * @param intervalMinutes 분 간격
+     * @return 분 간격에 따라 시작 시간 ~ 종료 시간내 나눠진 시간 목록
+     */
+    private List<LocalTime> generateTimeIntervals(LocalTime from, LocalTime to,
+        int intervalMinutes) {
+        List<LocalTime> timeIntervals = new ArrayList<>();
+
+        while (from.isBefore(to)) {
+            timeIntervals.add(from);
+            from = from.plusMinutes(intervalMinutes);
+        }
+
+        return timeIntervals;
+    }
 
     /**
      * 1분마다 알림 송신을 수행하는 스케줄러, 이하 과정에 따라 작업 수행 <br/> <br/>
@@ -105,7 +126,7 @@ public class NotificationQueryService {
     @Async
     @Scheduled(fixedRate = 1000 * 60)
     public void sendScheduledNotifications() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = timeProvider.provideSystemTime();
 
         List<NotificationScheduledResponse> scheduledNotifications = queryDslNotificationRepository
             .getScheduledNotifications(now);
@@ -149,6 +170,22 @@ public class NotificationQueryService {
     }
 
     /**
+     * 송신 알림 여부 확인 로직 <br/>
+     * 시작 시간부터 분 간격에 따라 알림 시간대를 구했을 때 송신 일시에 해당하는 것이 있는 경우 true 반환
+     *
+     * @param notification 알림
+     * @param noticeTime   알림 일시(송신 일시)
+     * @return 알림 일시(송신 일시) 해당 여부
+     */
+    private boolean isNoticeTime(NotificationScheduledResponse notification, LocalTime noticeTime) {
+        LocalTime startTime = notification.startTime();
+        int intervalMinutes = notification.intervalMinutes();
+        long minutesSinceStart = ChronoUnit.MINUTES.between(startTime, noticeTime);
+
+        return minutesSinceStart % intervalMinutes == 0;
+    }
+
+    /**
      * 특정 알림과 연관된 DTO 그룹에서 알림 지정 순서에 따라 현재 송신할 알림을 선택하는 로직
      *
      * @param group      특정 알림과 관련된 DTO 그룹
@@ -181,41 +218,5 @@ public class NotificationQueryService {
         return new NotificationSendEvent(sendNotification.receiverToken(),
             sendNotification.talkTopicTitle(),
             sendNotification.talkTopicSubtitle());
-    }
-
-    /**
-     * 송신 알림 여부 확인 로직 <br/>
-     * 시작 시간부터 분 간격에 따라 알림 시간대를 구했을 때 송신 일시에 해당하는 것이 있는 경우 true 반환
-     *
-     * @param notification 알림
-     * @param noticeTime   알림 일시(송신 일시)
-     * @return 알림 일시(송신 일시) 해당 여부
-     */
-    private boolean isNoticeTime(NotificationScheduledResponse notification, LocalTime noticeTime) {
-        LocalTime startTime = notification.startTime();
-        int intervalMinutes = notification.intervalMinutes();
-        long minutesSinceStart = ChronoUnit.MINUTES.between(startTime, noticeTime);
-
-        return minutesSinceStart % intervalMinutes == 0;
-    }
-
-    /**
-     * 분 간격에 따라 나눠진 시간 목록을 제공하는 로직
-     *
-     * @param from            시작 시간
-     * @param to              종료 시간
-     * @param intervalMinutes 분 간격
-     * @return 분 간격에 따라 시작 시간 ~ 종료 시간내 나눠진 시간 목록
-     */
-    private List<LocalTime> generateTimeIntervals(LocalTime from, LocalTime to,
-        int intervalMinutes) {
-        List<LocalTime> timeIntervals = new ArrayList<>();
-
-        while (from.isBefore(to)) {
-            timeIntervals.add(from);
-            from = from.plusMinutes(intervalMinutes);
-        }
-
-        return timeIntervals;
     }
 }
