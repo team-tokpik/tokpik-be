@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,15 +23,18 @@ import org.example.tokpik_be.exception.NotificationException;
 import org.example.tokpik_be.notification.domain.Notification;
 import org.example.tokpik_be.notification.domain.NotificationTalkTopic;
 import org.example.tokpik_be.notification.dto.response.NotificationDetailResponse;
+import org.example.tokpik_be.notification.dto.response.NotificationScheduledResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse.NotificationResponse;
 import org.example.tokpik_be.notification.dto.response.NotificationsResponse.NotificationResponse.NotificationTalkTopicTypeResponse;
+import org.example.tokpik_be.notification.event.NotificationSendEvent;
 import org.example.tokpik_be.notification.repository.NotificationRepository;
 import org.example.tokpik_be.notification.repository.QueryDslNotificationRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.type.domain.TopicType;
 import org.example.tokpik_be.user.domain.User;
 import org.example.tokpik_be.user.service.UserQueryService;
+import org.example.tokpik_be.util.TimeProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,7 +58,10 @@ class NotificationQueryServiceTest {
     private UserQueryService userQueryService;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private TimeProvider timeProvider;
 
     @InjectMocks
     private NotificationQueryService notificationQueryService;
@@ -105,6 +113,36 @@ class NotificationQueryServiceTest {
             softly.assertThat(response.first()).isEqualTo(expected.first());
             softly.assertThat(response.last()).isEqualTo(expected.last());
         });
+    }
+
+    @DisplayName("예정된 알림 전송에 성공한다.")
+    @Test
+    void sendScheduledNotifications() {
+        // given
+        LocalDateTime fixedTime = LocalDateTime.of(2024, 12, 1, 3, 0);
+        given(timeProvider.provideSystemTime()).willReturn(fixedTime);
+
+        long notificationId = 1L;
+        String receiverToken = "header.payload.signature";
+        String talkTopicTitle = "대화 제목";
+        String talkTopicSubtitle = "대화 부제목";
+        LocalTime startTime = fixedTime.toLocalTime().minusMinutes(30);
+        LocalTime endTime = startTime.plusMinutes(60);
+        int intervalMinutes = 10;
+        List<NotificationScheduledResponse> response = LongStream.range(1, 7)
+            .mapToObj(talkTopicId -> new NotificationScheduledResponse(
+                notificationId, talkTopicId, receiverToken, talkTopicTitle, talkTopicSubtitle,
+                startTime, endTime, intervalMinutes))
+            .toList();
+        given(queryDslNotificationRepository.getScheduledNotifications(fixedTime))
+            .willReturn(response);
+
+        // when
+        notificationQueryService.sendScheduledNotifications();
+
+        // then
+        verify(eventPublisher, times(1))
+            .publishEvent(any(NotificationSendEvent.class));
     }
 
     @Nested
