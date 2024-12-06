@@ -237,7 +237,7 @@ public class ScrapServiceTest {
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
         given(userQueryService.findById(userId)).willReturn(user);
 
-        given(queryDslScrapRepository.countByUser(user)).willReturn(10L);
+        given(queryDslScrapRepository.countScrapByUser(user)).willReturn(10L);
 
         // when
         ScrapCountResponse response = scrapService.getUserScrapCount(userId);
@@ -254,7 +254,7 @@ public class ScrapServiceTest {
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
         given(userQueryService.findById(userId)).willReturn(user);
 
-        given(scrapTopicRepository.countByUserId(userId)).willReturn(20L);
+        given(queryDslScrapRepository.countScrapTopicByUser(user)).willReturn(20L);
 
         // when
         ScrapCountResponse response = scrapService.getUserTopicCount(userId);

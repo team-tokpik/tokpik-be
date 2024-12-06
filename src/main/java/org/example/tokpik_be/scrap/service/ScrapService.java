@@ -73,7 +73,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        Long count = queryDslScrapRepository.countByUser(user);
+        Long count = queryDslScrapRepository.countScrapByUser(user);
 
         return new ScrapCountResponse(count);
     }
@@ -82,7 +82,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        Long count = scrapTopicRepository.countByUserId(userId);
+        Long count = queryDslScrapRepository.countScrapTopicByUser(user);
 
         return new ScrapCountResponse(count);
     }
