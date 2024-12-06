@@ -12,6 +12,7 @@ import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
+import org.example.tokpik_be.scrap.repository.QueryDslScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
@@ -31,6 +32,7 @@ public class ScrapService {
     private final ScrapTopicRepository scrapTopicRepository;
     private final UserQueryService userQueryService;
     private final TalkTopicQueryService talkTopicQueryService;
+    private final QueryDslScrapRepository queryDslScrapRepository;
 
     public ScrapListResponse getScraps(long userId) {
 
@@ -71,7 +73,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        Long count = scrapRepository.countByUser(user);
+        Long count = queryDslScrapRepository.countByUser(user);
 
         return new ScrapCountResponse(count);
     }

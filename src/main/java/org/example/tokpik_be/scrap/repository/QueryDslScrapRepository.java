@@ -1,9 +1,12 @@
 package org.example.tokpik_be.scrap.repository;
 
+import static org.example.tokpik_be.scrap.domain.QScrap.*;
 import static org.example.tokpik_be.scrap.domain.QScrapTopic.scrapTopic;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Objects;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.user.domain.User;
@@ -25,4 +28,14 @@ public class QueryDslScrapRepository {
 
         return Objects.nonNull(result);
     }
+
+	public Long countByUser(User user) {
+		Long count = queryFactory
+			.select(scrap.count())
+			.from(scrap)
+			.where(scrap.user.eq(user))
+			.fetchOne();
+
+		return Optional.ofNullable(count).orElse(0L);
+	}
 }
