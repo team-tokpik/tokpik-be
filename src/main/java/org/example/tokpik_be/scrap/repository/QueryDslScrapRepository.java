@@ -77,7 +77,7 @@ public class QueryDslScrapRepository {
 		return Optional.ofNullable(count).orElse(0L) > 0;
 	}
 
-	public List<Scrap> findByUser(User user){
+	public List<Scrap> findScrapBy(User user){
 		QScrap qScrap = QScrap.scrap;
 
 		return queryFactory

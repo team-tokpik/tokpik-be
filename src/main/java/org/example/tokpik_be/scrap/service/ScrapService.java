@@ -38,7 +38,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        List<Scrap> scraps = queryDslScrapRepository.findByUser(user);
+        List<Scrap> scraps = queryDslScrapRepository.findScrapBy(user);
 
         List<ScrapListResponse.ScrapResponse> scrapResponses = scraps.stream()
             .map(this::mapToScrapResponse)
