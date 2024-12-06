@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
-    List<Scrap> findByUserOrderByCreatedAtDesc(User user);
+	List<Scrap> findByUserOrderByCreatedAtDesc(User user);
 
-    Long countByUser(User user);
-
-    boolean existsByIdAndScrapTopicsTalkTopicId(Long id, Long topicId);
+	boolean existsByIdAndScrapTopicsTalkTopicId(Long id, Long topicId);
 }
