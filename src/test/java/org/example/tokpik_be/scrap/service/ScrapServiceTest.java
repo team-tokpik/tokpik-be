@@ -18,6 +18,7 @@ import org.example.tokpik_be.scrap.dto.response.ScrapCountResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapCreateResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapListResponse;
 import org.example.tokpik_be.scrap.dto.response.ScrapResponse;
+import org.example.tokpik_be.scrap.repository.QueryDslScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapRepository;
 import org.example.tokpik_be.scrap.repository.ScrapTopicRepository;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
@@ -48,6 +49,9 @@ public class ScrapServiceTest {
 
     @Mock
     private TalkTopicQueryService talkTopicQueryService;
+
+    @Mock
+    private QueryDslScrapRepository queryDslScrapRepository;
 
     @InjectMocks
     private ScrapService scrapService;
@@ -233,7 +237,7 @@ public class ScrapServiceTest {
         User user = new User("ex@example.com", "https://www.example.com/profile-photo");
         given(userQueryService.findById(userId)).willReturn(user);
 
-        given(scrapRepository.countByUser(user)).willReturn(10L);
+        given(queryDslScrapRepository.countByUser(user)).willReturn(10L);
 
         // when
         ScrapCountResponse response = scrapService.getUserScrapCount(userId);
