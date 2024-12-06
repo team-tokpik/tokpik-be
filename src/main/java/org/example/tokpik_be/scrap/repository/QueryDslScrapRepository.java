@@ -4,12 +4,17 @@ import static org.example.tokpik_be.scrap.domain.QScrap.*;
 import static org.example.tokpik_be.scrap.domain.QScrapTopic.scrapTopic;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
+import org.example.tokpik_be.scrap.domain.QScrap;
 import org.example.tokpik_be.scrap.domain.QScrapTopic;
+import org.example.tokpik_be.scrap.domain.Scrap;
+import org.example.tokpik_be.talk_topic.domain.QTalkTopic;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.user.domain.User;
 import org.springframework.stereotype.Repository;
@@ -52,5 +57,32 @@ public class QueryDslScrapRepository {
 			.fetchOne();
 
 		return Optional.ofNullable(count).orElse(0L);
+	}
+
+	public boolean checkIsTopicScraped(Long id, Long topicId) {
+		QScrap qScrap = QScrap.scrap;
+		QScrapTopic qScrapTopic = QScrapTopic.scrapTopic;
+		QTalkTopic qTalkTopic = QTalkTopic.talkTopic;
+
+		Long count = queryFactory
+			.select(qScrap.count())
+			.from(qScrap)
+			.innerJoin(qScrap.scrapTopics, qScrapTopic)
+			.innerJoin(qScrapTopic.talkTopic, qTalkTopic)
+			.where(qScrap.id.eq(id)
+				.and(qTalkTopic.id.eq(topicId)))
+			.fetchOne();
+
+		return Optional.ofNullable(count).orElse(0L) > 0;
+	}
+
+	public List<Scrap> findByUser(User user){
+		QScrap qScrap = QScrap.scrap;
+
+		return queryFactory
+			.selectFrom(qScrap)
+			.where(qScrap.user.eq(user))
+			.orderBy(qScrap.createdAt.desc())
+			.fetch();
 	}
 }

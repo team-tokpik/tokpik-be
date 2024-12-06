@@ -38,7 +38,7 @@ public class ScrapService {
 
         User user = userQueryService.findById(userId);
 
-        List<Scrap> scraps = scrapRepository.findByUserOrderByCreatedAtDesc(user);
+        List<Scrap> scraps = queryDslScrapRepository.findByUser(user);
 
         List<ScrapListResponse.ScrapResponse> scrapResponses = scraps.stream()
             .map(this::mapToScrapResponse)
@@ -167,7 +167,7 @@ public class ScrapService {
     }
 
     private boolean isTopicScraped(Long scrapId, Long topicId) {
-        return scrapRepository.existsByIdAndScrapTopicsTalkTopicId(scrapId, topicId);
+        return queryDslScrapRepository.checkIsTopicScraped(scrapId, topicId);
     }
 
     public Long getNewNextCursorId(List<ScrapResponse.ScrapTopicResponse> contents, Long nextCursorId, List<ScrapTopic> scrapTopics) {

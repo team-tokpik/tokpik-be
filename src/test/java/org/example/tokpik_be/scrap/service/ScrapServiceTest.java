@@ -126,7 +126,7 @@ public class ScrapServiceTest {
         List<ScrapTopic> scrapTopicsForScrap1 = List.of(scrapTopics.get(0), scrapTopics.get(1));
         List<ScrapTopic> scrapTopicsForScrap2 = List.of(scrapTopics.get(2), scrapTopics.get(3));
 
-        given(scrapRepository.findByUserOrderByCreatedAtDesc(user)).willReturn(scraps);
+        given(queryDslScrapRepository.findByUser(user)).willReturn(scraps);
         given(scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scraps.get(0))).willReturn(scrapTopicsForScrap1);
         given(scrapTopicRepository.findByScrapOrderByCreatedAtDesc(scraps.get(1))).willReturn(scrapTopicsForScrap2);
 
