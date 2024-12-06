@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.tokpik_be.scrap.domain.QScrap;
 import org.example.tokpik_be.scrap.domain.QScrapTopic;
 import org.example.tokpik_be.scrap.domain.Scrap;
+import org.example.tokpik_be.scrap.domain.ScrapTopic;
 import org.example.tokpik_be.talk_topic.domain.QTalkTopic;
 import org.example.tokpik_be.talk_topic.domain.TalkTopic;
 import org.example.tokpik_be.user.domain.User;
@@ -83,6 +84,16 @@ public class QueryDslScrapRepository {
 			.selectFrom(qScrap)
 			.where(qScrap.user.eq(user))
 			.orderBy(qScrap.createdAt.desc())
+			.fetch();
+	}
+
+	public List<ScrapTopic> findScrapTopicBy(Scrap scrap) {
+		QScrapTopic qScrapTopic = QScrapTopic.scrapTopic;
+
+		return queryFactory
+			.selectFrom(qScrapTopic)
+			.where(qScrapTopic.scrap.eq(scrap))
+			.orderBy(qScrapTopic.createdAt.desc())
 			.fetch();
 	}
 }
