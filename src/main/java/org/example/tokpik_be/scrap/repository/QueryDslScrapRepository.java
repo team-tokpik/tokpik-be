@@ -38,8 +38,7 @@ public class QueryDslScrapRepository {
 
 	public Long countScrapBy(User user) {
 
-		Long count = queryFactory
-			.select(scrap.count())
+		Long count = queryFactory.select(scrap.count())
 			.from(scrap)
 			.where(scrap.user.eq(user))
 			.fetchOne();
@@ -49,8 +48,7 @@ public class QueryDslScrapRepository {
 
 	public Long countScrapTopicBy(User user) {
 
-		Long count = queryFactory
-			.select(scrapTopic.count())
+		Long count = queryFactory.select(scrapTopic.count())
 			.from(scrapTopic)
 			.join(scrapTopic.scrap)
 			.where(scrapTopic.scrap.user.eq(user))
@@ -61,8 +59,7 @@ public class QueryDslScrapRepository {
 
 	public boolean checkIsTopicScraped(Long id, Long topicId) {
 
-		Long count = queryFactory
-			.select(scrap.count())
+		Long count = queryFactory.select(scrap.count())
 			.from(scrap)
 			.innerJoin(scrap.scrapTopics, scrapTopic)
 			.innerJoin(scrapTopic.talkTopic, talkTopic)
@@ -75,8 +72,7 @@ public class QueryDslScrapRepository {
 
 	public List<Scrap> findScrapBy(User user) {
 
-		return queryFactory
-			.selectFrom(scrap)
+		return queryFactory.selectFrom(scrap)
 			.where(scrap.user.eq(user))
 			.orderBy(scrap.createdAt.desc())
 			.fetch();
@@ -84,8 +80,7 @@ public class QueryDslScrapRepository {
 
 	public List<ScrapTopic> findScrapTopicBy(Scrap scrap) {
 
-		return queryFactory
-			.selectFrom(scrapTopic)
+		return queryFactory.selectFrom(scrapTopic)
 			.where(scrapTopic.scrap.eq(scrap))
 			.orderBy(scrapTopic.createdAt.desc())
 			.fetch();
@@ -94,10 +89,8 @@ public class QueryDslScrapRepository {
 	public List<ScrapTopic> findScrapTopicByCursor(Long scrapId, Long nextCursorId, Pageable pageable) {
 
 		return queryFactory.selectFrom(scrapTopic)
-			.where(
-				scrapTopic.scrap.id.eq(scrapId),
-				scrapTopic.id.gt(nextCursorId)
-			)
+			.where(scrapTopic.scrap.id.eq(scrapId)
+					.and(scrapTopic.id.gt(nextCursorId)))
 			.orderBy(scrapTopic.id.asc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -107,8 +100,7 @@ public class QueryDslScrapRepository {
 	public long countScrapTopicByCursor(Long scrapId, Long nextCursorId) {
 
 		return Optional.ofNullable(
-			queryFactory
-				.select(scrapTopic.count())
+			queryFactory.select(scrapTopic.count())
 				.from(scrapTopic)
 				.where(scrapTopic.scrap.id.eq(scrapId)
 					.and(scrapTopic.id.gt(nextCursorId)))
@@ -120,10 +112,8 @@ public class QueryDslScrapRepository {
 
 		Integer result = queryFactory.selectOne()
 			.from(scrapTopic)
-			.where(
-				scrapTopic.scrap.id.eq(scrapId),
-				scrapTopic.id.eq(topicId)
-			)
+			.where(scrapTopic.scrap.id.eq(scrapId)
+					.and(scrapTopic.id.eq(topicId)))
 			.fetchFirst();
 
 		return Objects.nonNull(result);
