@@ -59,8 +59,3 @@
     - refresh token 탈취 시 최대 노출 시간을 5시간으로 단축
     - 이전 refresh token 무효화로 탈취된 token의 재사용 방지
 
-## 팀원 소개 
-[안민재](https://github.com/Minjae-An)|[박현지](https://github.com/hhyuun)|
-|:-:|:-:|
-<img src="https://avatars.githubusercontent.com/u/101340860?v=4" height=160 width=160px></img> | <img src="https://avatars.githubusercontent.com/u/119161420?v=4" height=160 width=160px></img> |
-
